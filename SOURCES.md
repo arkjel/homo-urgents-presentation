@@ -6,16 +6,15 @@ Materiał dostarczony przez użytkownika: `PUBLIKACJA 6.10 INQ.pdf`, 26 stron, r
 
 | Slajd | Strona PDF | Wartości i znaczenie |
 |---|---|---|
-| 6 | 5 | Homo Urgens jest trybem sytuacyjnym, nie trwałym segmentem lub generacją. |
-| 7 | 6 | 78% chce produktu/usługi wtedy, kiedy ich potrzebuje. 48% woli szybko zdecydować niż długo rozważać możliwości. |
-| 8 | 7 | Oczekiwanie realizacji potrzeby do maksymalnie kilku godzin: brakujący produkt spożywczy 53%, prezent/produkt na specjalną okazję 20%. |
-| 9 | 11 | 55% zawsze lub często zna mniej więcej potrzebę, ale konkretny produkt wybiera podczas przeglądania aplikacji. 41% wybiera markę podczas przeglądania oferty. |
-| 10 | 14 | Model otwartej, zawężanej i domykanej decyzji. |
-| 12 | 14 | 48% uważa, że trafne rekomendacje pomagają szybciej znaleźć produkt. |
-| 15 | 18, 20 | 67% często zwraca uwagę na promocje i oferty. 18% deklaruje częsty efekt w postaci szybszej decyzji, co kupić. Odrębne deklaracje, bez obliczania konwersji lub wnioskowania przyczynowego. |
-| 16 | 21 | Wybrane kryteria produktu: cena 55%, promocja 37%, dostępność 28%, marka 23%. Jest to wybór kryteriów, nie kompletny ranking: wcześniejsze doświadczenia mają 26%. Odpowiedzi nie sumują się do 100%. |
-| 17–19 | 17, 22 | Rola Retail Media w pokazaniu możliwości, ułatwieniu wyboru i domknięciu zakupu. |
-| 20 | 19, 24, 25 | Implikacje i ograniczenie: zakup po ekspozycji nie jest sam w sobie dowodem przyczynowego wpływu reklamy. |
+| 5–6 | — | Schemat dwóch planów i ilustracyjna potrzeba antyperspirantu. |
+| 7 | 5 | Homo Urgens jest trybem sytuacyjnym, nie trwałym segmentem lub generacją. |
+| 8 | 6 | 78% chce produktu/usługi wtedy, kiedy ich potrzebuje. 48% woli szybko zdecydować niż długo rozważać możliwości. |
+| 9 | 7 | Oczekiwanie realizacji potrzeby do maksymalnie kilku godzin: brakujący produkt spożywczy 53%, prezent/produkt na specjalną okazję 20%. Nie są to dane o antyperspirantach. |
+| 10 | 11 | 55% zawsze lub często zna mniej więcej potrzebę, ale konkretny produkt wybiera podczas przeglądania aplikacji. 41% wybiera markę podczas przeglądania oferty. |
+| 11 | 14, 17 | Retail Media towarzyszy decyzji: pokazuje opcję, pomaga rozważyć konkretny produkt i wspiera domknięcie zakupu. Model jakościowy. |
+| 13 | 14 | 48% uważa, że trafne rekomendacje pomagają szybciej znaleźć produkt. |
+| 16–18 | 11, 17, 22 | Ilustracja roli Retail Media: zapytanie o produkt → pasujący wynik sponsorowany → wybór marki → koszyk. |
+| 19 | 19, 24, 25 | Implikacje i ograniczenie: zakup po ekspozycji nie jest sam w sobie dowodem przyczynowego wpływu reklamy. |
 
 Metodologia (s. 4 raportu): CAWI objęło N=1002 mieszkańców miast, 18+. FGI to 2 grupy, łącznie 12 osób. Decision Lab obejmuje 11 ścieżek zakupowych w Glovo. Metodologia pozostaje w dokumentacji; osobny slajd został usunięty na prośbę użytkownika.
 
@@ -39,9 +38,11 @@ Lato Regular, Bold i Black pobrano z [repozytorium Google Fonts](https://github.
 
 ## Autorski przykład i grafika
 
-Ekrany zakupów, produkty, ceny i sytuacja „Goście za 20 minut” służą ilustracji wniosków. Nie są zrzutami prawdziwego interfejsu, aktualną ofertą, deklaracją czasu dostawy ani case study kampanii. Suma trzech przykładowych produktów to 25,47 zł, bez wyliczania dostawy i opłat.
+Ekrany zakupów, marki A–C i potrzeba antyperspirantu służą ilustracji wniosków. Nie są zrzutami prawdziwego interfejsu, aktualną ofertą, deklaracją czasu dostawy ani case study kampanii. Cena 18,99 zł jest umowna, bez wyliczania dostawy i opłat. Konsument w tym przykładzie wybiera pasujący produkt sponsorowany; jest to autorska scena, nie zmierzony efekt reklamy.
 
-Grafika `assets/images/party-groceries.png` powstała przy użyciu wbudowanego narzędzia imagegen. Zachowano przezroczystość. Nie przedstawia konkretnej marki ani rzeczywistego produktu.
+Podział ekranu na plan marki i plan konsumenta oraz ilustracja opakowania antyperspirantu są autorskimi elementami HTML/CSS. Nazwa Glovo jest tekstem wewnątrz schematu zakupów; schemat nie jest kopią interfejsu platformy.
+
+Grafika `assets/images/party-groceries.png` powstała przy użyciu wbudowanego narzędzia imagegen. Zachowano przezroczystość. Nie przedstawia konkretnej marki ani rzeczywistego produktu. Po zmianie przykładu na antyperspirant grafika pozostaje opcjonalnym zasobem i nie jest wyświetlana na slajdach.
 
 Prompt:
 

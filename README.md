@@ -2,7 +2,7 @@
 
 Prezentacja dla Uliany Jelonek i Joanny Wysockiej z Glovo.
 
-**21 slajdów. Scenariusz 16:45. Limit 18 minut.**
+**20 slajdów. Scenariusz 15:40. Limit 18 minut.**
 
 ## Uruchomienie
 
@@ -37,9 +37,9 @@ Treści, czasy, dane badania i notatki są w `slides.js`. Liczby wykresów zmien
 
 ## Dane i sceny zakupowe
 
-Źródła, podstawy badania, strony PDF oraz pochodzenie grafik opisano w `SOURCES.md`. „Goście za 20 minut” jest autorskim przykładem. Ekrany i ceny są umowne, a czas odnosi się do przyjścia gości.
+Źródła, podstawy badania, strony PDF oraz pochodzenie grafik opisano w `SOURCES.md`. Motyw przewodni to spotkanie planu marki i pilnej potrzeby konsumenta. Scena „potrzebuję antyperspirantu, marki jeszcze nie wybrałem” jest autorskim przykładem. Marki A–C, ekrany i cena są umowne. Scena nie jest wynikiem kampanii ani obietnicą czasu dostawy.
 
-Wyniki 67% i 18% są odrębnymi deklaracjami. Nie tworzą lejka konwersji. CAWI N=1002 dotyczy całej próby mieszkańców miast 18+; raport nie podaje liczebności wszystkich podgrup q-commerce. Decision Lab N=11 opisuje ścieżki jakościowe, nie rozkład w populacji.
+CAWI N=1002 dotyczy całej próby mieszkańców miast 18+; raport nie podaje liczebności wszystkich podgrup q-commerce. Decision Lab N=11 opisuje ścieżki jakościowe, nie rozkład w populacji. Retail Media może współtworzyć wybór w aplikacji; sam zakup po reklamie nie jest dowodem jej przyczynowego wpływu.
 
 Tryb ograniczonego ruchu respektuje ustawienia systemowe. Możesz też otworzyć `index.html?motion=off`.
 
