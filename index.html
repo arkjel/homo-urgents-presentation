@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Homo Urgens: Tryb TERAZ — Uliana Jelonek i Joanna Wysocka</title>
+  <link rel="icon" href="assets/brand/conference-heart.png">
+  <link rel="preload" href="assets/fonts/Lato-Black.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="editor.css">
+</head>
+<body>
+  <main id="stageShell" class="stage-shell" aria-label="Prezentacja Homo Urgens">
+    <div id="stage" class="stage" aria-live="polite"></div>
+  </main>
+  <nav class="deck-hud" aria-label="Sterowanie prezentacją">
+    <button id="previous" type="button" aria-label="Poprzedni etap">←</button>
+    <span id="slideCounter"></span>
+    <button id="next" type="button" aria-label="Następny etap">→</button>
+    <span class="hud-divider"></span>
+    <button id="fullscreen" type="button" title="Pełny ekran · F">Ekran</button>
+    <button id="edit" type="button" title="Edycja · E">Edytuj</button>
+    <button id="notes" type="button" title="Notatki · O">Notatki</button>
+    <button id="help" type="button" aria-label="Skróty klawiatury">?</button>
+  </nav>
+  <dialog id="notesDialog" class="notes-dialog" aria-labelledby="notesTitle">
+    <button class="dialog-close" type="button" data-close-dialog aria-label="Zamknij notatki">×</button>
+    <p id="notesMeta" class="notes-meta"></p><h2 id="notesTitle"></h2><div id="notesBody"></div>
+  </dialog>
+  <dialog id="helpDialog" class="help-dialog" aria-labelledby="helpTitle">
+    <button class="dialog-close" type="button" data-close-dialog aria-label="Zamknij pomoc">×</button>
+    <h2 id="helpTitle">Sterowanie</h2>
+    <dl><dt>→ ↓ Page Down Spacja Enter</dt><dd>Kolejny element, potem slajd</dd><dt>← ↑ Page Up Backspace</dt><dd>Cofnięcie elementu, potem slajdu</dd><dt>F</dt><dd>Pełny ekran</dd><dt>E</dt><dd>Edytor tekstów i pozycji</dd><dt>O</dt><dd>Notatki do bieżącego slajdu</dd><dt>R</dt><dd>Powtórzenie otwarcia</dd><dt>Home / End</dt><dd>Początek / koniec</dd><dt>Esc</dt><dd>Zamknięcie panelu lub pełnego ekranu</dd></dl>
+  </dialog>
+  <script>
+    window.DECK_EDITION={id:'homo-urgens',editor:{texts:'homo-urgens-texts-v1',positions:'homo-urgens-layout-v1'}};
+    window.DECK_I18N={text:s=>s,html:s=>s};
+  </script>
+  <script src="slides.js"></script>
+  <script src="text-overrides.js"></script>
+  <script src="navigation.js"></script>
+  <script src="editor-data.js"></script>
+  <script src="editor.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
