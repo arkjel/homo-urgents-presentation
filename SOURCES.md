@@ -8,11 +8,12 @@ Materiał dostarczony przez użytkownika: `PUBLIKACJA 6.10 INQ.pdf`, 26 stron, r
 |---|---|---|
 | 5–6 | — | Schemat dwóch planów i ilustracyjna potrzeba antyperspirantu. |
 | 7 | 5 | Homo Urgens jest trybem sytuacyjnym, nie trwałym segmentem lub generacją. |
-| 8 | 6 | 78% chce produktu/usługi wtedy, kiedy ich potrzebuje. 48% woli szybko zdecydować niż długo rozważać możliwości. |
-| 9 | 7 | Oczekiwanie realizacji potrzeby do maksymalnie kilku godzin: brakujący produkt spożywczy 53%, prezent/produkt na specjalną okazję 20%. Nie są to dane o antyperspirantach. |
+| 8 | 6 | 78% chce produktu/usługi wtedy, kiedy ich potrzebuje. |
+| 9 | 11 | Otwarty wybór marki w ilustracyjnym przykładzie antyperspirantu. Slajd narracyjny. |
 | 10 | 11 | 55% zawsze lub często zna mniej więcej potrzebę, ale konkretny produkt wybiera podczas przeglądania aplikacji. 41% wybiera markę podczas przeglądania oferty. |
 | 11 | 14, 17 | Retail Media towarzyszy decyzji: pokazuje opcję, pomaga rozważyć konkretny produkt i wspiera domknięcie zakupu. Model jakościowy. |
 | 13 | 14 | 48% uważa, że trafne rekomendacje pomagają szybciej znaleźć produkt. |
+| 14 | — | Ogólny schemat natłoku komunikacji. Nie jest interfejsem ani opisem działań Glovo. |
 | 16–18 | 11, 17, 22 | Ilustracja roli Retail Media: zapytanie o produkt → pasujący wynik sponsorowany → wybór marki → koszyk. |
 | 19 | 19, 24, 25 | Implikacje i ograniczenie: zakup po ekspozycji nie jest sam w sobie dowodem przyczynowego wpływu reklamy. |
 
@@ -40,7 +41,7 @@ Lato Regular, Bold i Black pobrano z [repozytorium Google Fonts](https://github.
 
 Ekrany zakupów, marki A–C i potrzeba antyperspirantu służą ilustracji wniosków. Nie są zrzutami prawdziwego interfejsu, aktualną ofertą, deklaracją czasu dostawy ani case study kampanii. Cena 18,99 zł jest umowna, bez wyliczania dostawy i opłat. Konsument w tym przykładzie wybiera pasujący produkt sponsorowany; jest to autorska scena, nie zmierzony efekt reklamy.
 
-Podział ekranu na plan marki i plan konsumenta oraz ilustracja opakowania antyperspirantu są autorskimi elementami HTML/CSS. Nazwa Glovo jest tekstem wewnątrz schematu zakupów; schemat nie jest kopią interfejsu platformy.
+Podział ekranu na plan marki i plan konsumenta, ilustracja opakowania antyperspirantu oraz ogólny schemat komunikacji na slajdzie 14 są autorskimi elementami HTML/CSS. Nazwa Glovo jest tekstem wewnątrz schematu zakupów; schemat nie jest kopią interfejsu platformy.
 
 Grafika `assets/images/party-groceries.png` powstała przy użyciu wbudowanego narzędzia imagegen. Zachowano przezroczystość. Nie przedstawia konkretnej marki ani rzeczywistego produktu. Po zmianie przykładu na antyperspirant grafika pozostaje opcjonalnym zasobem i nie jest wyświetlana na slajdach.
 

@@ -1,12 +1,11 @@
 (() => {
   const edition = window.DECK_EDITION;
   const tr = window.DECK_I18N.text;
-  // Exported text and layout edits are now part of the source; ignore their old browser caches.
+  // This deck keeps independent text and layout caches.
   const storageKey = edition.editor.texts;
   const layoutStorageKey = edition.editor.positions;
-  const supplied = window.DECK_EDITOR_OVERRIDES || { texts: window.DECK_TEXT_OVERRIDES || {}, positions: {} };
-  // Legacy exports without an edition belong to the original Polish presentation.
-  const bundled = (supplied.edition || 'homo-urgens') === edition.id ? supplied : {texts:{},positions:{}};
+  const supplied = window.DECK_EDITOR_OVERRIDES || { edition: edition.id, texts: {}, positions: {} };
+  const bundled = supplied.edition === edition.id ? supplied : {texts:{},positions:{}};
   let editing = false;
   let minimized = false;
   let moving = false;
@@ -58,7 +57,7 @@
   }
   function editLeaves(root) {
     // Preserve inline emphasis and line breaks, as well as existing text override keys.
-    root.querySelectorAll('h1,h2,h3,p,figcaption,.character-copy strong,.character-copy span,.about-qr-copy span,.about-qr-copy strong,.about-qr-copy small,.map-heading p,.case-map strong,.questions-copy a').forEach(el => {
+    root.querySelectorAll('h1,h2,h3,p,figcaption').forEach(el => {
       if (el.closest('[data-edit]') || el.querySelector('[data-edit]')) return;
       if (!el.children.length) { el.dataset.edit = ''; return; }
       const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
@@ -67,7 +66,7 @@
       nodes.forEach(node => { const span = document.createElement('span'); span.className = 'editable-fragment'; span.dataset.edit = ''; node.replaceWith(span); span.textContent = node.textContent; });
     });
   }
-  const moveGroups = '[data-move],.slide-heading,.metric,.bar-row,.phase-item,.lesson,.shopping-frame,.hero-groceries,.conference-art';
+  const moveGroups = '[data-move],.slide-heading,.metric,.phase-item,.lesson,.shopping-frame,.conference-art';
   function validPosition(value) { return value && Number.isFinite(value.x) && Number.isFinite(value.y) && Math.abs(value.x) <= 3840 && Math.abs(value.y) <= 2160; }
   function getPosition(el) { const value = positions[el.dataset.moveKey]; return validPosition(value) ? value : { x: 0, y: 0 }; }
   function applyPosition(el) { const { x, y } = getPosition(el); el.style.translate = `${x}px ${y}px`; }

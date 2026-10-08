@@ -32,5 +32,3 @@
 .moving-elements [data-move-key].move-dragging{cursor:grabbing!important;z-index:100}
 .editing-text:not(.moving-elements) [data-edit]{pointer-events:auto}
 .editing-text .metric .ring-value{stroke-dasharray:var(--value) 100}
-.editing-text .bar-fill{transform:none}
-.editing-text .noise{opacity:1;transform:none}
