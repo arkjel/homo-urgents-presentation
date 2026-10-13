@@ -4,7 +4,7 @@
  * stays the single source of truth for content and movement.
  */
 (function(){
-  const W=1920,H=1080,STEP=1000/30,OFF=2400,LOOP_CAP=6000,SYMBOL_FONT='Segoe UI Symbol';
+  const W=1920,H=1080,STEP=1000/30,OFF=2400,LOOP_CAP=6000,SYMBOL_FONT='Segoe UI Symbol',EMOJI_FONT='Segoe UI Emoji';
   const realTimeout=window.setTimeout.bind(window);
   const breathe=()=>new Promise(resolve=>realTimeout(resolve,0));
   const SKIP='.mo-caret,.mo-sheen,[data-pptx-skip]';
@@ -428,11 +428,12 @@
         paragraphs.push({align,lineHeight:line.lh,before,runs:splitRuns(runs.filter(r=>r.text),glyphs),lineHost:hosts.indexOf(host)});
       }
       if(!paragraphs.length)return null;
+      // PowerPoint, Keynote and font substitutes measure text a little wider than the browser (tracking, kerning).
+      // Every line is already its own paragraph, so boxes never wrap and leave room around the text.
       let x=contentLeft,w=Math.max(1,contentRight-contentLeft);
-      const need=maxWidth*1.04+4;
+      const need=maxWidth*1.2+24;
       if(w<need){if(align==='ctr')x-=(need-w)/2;else if(align==='r')x-=need-w;w=need;}
-      else if(align==='l')w=Math.min(w+maxWidth*.04,Math.max(w,need));
-      return {local:{x,y:top,w,h:Math.max(1,prevBottom-top)},anchor:'t',wrap:'square',paragraphs};
+      return {local:{x,y:top,w,h:Math.max(1,prevBottom-top)},anchor:'t',wrap:'none',paragraphs};
     }finally{restore();}
   }
   function splitRuns(runs,glyphs){
@@ -441,7 +442,7 @@
       let cur=null;
       for(const ch of Array.from(r.text)){
         const symbol=glyphs&&!glyphs.has(ch.codePointAt(0))&&ch.trim()!=='';
-        const font=symbol?SYMBOL_FONT:r.font;
+        const font=symbol?(/\p{Extended_Pictographic}/u.test(ch)?EMOJI_FONT:SYMBOL_FONT):r.font;
         if(cur&&cur.font===font)cur.text+=ch;else{cur={...r,font,bold:symbol?false:r.bold,text:ch};delete cur.key;out.push(cur);}
       }
     }
@@ -766,9 +767,18 @@
     if(el.matches('.waiting-content h1'))return 'Proszę czekać';
     if(el.closest('.mo-mascot')&&p.kind==='poly')return 'Postać '+(el.dataset.feature||el.dataset.part);
     if(el.closest('.mo-backdrop')){const list=[...el.closest('.mo-backdrop').querySelectorAll('polygon')];return 'Tło '+(list.indexOf(el)+1);}
-    const frameRoles=[['.shopping-frame','Telefon'],['.shop-header','Telefon – nagłówek'],['.shop-wordmark','Telefon – Glovo'],['.shop-cart-icon','Telefon – koszyk'],['.shop-context','Telefon – kontekst'],['.shop-body > h2','Telefon – tytuł'],['.shop-search','Telefon – wyszukiwarka']];
+    // The story clock keeps its parts' names, so Morph carries the hand from slide to slide.
+    const clock=el.closest('.story-clock');
+    if(clock){
+      if(el.matches('.clock-face'))return 'Zegar – tarcza';
+      if(el.matches('.clock-hand'))return 'Zegar – wskazówka';
+      if(el.matches('.clock-pin'))return 'Zegar – oś';
+      if(el.matches('.clock-wedge'))return 'Zegar – wycinek '+el.dataset.k;
+      if(el.matches('.clock-tick'))return 'Zegar – kreska '+([...clock.querySelectorAll('.clock-tick')].indexOf(el)+1);
+      if(el.matches('.clock-label'))return 'Zegar – napis';
+    }
+    const frameRoles=[['.shopping-frame','Telefon'],['.shop-header','Telefon – nagłówek'],['.shop-wordmark','Telefon – aplikacja'],['.shop-cart-icon','Telefon – koszyk'],['.shop-context','Telefon – kontekst'],['.shop-body > h2','Telefon – tytuł'],['.shop-search','Telefon – wyszukiwarka']];
     for(const [selector,name] of frameRoles)if(el.matches(selector))return name+(p.kind==='text'?' (tekst)':'');
-    if(el.matches('.shop-header > span:nth-child(2)'))return 'Telefon – Zakupy';
     void index;
     return null;
   }

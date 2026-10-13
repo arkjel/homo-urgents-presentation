@@ -77,7 +77,7 @@
     stopAnimation();
     const {index}=nav.state(),slide=slides[index],shown=stage.querySelector('.slide');
     document.documentElement.dataset.motion=reduced()&&source!=='capture'?'reduce':'normal';
-    stage.innerHTML='<article class="slide theme-'+slide.theme+' layout-'+slide.layout.split(' ').join(' layout-')+'" data-slide-id="'+slide.id+'" data-slide-index="'+index+'" data-reveal-index="0">'+
+    stage.innerHTML='<article class="slide theme-'+slide.theme+' layout-'+slide.layout.split(' ').join(' layout-')+'" data-slide-id="'+slide.id+'" data-slide-index="'+index+'" data-reveal-index="0"'+(slide.paper?' style="background:'+slide.paper+'"':'')+'>'+
       '<img class="brand-top" src="assets/brand/conference-logo.png" alt="I love marketing & technology">'+
       '<img class="corner-heart" src="assets/brand/conference-heart.png" alt="">'+
       slide.html+'<footer class="slide-footer"><p class="source-note">'+escape(slide.source||'')+'</p><span class="slide-number">'+String(index+1).padStart(2,'0')+' / '+slides.length+'</span></footer>'+

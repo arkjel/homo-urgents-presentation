@@ -299,7 +299,6 @@ dialog h2{font-size:30px;line-height:1.2;margin:12px 0 24px}
 .item-sauce{left:258px;top:520px;width:36px;height:90px;border-radius:12px 12px 6px 6px;background:var(--red)}
 .fridge-door{position:absolute;left:380px;top:0;width:170px;height:780px;transform-origin:left}
 /* The laid table. */
-.slide.layout-story-table{background:#fbf7f0}
 .table-slogan{position:absolute;left:130px;top:380px;font-size:72px;line-height:1.08;font-weight:900;letter-spacing:-.035em}
 .table-scene{position:absolute;left:130px;top:560px;width:1660px;height:440px}
 .table-art{display:block;width:100%;height:100%;overflow:visible}

@@ -241,7 +241,7 @@
   const themeKey=slide=>slide.layout.includes('worlds')?'split':slide.theme;
   function colorFor(slide){
     if(themeKey(slide)==='split')return t=>centroid(t)[0]<960?'#111':'#faf8f5';
-    const fill={dark:'#111',light:'#fff',red:RED}[slide.theme]||'#fff';
+    const fill=slide.paper||{dark:'#111',light:'#fff',red:RED}[slide.theme]||'#fff';
     return ()=>fill;
   }
   function sweep(ctx,{origin=[0,H],reverse=false,cols=9,rows=5,seed=9,spread=340,duration=380,colorOf=colorFor(ctx.prevSlide),rotate=80,toward=null,ghostOut=170}={}){
@@ -638,7 +638,7 @@
         const a=ctx.article,card=$(a,'.notification');
         fadeUp($(a,'.message-kicker'),100,{distance:14,duration:520});
         let land=320;
-        if(card&&!recorder){
+        if(card){
           // Someone is typing: three dots, then the message lands.
           const typing=doc().createElement('div');
           typing.className='mo-typing';typing.setAttribute('aria-hidden','true');typing.innerHTML='<i></i><i></i><i></i>';
