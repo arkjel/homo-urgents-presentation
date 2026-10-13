@@ -109,3 +109,20 @@ test('every animation behaviour the exporter uses is written',async()=>{
     assert.ok(xml.includes(snippet),snippet);
 });
 const text_=(files,name)=>new TextDecoder().decode(files.get(name));
+test('the Google Slides version: a plain fade transition and click fades in and out',async()=>{
+  const deck=createPresentation();
+  const before={name:'Before',x:0,y:0,w:100,h:100,fill:{color:'#f1f1f1'}},after={...before,name:'After',fill:{color:'#ee312f'}};
+  const line={name:'Line',x:0,y:200,w:400,h:100,textBox:true,text:{wrap:'none',anchor:'ctr',paragraphs:[{lineHeight:0,runs:[{text:'Wiersz',size:40}]}]}};
+  deck.addSlide({shapes:[line]});
+  deck.addSlide({shapes:[before,after,line],transition:{type:'plain',duration:600},timing:{groups:[{trigger:'auto',effects:[]},{trigger:'click',effects:[
+    {shape:after,cls:'entr',preset:[10,0],behaviors:[{type:'visibility',value:'visible'},{type:'fade',dir:'in',dur:400}]},
+    {shape:before,cls:'exit',preset:[10,0],behaviors:[{type:'fade',dir:'out',dur:300},{type:'visibility',value:'hidden',at:299}]}]}]}});
+  const files=unzip(await deck.build()),xml=text_(files,'ppt/slides/slide2.xml');
+  wellFormed(xml,'slide');
+  assert.ok(xml.includes('<p:transition spd="med"><p:fade/></p:transition>'),'plain fade transition');
+  assert.ok(!xml.includes('mc:AlternateContent'),'no extension markup for importers');
+  assert.equal((xml.match(/nodeType="clickEffect"/g)||[]).length,1,'one click');
+  assert.ok(xml.includes('presetClass="exit"')&&xml.includes('transition="out" filter="fade"'),'fade out');
+  assert.ok(!xml.includes('<a:lnSpc>'),'line boxes use the default spacing');
+  assert.ok(text_(files,'ppt/slides/slide1.xml').includes('wrap="none"'),'no wrapping');
+});

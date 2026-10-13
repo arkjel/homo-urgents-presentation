@@ -53,9 +53,23 @@ Ruch nie zmienia czasów ani kolejności: nic nie przełącza się samo, a każd
 
 Tryb ograniczonego ruchu respektuje ustawienia systemowe. Możesz też otworzyć `index.html?motion=off`; postać jest wtedy widoczna, ale się nie porusza.
 
-## Eksport do PowerPointa
+## Prezentacje Google
 
-**Plik `exports/Homo-Urgens.pptx` pochodzi z wcześniejszej wersji (20 slajdów, antyperspirant). Wygeneruj go ponownie po zakończeniu poprawek w HTML.** Gotowy plik: `exports/Homo-Urgens.pptx`. Nowy wygenerujesz w Chrome lub Edge: **E** → **Eksportuj PPTX**. Eksport trwa kilka sekund, działa offline i uwzględnia poprawki tekstów i pozycji z edytora. Po pobraniu pliku prezentacja wraca do tego samego slajdu.
+Plik do importu: **`exports/Homo-Urgens-Google.pptx`**. Nowy wygenerujesz w Chrome lub Edge: **E** → **PPTX dla Google** (eksport trwa ok. sekundy i uwzględnia poprawki z edytora). Import: Dysk Google → Nowy → Prześlij plik → Otwórz w Prezentacjach Google (albo w Prezentacjach: Plik → Importuj slajdy).
+
+Prezentacje Google nie mają przejścia Morph, ścieżek ruchu, efektów wyróżnienia ani opóźnień. Pomijają też odstępy między literami i dokładny odstęp wierszy, a tekst zawsze zawijają do szerokości ramki. Dlatego wersja dla Google jest celowo prostsza:
+
+- Każdy slajd pokazuje swój stan spoczynkowy, taki jak w HTML po wejściu.
+- Każde kliknięcie z HTML to jedno kliknięcie w Google: elementy z tego kroku pojawiają się przenikaniem, a zastępowane (np. „+” zamienione na „✓”) znikają przenikaniem. Na pozostałych slajdach przejście to zwykłe przenikanie.
+- Każdy wiersz tekstu jest osobną ramką, szerszą od tekstu o ok. 20%, wyśrodkowaną w pionie. Nic się nie zawija i nie rozjeżdża, nawet gdy Google mierzy tekst szerzej.
+- Nie ma iskier, kursora, mozaiki przejść, pisania na żywo ani liczników. Loader na slajdach 3–4 stoi na 87% i 99%, a zegar opowieści przeskakuje między slajdami.
+- Notatki prowadzących z czasami i źródłami są w notatkach slajdów.
+
+Teksty są edytowalne w Google. Po zmianie tekstu sprawdź, czy wiersz nadal mieści się w swojej ramce.
+
+## Eksport do PowerPointa (nieużywany)
+
+Prezentację pokazujemy w Prezentacjach Google, więc pełnego pliku PowerPointa nie generujemy. Przycisk zostaje: nowy plik wygenerujesz w Chrome lub Edge: **E** → **Eksportuj PPTX**. Eksport trwa kilka sekund, działa offline i uwzględnia poprawki tekstów i pozycji z edytora. Po pobraniu pliku prezentacja wraca do tego samego slajdu.
 
 Plik jest przygotowany dla PowerPointa 365/2021 na Windows:
 

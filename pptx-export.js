@@ -1059,6 +1059,95 @@
     model.effects[0].push(...effects);
   }
 
+  // ---- Google Slides: the resting state of every step, simple fades ---------------------------
+  // Google Slides keeps fade and appear effects but drops motion paths, emphasis, Morph, delays,
+  // letter spacing and exact line spacing. Each slide shows its resting state; a click fades in what
+  // appears at that step and fades out what disappears. Every text line is a box of its own.
+  const FADE_IN=400,FADE_OUT=300;
+  const fadeIn=shape=>({shape,cls:'entr',preset:[10,0],delay:0,behaviors:[{type:'visibility',value:'visible'},{type:'fade',dir:'in',dur:FADE_IN}]});
+  const fadeOut=shape=>({shape,cls:'exit',preset:[10,0],delay:0,behaviors:[{type:'fade',dir:'out',dur:FADE_OUT},{type:'visibility',value:'hidden',at:FADE_OUT-1}]});
+  function lineBoxes(shape){
+    const ps=shape.text.paragraphs;
+    if(shape.text.anchor!=='t'||ps.length<2)return [{...shape,text:{...shape.text,paragraphs:ps.map(p=>({...p,lineHeight:0}))}}];
+    const rot=(shape.rot||0)*Math.PI/180,cx=shape.x+shape.w/2,cy=shape.y+shape.h/2;
+    let y=shape.y;
+    return ps.map((par,i)=>{
+      y+=par.before||0;
+      const h=par.lineHeight||shape.h/ps.length,dy=y+h/2-cy,lcx=cx-dy*Math.sin(rot),lcy=cy+dy*Math.cos(rot);
+      y+=h;
+      return {...shape,name:shape.name+' · '+(i+1),x:lcx-shape.w/2,y:lcy-h/2,h,text:{...shape.text,anchor:'ctr',paragraphs:[{...par,before:0,lineHeight:0}]}};
+    });
+  }
+  // Colours that change at a click (a button turning red, a highlighted card) split a shape into states.
+  function paintOf(p){
+    const cs=getComputedStyle(p.el);
+    if(p.kind==='text')return cs.color+'|'+(p.pseudoText??p.nodes.map(n=>n.textContent).join(''));
+    if(p.svg)return cs.fill+'|'+cs.stroke;
+    return cs.backgroundColor+'|'+cs.borderTopColor+'|'+cs.outlineColor;
+  }
+  function repaint(p){
+    const cs=getComputedStyle(p.el);
+    if(p.svg){
+      const f=color(cs.fill),k=color(cs.stroke);
+      if(p.fill&&cs.fill!=='none')p.fill={color:f.hex,alpha:f.a*number(cs.fillOpacity,1)};
+      if(p.line&&cs.stroke!=='none')p.line={...p.line,color:k.hex,alpha:k.a*number(cs.strokeOpacity,1)};
+    }else if(p.role==='box'){
+      if(p.fill&&!p.fill.gradient){const c=color(cs.backgroundColor);p.fill={color:c.hex,alpha:c.a};}
+      if(p.line){const c=color(cs.borderTopColor);p.line={...p.line,color:c.hex,alpha:c.a};}
+    }else if(p.role==='outline'){const c=color(cs.outlineColor);p.line={...p.line,color:c.hex,alpha:c.a};}
+  }
+  function exportSlideSimple(session,index,assets){
+    const slide=window.HOMO_DECK.slides[index];
+    const {article,groups,state}=captureSlide(session,index);
+    const ends=groups.map(g=>g.end);
+    let frame=frameOf(article);
+    // Looping motion (blinking, tapping, drifting) rests at its first frame.
+    const setTime=t=>{
+      session.setTime(t);
+      for(const r of state.records)if(r.timing.iterations===Infinity&&r.anim.playState!=='idle')r.anim.currentTime=0;
+      frame=frameOf(article);
+    };
+    setTime(ends.at(-1));
+    const background=backgroundOf(article,slide);
+    // Sparks, the cursor, cut overlays and blurred glows only exist in motion.
+    const prims=collect(article,frame).filter(p=>!p.softEdge&&!p.el.closest('.mo-fx,.mo-cursor,.mo-overlay,.mo-typing,.mo-rule'));
+    prims.sort((a,b)=>a.z-b.z||a.order-b.order);
+    const sized=s=>s.m?Math.hypot(s.m[0],s.m[1])*Math.hypot(s.m[2],s.m[3])>1e-6:s.w*Math.hypot(s.l[0],s.l[1])>.5&&s.h*Math.hypot(s.l[2],s.l[3])>.5;
+    const samples=prims.map(()=>[]);
+    ends.forEach(t=>{setTime(t);prims.forEach((p,i)=>{const s=measure(p,frame,t,state);if(s.alive)s.paint=paintOf(p);samples[i].push(s.alive&&s.presence>.01&&sized(s)?s:null);});});
+    const same=(a,b)=>{
+      if(!a||!b)return a===b;
+      if(Math.abs(a.presence-b.presence)>.05||a.paint!==b.paint)return false;
+      if(a.m)return a.m.every((v,i)=>Math.abs(v-b.m[i])<(i>3?.75:.005))&&a.d===b.d;
+      return Math.abs(a.cx-b.cx)<.75&&Math.abs(a.cy-b.cy)<.75&&Math.abs(a.w-b.w)<.75&&Math.abs(a.h-b.h)<.75&&a.l.every((v,i)=>Math.abs(v-b.l[i])<.005);
+    };
+    const model={shapes:[],effects:groups.map(()=>[]),background},names=new Set();
+    // The split background of the two-plans slide is the slide's own gradient.
+    if(slide.layout.includes('worlds')){model.background='111111';model.shapes.push({name:'Tło – jasna połowa',x:W/2,y:0,w:W/2,h:H,fill:{color:'FAF8F5'},line:null});}
+    prims.forEach((p,i)=>{
+      const list=samples[i];
+      for(let a=0;a<list.length;a++){
+        if(!list[a])continue;
+        let b=a;while(b+1<list.length&&same(list[a],list[b+1]))b++;
+        const s=list[a];
+        setTime(ends[a]);
+        Object.assign(p,{staticSample:s,transient:false,maxPresence:s.presence});
+        repaint(p);
+        if(p.kind==='text'){const layout=textLayout(p,frame,assets.glyphs);if(!layout){a=b;continue;}Object.assign(p,{local:layout.local,body:layout});}
+        if(p.svg){if(p.feature&&s.d)p.points=parsePath(s.d);prepareSvg(p);}
+        p.base=pose(p,s);
+        const shape=shapeOf(p,names,index);
+        const shapes=shape.textBox?lineBoxes(shape):[shape];
+        model.shapes.push(...shapes);
+        if(a>0)shapes.forEach(x=>model.effects[a].push(fadeIn(x)));
+        if(b<list.length-1)shapes.forEach(x=>model.effects[b+1].push(fadeOut(x)));
+        a=b;
+      }
+    });
+    setTime(ends.at(-1));
+    return {model,groups,link:{type:index?'plain':'none'}};
+  }
+
   // ---- Deck ---------------------------------------------------------------------------------
   async function bytesOf(url){const r=await fetch(url);if(!r.ok)throw new Error('Nie można wczytać '+url);return new Uint8Array(await r.arrayBuffer());}
   function notesOf(slide,index,slides){
@@ -1069,7 +1158,8 @@
     if(slide.layout.includes('worlds'))return '111111';
     return color(getComputedStyle(article).backgroundColor).hex;
   }
-  async function exportDeck({onProgress=()=>{}}={}){
+  async function exportDeck({onProgress=()=>{},target='powerpoint'}={}){
+    const simple=target==='google';
     const writer=window.DECK_PPTX_WRITER,slides=window.HOMO_DECK.slides;
     const stage=document.querySelector('#stage');
     onProgress('Wczytuję fonty i obrazy…',0);
@@ -1087,7 +1177,7 @@
       for(let i=0;i<slides.length;i++){
         onProgress('Slajd '+(i+1)+' z '+slides.length,i/slides.length);
         await breathe();
-        results.push(exportSlide(session,i,assets));
+        results.push(simple?exportSlideSimple(session,i,assets):exportSlide(session,i,assets));
       }
     }finally{session.uninstall();}
     onProgress('Składam plik…',1);
@@ -1097,14 +1187,15 @@
         if(!media.has(shape.src))media.set(shape.src,deck.addMedia(await bytesOf(shape.src),/\.jpe?g$/i.test(shape.src)?'jpeg':'png'));
         shape.media=media.get(shape.src);
       }
-      const transition=link.type==='morph'?{type:'morph',duration:550}:link.type==='wave'?{type:'fade',duration:200}:null;
+      const transition=link.type==='plain'?{type:'plain',duration:600}:link.type==='morph'?{type:'morph',duration:550}:link.type==='wave'?{type:'fade',duration:200}:null;
       const timing={groups:groups.map((g,gi)=>({trigger:g.trigger,effects:model.effects[gi].sort((a,b)=>a.delay-b.delay)}))};
       deck.addSlide({name:slide.title,background:model.background,shapes:model.shapes,notes:notesOf(slide,i,slides),transition,timing});
     }
     return deck.build();
   }
   let busy=false;
-  async function exportAndDownload(){
+  async function exportAndDownload({target='powerpoint'}={}){
+    const filename=target==='google'?'Homo-Urgens-Google.pptx':'Homo-Urgens.pptx';
     if(busy)return;busy=true;
     const ui=document.createElement('div');
     ui.className='pptx-progress';ui.setAttribute('role','status');
@@ -1114,11 +1205,11 @@
     if(wasEditing)window.DECK_EDITOR.toggle();
     const before=window.DECK_NAV.getState();
     try{
-      const bytes=await exportDeck({onProgress:(text,f)=>{ui.querySelector('span').textContent=text;ui.querySelector('b').style.width=Math.round(f*100)+'%';}});
+      const bytes=await exportDeck({target,onProgress:(text,f)=>{ui.querySelector('span').textContent=text;ui.querySelector('b').style.width=Math.round(f*100)+'%';}});
       const url=URL.createObjectURL(new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.presentationml.presentation'}));
-      const a=document.createElement('a');a.href=url;a.download='Homo-Urgens.pptx';document.body.append(a);a.click();a.remove();
+      const a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();
       realTimeout(()=>URL.revokeObjectURL(url),4000);
-      ui.querySelector('span').textContent='Gotowe: Homo-Urgens.pptx';
+      ui.querySelector('span').textContent='Gotowe: '+filename;
       return bytes;
     }catch(error){
       console.error(error);ui.querySelector('span').textContent='Eksport się nie udał: '+error.message;

@@ -196,6 +196,8 @@
     const dur=Math.max(1,ms(t.duration||500)),spd=dur<=500?'fast':dur<=1000?'med':'slow';
     const fallback='<mc:Fallback><p:transition spd="'+spd+'"><p:fade/></p:transition></mc:Fallback>';
     if(t.type==='morph')return '<mc:AlternateContent xmlns:mc="'+NS.mc+'"><mc:Choice xmlns:p159="'+NS.p159+'" Requires="p159"><p:transition spd="'+spd+'" p14:dur="'+dur+'"><p159:morph option="'+(t.option||'byObject')+'"/></p:transition></mc:Choice>'+fallback+'</mc:AlternateContent>';
+    // A plain fade, readable by every importer (Google Slides, Keynote).
+    if(t.type==='plain')return '<p:transition spd="'+spd+'"><p:fade/></p:transition>';
     if(t.type==='fade')return '<mc:AlternateContent xmlns:mc="'+NS.mc+'"><mc:Choice Requires="p14"><p:transition spd="'+spd+'" p14:dur="'+dur+'"><p:fade/></p:transition></mc:Choice>'+fallback+'</mc:AlternateContent>';
     throw new Error('Unknown transition: '+t.type);
   }

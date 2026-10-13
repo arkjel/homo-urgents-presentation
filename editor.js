@@ -30,7 +30,7 @@
     <p class="editor-hint">Kliknij tekst. Zmiany zapisują się w tej przeglądarce.</p>
     <label>Slajd <select data-editor="slide" aria-label="Slajd do edycji"></select></label>
     <div class="editor-position-controls" hidden><label>Element <select data-editor="element" aria-label="Element do przesunięcia"></select></label><button type="button" data-action="reset-position" disabled>Wyzeruj pozycję elementu</button></div>
-    <div class="editor-actions"><button type="button" data-action="export">Eksportuj zmiany</button><button type="button" data-action="pptx">Eksportuj PPTX</button><button type="button" data-action="import">Importuj</button><button type="button" data-action="reset">Przywróć teksty</button><button type="button" data-action="reset-layout">Przywróć układ</button></div>
+    <div class="editor-actions"><button type="button" data-action="export">Eksportuj zmiany</button><button type="button" data-action="pptx">Eksportuj PPTX</button><button type="button" data-action="pptx-google">PPTX dla Google</button><button type="button" data-action="import">Importuj</button><button type="button" data-action="reset">Przywróć teksty</button><button type="button" data-action="reset-layout">Przywróć układ</button></div>
     <small role="status">Teksty i pozycje zapisują się lokalnie. Eksport zachowuje je w pliku text-overrides.js.</small>`);
   document.body.append(panel);
   const select = panel.querySelector('[data-editor="slide"]');
@@ -233,7 +233,7 @@
     if (action === 'minimize') { minimized = !minimized; syncMinimized(); }
     if (action === 'text' || action === 'move') { moving = action === 'move'; syncMode(); }
     if (action === 'export') void exportChanges();
-    if (action === 'pptx') window.DECK_PPTX?.export().catch(() => status('Eksport PPTX się nie udał. Szczegóły w konsoli przeglądarki.'));
+    if (action === 'pptx' || action === 'pptx-google') window.DECK_PPTX?.export({target: action === 'pptx-google' ? 'google' : 'powerpoint'}).catch(() => status('Eksport PPTX się nie udał. Szczegóły w konsoli przeglądarki.'));
     if (action === 'import') importChanges();
     if (action === 'reset-position' && selected) { setPosition(selected, 0, 0); persist(); }
     if (action === 'reset' || action === 'reset-layout') {

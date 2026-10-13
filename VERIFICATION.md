@@ -11,7 +11,16 @@ Wersja HTML: **23 slajdy, 50 stanów odsłonięć, pięć wartości z raportu (7
 
 Nie sprawdzono: 1920×1080 na projektorze, docelowy laptop, próba na głos. Strona 41 i N=619 dla wyniku 27% pochodzą z pełnego raportu, którego nie było w materiałach; w publikacji wartość jest na s. 15.
 
-**`exports/Homo-Urgens.pptx` jest nieaktualny** (poprzednia wersja, 20 slajdów). Eksport po zakończeniu poprawek. Nowe grafiki rysowano wyłącznie z elementów, które eksport już obsługuje; w `pptx-export.js` nazwa roli „Telefon – Glovo” wymaga wtedy zmiany na „Telefon – aplikacja”.
+## Eksport dla Prezentacji Google (13 października 2026)
+
+Zrzuty od prowadzącej pokazały, że w Prezentacjach Google tytuły z pełnego eksportu PowerPointa zawijały się („Potrzebuj / ę”, „55 / %”), a wiersze były szerzej rozstawione. Google pomija odstępy między literami i dokładny odstęp wierszy. Powstał osobny tryb eksportu (`DECK_PPTX.export({target:'google'})`, w edytorze **PPTX dla Google**) i plik `exports/Homo-Urgens-Google.pptx`.
+
+- **Struktura:** 23 slajdy, 1143 kształty, 184 efekty: wyłącznie przenikanie na wejście i wyjście (preset 10). Liczba kliknięć na każdym slajdzie równa się liczbie odsłonięć w HTML. Przejścia to zwykłe `<p:fade/>` bez rozszerzeń. Każda ramka tekstu ma jeden wiersz, nie zawija i nie ma dokładnego odstępu. Żaden kształt nie leży poza slajdem, każda animacja wskazuje istniejący kształt, XML jest poprawny (`xmllint`), `unzip -t` bez błędów, 23 notatki.
+- **Wygląd:** wszystkie 50 stanów porównano z HTML. Każdy slajd pliku narysowano z jego XML (`exports/dev/preview.js`), ukrywając elementy wchodzące później i te, które już wyszły. Różnica pikseli wynosi najwyżej 5,4% (wygładzanie tekstu). Ręcznie obejrzano stany z kliknięciami w aplikacji i na osi faz.
+- **Poprawione przy okazji:** fasetki serca na okładce miały złą wysokość, bo obraz nie był jeszcze wczytany, gdy okładka stała się pierwszym slajdem. Dotyczyło to też składania serca na żywo w HTML. Przyciski zmieniające kolor po kliknięciu mają teraz osobne stany.
+- `npm test` (17 testów, w tym zapis wersji Google) i `npm run validate` przechodzą.
+
+**Pliku nie otwarto w Prezentacjach Google** (brak dostępu z tego komputera). Do sprawdzenia po imporcie: czy kliknięcia odsłaniają elementy (panel Animacje), czy przyciski „+” → „✓” na slajdach 16–17 przełączają się bez nakładania i czy fonty Lato oraz Lato Black są rozpoznane.
 
 Sekcje poniżej opisują poprzednią wersję (antyperspirant, 20 slajdów) i pozostają jako historia kontroli.
 

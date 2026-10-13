@@ -307,7 +307,8 @@
   const HEART=[['ls lt c',MID],['lt n c',RED],['n rt c',MID],['rt rs c',RED],['rs r rb c',MID],['ls l lb c',DARK],['lb c b',MID],['c rb b',DARK]];
   function heartOver(img){
     const field=svg('svg',{class:'mo-heart',viewBox:'0 0 2000 1648','aria-hidden':'true'});
-    Object.assign(field.style,{left:img.offsetLeft+'px',top:img.offsetTop+'px',width:img.offsetWidth+'px',height:img.offsetHeight+'px',translate:img.style.translate||''});
+    // The cover is now the first slide: its image may still be decoding, so the height comes from the artwork's proportions.
+    Object.assign(field.style,{left:img.offsetLeft+'px',top:img.offsetTop+'px',width:img.offsetWidth+'px',height:(img.offsetHeight||img.offsetWidth*1648/2000)+'px',translate:img.style.translate||''});
     const facets=HEART.map(([names,fill])=>{
       const p=svg('polygon',{points:pts(names.split(' ').map(n=>HV[n])),fill,stroke:fill,'stroke-width':'3','stroke-linejoin':'round'},field);
       p.style.transformBox='fill-box';p.style.transformOrigin='center';
