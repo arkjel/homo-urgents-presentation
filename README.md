@@ -49,6 +49,27 @@ Ruch nie zmienia czasów ani kolejności: nic nie przełącza się samo, a każd
 
 Tryb ograniczonego ruchu respektuje ustawienia systemowe. Możesz też otworzyć `index.html?motion=off`; postać jest wtedy widoczna, ale się nie porusza.
 
+## Eksport do PowerPointa
+
+Gotowy plik: `exports/Homo-Urgens.pptx`. Nowy wygenerujesz w Chrome lub Edge: **E** → **Eksportuj PPTX**. Eksport trwa kilka sekund, działa offline i uwzględnia poprawki tekstów i pozycji z edytora. Po pobraniu pliku prezentacja wraca do tego samego slajdu.
+
+Plik jest przygotowany dla PowerPointa 365/2021 na Windows:
+
+- 20 slajdów i te same 44 stany co w HTML. Wejście slajdu startuje samo, a każde odsłonięcie to jedno kliknięcie.
+- Teksty są edytowalnymi polami w foncie Lato, osadzonym w pliku. Kształty, wykresy, tła z fasetek i postać to natywne kształty PowerPointa. Logo i serce w rogu to oryginalne pliki PNG.
+- Ruch to natywne efekty (okienko **Animacje**). Slajdy jednego motywu łączy przejście Morph, a zmianę motywu fala trójkątów, jak w HTML. Notatki do slajdów zawierają czasy i źródła.
+
+Edycja w PowerPoincie:
+
+- Elementy widoczne tylko w ruchu (iskry, konfetti, kursor, echo slajdu 2, kolejne wartości liczników, miny postaci) leżą poza slajdem, po prawej stronie. Animacja wprowadza je na slajd; nie usuwaj ich.
+- Obiekty o nazwach zaczynających się od `!!` (okienko zaznaczenia, Alt+F10) łączy Morph z sąsiednim slajdem. Po zmianie nazwy obiekt nie przejdzie płynnie.
+- Na slajdach z falą trójkąty w nowym kolorze tworzą tło, a tło samego slajdu ma kolor poprzedniego. Po zmianie kolejności slajdów fala pokaże stary kolor.
+- Wiersze są łamane jawnie, jak w HTML. Po wydłużeniu tekstu sprawdź podział wierszy.
+
+Różnice względem HTML: nie ma rozmycia ani wstrząsu ekranu, miny postaci zmieniają się krótkim przenikaniem, a liczby metryk pojawiają się bez odliczania (licznik mają tylko loader i finał). Zmiany wprowadzone w PowerPoincie nie wracają do HTML.
+
+Jeśli PowerPoint pokaże inny font (np. gdy osadzanie fontów jest zablokowane), zainstaluj Lato z `assets/fonts`. Plik przeszedł walidację formatu, ale nie został jeszcze otwarty w PowerPoincie. Przed wystąpieniem przejrzyj go na docelowym komputerze (szczegóły w `VERIFICATION.md`).
+
 ## Kontrole lokalne
 
 ```sh

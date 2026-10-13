@@ -35,7 +35,9 @@
   }
 
   // Sessions: every render starts a new one; timers and frames of older sessions die quietly.
-  let session=0,current=null;
+  let session=0,current=null,recorder=null;
+  // Set by the PPTX exporter while it replays scenes; helpers describe what they animate.
+  const record=event=>recorder?.event({...event,at:recorder.now()+(event.delay||0)});
   const timers=new Set(),frames=new Set(),pausedWhileHidden=new Set(),mascots=new WeakMap();
   const doc=()=>global.document;
   function later(ms,fn){const id=session;const t=setTimeout(()=>{timers.delete(t);if(id===session)fn();},ms);timers.add(t);return t;}
@@ -120,6 +122,7 @@
     return A(el,[{opacity:0,transform:'translateY('+distance+'px)'},{opacity:1,transform:'none'}],{duration,delay,easing});
   }
   function rise(el,delay=0,{stagger=85,duration=820}={}){
+    if(el)record({type:'lines',el,delay,stagger,duration});
     splitLines(el).forEach((line,i)=>A(line,[{transform:'translateY(112%)'},{transform:'none'}],{duration,delay:delay+i*stagger,easing:EASE.expo}));
   }
   function typeText(el,{delay=0,speed=55,variance=.8,caret=true}={}){
@@ -134,11 +137,13 @@
       later(t,()=>{node.textContent=chars.slice(0,i+1).join('');});
     });
     if(mark)later(t+1100,()=>mark.remove());
+    record({type:'type',el,delay,duration:t-delay,length:chars.length});
     return t;
   }
   function countUp(strong,to,{from=0,duration=1200,delay=0,ease=expoOut}={}){
     const text=Array.from(strong?.childNodes||[]).find(n=>n.nodeType===3);
     if(!text)return;
+    if(recorder){record({type:'count',el:strong,from,to,delay,duration});text.textContent=String(to);return;}
     text.textContent=String(from);
     const begin=performance.now()+delay;
     const step=now=>{
@@ -240,6 +245,12 @@
     return ()=>fill;
   }
   function sweep(ctx,{origin=[0,H],reverse=false,cols=9,rows=5,seed=9,spread=340,duration=380,colorOf=colorFor(ctx.prevSlide),rotate=80,toward=null,ghostOut=170}={}){
+    if(recorder){
+      const tris=mesh(cols,rows,seed),ds=tris.map(t=>{const c=centroid(t);return Math.hypot(c[0]-origin[0],c[1]-origin[1]);}),max=Math.max(...ds),next=colorFor(ctx.slide);
+      record({type:'wave',tris,base:ctx.prevSlide?themeKey(ctx.prevSlide)==='split'?'split':colorFor(ctx.prevSlide)(tris[0]):'#111',
+        colors:tris.map(t=>next(t)),delays:ds.map(d=>(reverse?1-d/max:d/max)*spread),duration,turns:tris.map((t,i)=>(i%2?1:-1)*rotate)});
+      return {layer:null,ghost:null};
+    }
     const layer=overlay(ctx.article),tris=mesh(cols,rows,seed),polys=mosaic(layer,tris,colorOf);
     const old=ghost(layer,ctx.prev);
     if(old)A(old,[{opacity:1},{opacity:0}],{duration:ghostOut,easing:'linear',fill:'forwards'});
@@ -308,11 +319,13 @@
   function assembleHeart(img,{delay=0,seed=13}={}){
     if(!img)return;
     const {field,facets}=heartOver(img),random=rng(seed),landed=delay+1250;
+    if(recorder)img.dataset.pptxSkip='1';
     facets.forEach((p,i)=>{
       const ang=random()*Math.PI*2,d=1500+random()*1300;
       A(p,[{transform:'translate('+(Math.cos(ang)*d).toFixed(0)+'px,'+(Math.sin(ang)*d).toFixed(0)+'px) rotate('+((random()-.5)*400).toFixed(0)+'deg) scale(.35)',opacity:0},{opacity:1,offset:.25},{transform:'none',opacity:1}],{duration:1000,delay:delay+i*65,easing:EASE.spring});
     });
     // The original artwork takes over, so the resting state is the brand file itself.
+    if(recorder)return;
     A(img,[{opacity:0},{opacity:0,offset:landed/(landed+260)},{opacity:1}],{duration:landed+260,easing:'linear'});
     A(field,[{opacity:1},{opacity:0}],{duration:260,delay:landed,fill:'forwards'});
     later(landed+300,()=>field.remove());
@@ -362,6 +375,7 @@
   function metricIn(ctx,figure,delay=0){
     const strong=$(figure,'.metric-value'),value=Number(strong?.dataset.value);
     if(!Number.isFinite(value))return;
+    record({type:'ring',el:figure,delay});
     countUp(strong,value,{delay,duration:1200});
     later(delay+1120,()=>{
       const disc=$(figure,'.metric-disc');if(!disc)return;
@@ -710,7 +724,7 @@
     }
   };
   function sheen(ctx,target,delay){
-    if(!target)return;
+    if(!target||recorder)return;
     target.classList.add('mo-sheen-host');
     const light=doc().createElement('span');light.className='mo-sheen';light.setAttribute('aria-hidden','true');
     target.append(light);
@@ -731,7 +745,7 @@
   // 99% → 100%: the opening's loader finally completes.
   function breakthrough(ctx){
     const a=ctx.article,layer=overlay(a),random=rng(31);
-    const tris=mesh(16,9,31,.38),polys=mosaic(layer,tris,()=>'#111');
+    const tris=mesh(16,9,31,.38),polys=recorder?[]:mosaic(layer,tris,()=>'#111');
     const old=ghost(layer,ctx.prev);
     const track=$(old,'.loading-track'),orbit=$(old,'.loader-orbit');
     const tb=track?box(track,a):{x:610,y:700,w:700,h:5,cx:960,cy:702,right:1310};
@@ -750,6 +764,11 @@
       later(90,()=>{m.pose('jump',{duration:200});m.shatter({distance:540,duration:900});});
     }
     const ds=tris.map(t=>{const c=centroid(t);return Math.hypot(c[0]-impact[0],c[1]-impact[1]);}),max=Math.max(...ds);
+    if(recorder){
+      const flash=[],turns=[];
+      tris.forEach((t,i)=>{flash.push(SHADES[Math.floor(random()*3)]);turns.push((i%2?1:-1)*(50+random()*80));});
+      record({type:'wave',tris,base:'#111',colors:tris.map(()=>RED),flash,delays:ds.map(d=>40+d/max*470),duration:600,turns});
+    }
     polys.forEach((p,i)=>{
       const shade=SHADES[Math.floor(random()*3)],turn=(i%2?1:-1)*(50+random()*80);
       A(p,[{transform:'none',fill:'#111',stroke:'#111'},{transform:'none',fill:shade,stroke:shade,offset:.22,easing:EASE.accel},{transform:'rotate('+turn.toFixed(0)+'deg) scale(0)',fill:shade,stroke:shade}],{duration:600,delay:40+ds[i]/max*470,easing:'linear',fill:'forwards'});
@@ -772,6 +791,7 @@
     later(fillAt+1350,()=>{
       A(meter,[{translate:'0 0'},{translate:'2px -1px'},{translate:'-2px 1px'},{translate:'1px 1px'},{translate:'0 0'}],{duration:130,iterations:Math.round((stall-500)/130),fill:'none'});
     });
+    record({type:'snap',el:value,delay:snap});
     later(snap,()=>{
       const text=Array.from(value?.childNodes||[]).find(n=>n.nodeType===3);
       if(text)text.textContent='100';
@@ -785,18 +805,26 @@
     return snap;
   }
 
+  function transitionFor(prev,next){
+    if(!prev||!next||prev.id===next.id)return {type:'none'};
+    if(SCENES[next.id]?.custom)return {type:next.id==='tryb-teraz'&&prev.layout==='waiting'?'breakthrough':'wave',custom:true};
+    return {type:themeKey(prev)!==themeKey(next)?'wave':'morph'};
+  }
   function enter(slide,article,{play=false,source='jump',previous=null,index=0}={}){
     stop();
     const root=doc().documentElement,reduce=root.dataset.motion==='reduce',editing=doc().body.classList.contains('editing-text');
     const slides=global.HOMO_DECK?.slides||[],prevIndex=previous?Number(previous.dataset.slideIndex):null,prevSlide=Number.isInteger(prevIndex)?slides[prevIndex]:null;
+    // While exporting, a Morph slide in PowerPoint stands in for the browser's View Transition.
+    const morph=Boolean(recorder)&&prevSlide&&transitionFor(prevSlide,slide).type==='morph';
     const ctx={slide,article,index,source,play,ambient:!reduce&&!editing,step:Number(article.dataset.revealIndex)||0,
       prev:play&&prevSlide&&prevSlide.id!==slide.id&&!previous.isConnected?previous:null,prevSlide,prevIndex,
-      viaVT:root.classList.contains('mo-vt'),vtShop:root.classList.contains('mo-vt-shop')};
+      viaVT:root.classList.contains('mo-vt')||morph,vtShop:root.classList.contains('mo-vt-shop')||morph&&/shopping/.test(prevSlide.layout)&&/shopping/.test(slide.layout),capture:Boolean(recorder)};
     current=ctx;
     const scene=SCENES[slide.id]||{};
     if(!play)scene.still?.(ctx);
     else{
-      if(ctx.prev&&!scene.custom&&themeKey(prevSlide)!==themeKey(slide)){sweep(ctx);progressIn(ctx);}
+      const link=transitionFor(prevSlide,slide);
+      if(ctx.prev&&!link.custom&&link.type==='wave'){sweep(ctx);progressIn(ctx);}
       (scene.enter||defaultEnter)(ctx);
     }
     // Loops on a slide that left the screen would keep ticking; the ghost keeps its own until removed.
@@ -822,8 +850,7 @@
   function useViewTransition(previous,next,source){
     const root=doc().documentElement;
     root.classList.remove('mo-vt','mo-vt-loader','mo-vt-shop');
-    if(!previous||!next||previous.id===next.id||source!=='next'||!doc().startViewTransition)return false;
-    if(themeKey(previous)!==themeKey(next)||SCENES[next.id]?.custom)return false;
+    if(source!=='next'||!doc().startViewTransition||transitionFor(previous,next).type!=='morph')return false;
     // A cut still in progress holds a copy of the previous slide; shared names must stay unique.
     doc().querySelectorAll('.mo-overlay').forEach(discard);
     root.classList.add('mo-vt');
@@ -837,5 +864,7 @@
     if(hidden)doc().getAnimations().forEach(run=>{if(run.playState==='running'&&scripted(run)){run.pause();pausedWhileHidden.add(run);}});
     else{pausedWhileHidden.forEach(run=>{if(run.playState==='paused')run.play();});pausedWhileHidden.clear();}
   }
-  global.DECK_MOTION={enter,reveal,stop,loaderValue,useViewTransition,endViewTransition,setHidden,easing:{bezier,spring}};
+  global.DECK_MOTION={enter,reveal,stop,loaderValue,useViewTransition,endViewTransition,setHidden,transitionFor,easing:{bezier,spring},
+    record:target=>{recorder=target;},loaderPoints:LOADER,
+    geometry:{mesh,rng,triangle,heartVertices:HV,heartFacets:HEART,shades:SHADES}};
 })(typeof window==='undefined'?globalThis:window);

@@ -32,3 +32,7 @@
 .moving-elements [data-move-key].move-dragging{cursor:grabbing!important;z-index:100}
 .editing-text:not(.moving-elements) [data-edit]{pointer-events:auto}
 .editing-text .metric .ring-value{stroke-dasharray:var(--value) 100}
+.pptx-progress{position:fixed;inset:auto 0 0 0;margin:auto;top:0;width:420px;height:max-content;z-index:20000;display:grid;gap:10px;padding:24px 28px;border-radius:14px;background:#171717f5;color:#fff;font:14px/1.45 var(--body-font);box-shadow:0 20px 80px #000a}
+.pptx-progress strong{font-size:16px}
+.pptx-progress i{display:block;height:4px;border-radius:4px;background:#ffffff30;overflow:hidden}
+.pptx-progress b{display:block;height:100%;width:0;background:var(--red);transition:width .2s}

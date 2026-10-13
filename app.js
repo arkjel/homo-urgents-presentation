@@ -76,7 +76,7 @@
   function commit(play,source){
     stopAnimation();
     const {index}=nav.state(),slide=slides[index],shown=stage.querySelector('.slide');
-    document.documentElement.dataset.motion=reduced()?'reduce':'normal';
+    document.documentElement.dataset.motion=reduced()&&source!=='capture'?'reduce':'normal';
     stage.innerHTML='<article class="slide theme-'+slide.theme+' layout-'+slide.layout.split(' ').join(' layout-')+'" data-slide-id="'+slide.id+'" data-slide-index="'+index+'" data-reveal-index="0">'+
       '<img class="brand-top" src="assets/brand/conference-logo.png" alt="I love marketing & technology">'+
       '<img class="corner-heart" src="assets/brand/conference-heart.png" alt="">'+
@@ -88,7 +88,7 @@
     stage.querySelectorAll('.ring-value').forEach(el=>getComputedStyle(el).strokeDasharray);
     drawFrame=requestAnimationFrame(()=>{syncReveals();drawFrame=0;});
     window.DECK_MOTION?.enter(slide,stage.firstElementChild,{play,source,previous:shown,index});
-    startLoader(slide,source!=='back'&&source!=='refresh');
+    startLoader(slide,!['back','refresh','capture'].includes(source));
   }
   function show(index,step=0,source='jump'){
     const before=nav.state();nav.show(index,step);
@@ -102,7 +102,10 @@
     if(before.index!==after.index)render(true,direction==='previous'?'back':'next');
     else{syncReveals();window.DECK_MOTION?.reveal(slides[after.index],stage.firstElementChild,after.step,before.step);}
   }
-  window.DECK_NAV={show,next:()=>move('next'),previous:()=>move('previous'),getState:nav.state,syncReveals,refresh:()=>render(false,'refresh')};
+  window.DECK_NAV={show,next:()=>move('next'),previous:()=>move('previous'),getState:nav.state,syncReveals,refresh:()=>render(false,'refresh'),
+    // The PPTX exporter replays each slide and each reveal with the choreography on.
+    capture(index){nav.show(index,0);commit(true,'capture');return stage.firstElementChild;},
+    captureStep(step){const before=nav.state();nav.show(before.index,step);syncReveals();window.DECK_MOTION?.reveal(slides[before.index],stage.firstElementChild,nav.state().step,before.step);}};
   function showControls(){
     document.body.classList.add('hud-visible');
     clearTimeout(hudTimer);hudTimer=setTimeout(()=>document.body.classList.remove('hud-visible'),2400);

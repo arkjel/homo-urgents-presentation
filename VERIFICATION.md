@@ -32,6 +32,30 @@ W Chrome przez lokalny serwer sprawdzono otwarcie (loader, postać, przełamanie
 
 Nie zmierzono płynności na docelowym laptopie i projektorze. Warto przejść otwarcie i finał na sprzęcie konferencyjnym.
 
+## Eksport PPTX (13 października 2026)
+
+`exports/Homo-Urgens.pptx` wygenerowano przyciskiem **Eksportuj PPTX** w Chrome (okno 1920×1080), zaczynając od slajdu 11. Eksport trwał 6,8 s. Prezentacja wróciła na ten sam slajd i krok, edytor otworzył się ponownie, a konsola nie pokazała błędów.
+
+- **Zawartość:** 20 slajdów, 2262 kształty, 2662 efekty animacji, 20 notatek, 3 osadzone fonty Lato i 2 oryginalne pliki PNG. Każdy slajd ma grupę efektów startującą automatycznie, a 24 grupy na kliknięcie odpowiadają 24 odsłonięciom, razem 44 stanom HTML. Przejścia: 8 × Morph, 10 × fala (krótkie przenikanie i trójkąty); slajdy 1 i 3 nie mają przejścia (slajd 3 zaczyna się cięciem i rozpadem echa slajdu 2).
+- **Format:** wszystkie części XML przechodzą walidację w `xmllint` względem schematów ECMA-376 (wersja przejściowa). Rozszerzenia PowerPointa (Morph, czas przejścia) walidowano w ich wersji zastępczej (Markup Compatibility); samej gałęzi Morph schemat nie sprawdza. `unzip -t` nie wykazał błędów, a każde odwołanie animacji wskazuje istniejący kształt.
+- **Powtarzalność:** eksport rozpoczęty na slajdzie 1 i na slajdzie 11 daje identyczną treść pliku (różni się tylko data utworzenia). W oknie 1366×768 kształty i efekty są te same, współrzędne różnią się najwyżej o 1 EMU (0,0002 piksela), a wygładzone tory ruchu mają czasem klatki kluczowe w innych chwilach tego samego toru.
+- **Wygląd:** podgląd pliku PPTX w przeglądarce (widok edycji) porównano ze wszystkimi 20 slajdami HTML. Treść, układ i kolory są zgodne. Na slajdzie 2 widok edycji pokazuje czerwone fasetki tła, które w pokazie wchodzą po 4–5 s, jak w HTML.
+- **Ruch:** osie czasu przejrzano dla slajdów 1–5, 7, 11, 14, 16–18 i 20: zacięcia loadera, wiersze spod maski, litery HOMO URGENS, pisanie, pierścienie metryk, fale, echo i rozpad przy 99%, liczniki loadera i finału, kliknięcie kursorem oraz wyciszenie natłoku do kolejnego kliknięcia.
+- **HTML bez zmian:** po eksporcie w tej samej karcie przeklikano 44 stany. Każde z 19 przejść miało właściwy typ (przejście przeglądarki albo mozaika), loader liczył dalej, a po animacjach nie zostały żadne warstwy ani błędy.
+- **Poprawione przy końcowej kontroli:** eksport uruchomiony z innego slajdu niż pierwszy dodawał slajdowi 1 falę przejścia. Teraz wynik nie zależy od slajdu, na którym zaczyna się eksport.
+
+`npm test` obejmuje 16 testów, w tym 5 testów zapisu PPTX: części i relacje pliku, odwołania animacji, Morph z zastępczym przenikaniem, nagłówek osadzonego fontu i wszystkie rodzaje efektów. `npm run validate` przechodzi.
+
+**Pliku nie otwarto w PowerPoincie.** Na komputerze roboczym nie ma PowerPointa, Keynote'a ani LibreOffice. Do sprawdzenia w PowerPoincie 365/2021 na Windows:
+
+- plik otwiera się bez komunikatu o naprawie;
+- teksty są w Lato i leżą tak jak w HTML (położenie linii bazowej wyliczono z metryk fontu, bez pomiaru w PowerPoincie);
+- Morph łączy obiekty `!!` także wtedy, gdy mają własne animacje;
+- slajdy z kilkuset efektami (1–3 i 20) odtwarzają się płynnie;
+- przezroczystość działa (wyciszenie natłoku na slajdzie 14).
+
+`exports/pptx-test.pptx` (7 slajdów, `node scripts/pptx-calibration.mjs`) pokazuje osobno każdą technikę eksportu: fonty z liniami pomocniczymi, kształty, efekty, Morph i falę. Jeśli coś w pełnym pliku wygląda inaczej niż w HTML, ten plik pomaga szybko znaleźć przyczynę.
+
 ## Próba sceniczna
 
 Do wykonania na docelowym laptopie przez prowadzące: próba wystąpienia na głos z fizycznym klikerem i pomiar rzeczywistego czasu. Nie przeprowadzono tej próby zdalnie.

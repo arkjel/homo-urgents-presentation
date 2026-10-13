@@ -53,7 +53,9 @@
     for(const [k,v] of Object.entries(attrs))node.setAttribute(k,v);
     parent?.append(node);return node;
   }
-  function facet(parent,points,fill,extra={}){return el('path',{d:P(points),fill,...extra},parent);}
+  // Facets are numbered in build order, so the same body part keeps its name on every slide (PPTX Morph).
+  let partIndex=0;
+  function facet(parent,points,fill,extra={}){return el('path',{d:P(points),fill,'data-part':String(++partIndex),...extra},parent);}
   function pivot(node,[x,y]){node.style.transformBox='view-box';node.style.transformOrigin=x+'px '+y+'px';return node;}
   function joint(parent,name){return pivot(el('g',{class:'m-'+name},parent),JOINTS[name]);}
   function hairBack(parent){
@@ -86,6 +88,7 @@
     return a;
   }
   function build(){
+    partIndex=0;
     const svg=el('svg',{viewBox:'0 0 200 340',class:'mascot-svg','aria-hidden':'true',focusable:'false'});
     const shake=el('g',{class:'m-shake'},svg);
     const breath=el('g',{class:'m-breath'},shake);
@@ -125,9 +128,9 @@
     facet(fringe,mirror([[43,44],[60,54],[54,114],[40,128]]),HAIR[2]);
     const look=joint(head,'look');
     const blink=pivot(el('g',{class:'m-blink'},look),[100,76]);
-    const eyeL=facet(blink,EYE.rest,INK),eyeR=facet(blink,mirror(EYE.rest),INK);
-    const browL=facet(head,BROW.rest,INK),browR=facet(head,mirror(BROW.rest),INK);
-    const mouth=facet(head,MOUTH.rest,LIPS);
+    const eyeL=facet(blink,EYE.rest,INK,{'data-feature':'oko L'}),eyeR=facet(blink,mirror(EYE.rest),INK,{'data-feature':'oko P'});
+    const browL=facet(head,BROW.rest,INK,{'data-feature':'brew L'}),browR=facet(head,mirror(BROW.rest),INK,{'data-feature':'brew P'});
+    const mouth=facet(head,MOUTH.rest,LIPS,{'data-feature':'usta'});
     arm(body,'L');arm(body,'R');
     const steam=el('g',{class:'m-steam'},shake);
     [[48,2,DARK],[152,4,MID],[100,-28,DARK]].forEach(([x,y,fill])=>{

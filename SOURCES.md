@@ -33,11 +33,13 @@ Obrazy wyodrębniono z PDF bez przerysowywania logotypu. Loader i wykresy danych
 
 Serce konferencji (`conference-heart.png`) na okładce składa się w animacji z ośmiu fasetek SVG. Wierzchołki i kolory (#ee312f, #cf1723, #95161d) zmierzono z oryginalnego pliku. Po złożeniu fasetki ustępują oryginalnej grafice PNG, więc stan końcowy to niezmieniony plik brandu. Animacja serca została zaakceptowana przez użytkownika.
 
+W eksporcie PPTX logo i serce w rogu to te same oryginalne pliki PNG. Serce na okładce pozostaje złożone z ośmiu wektorowych fasetek o tych samych wierzchołkach i kolorach; plik PPTX nie podmienia ich na PNG po złożeniu.
+
 Podpisy prowadzących: [program organizatora](https://sprawnymarketing.pl/konferencja/poznan/), odczytany 8 października 2026. Zachowano nazwiska zgodne z aktualnym wpisem: Uliana Jelonek i Joanna Wysocka.
 
 ## Fonty
 
-Lato Regular, Bold i Black pobrano z [repozytorium Google Fonts](https://github.com/google/fonts/tree/main/ofl/lato). Oryginalna licencja SIL Open Font License znajduje się w `assets/fonts/OFL.txt`. Fonty są lokalne.
+Lato Regular, Bold i Black pobrano z [repozytorium Google Fonts](https://github.com/google/fonts/tree/main/ofl/lato). Oryginalna licencja SIL Open Font License znajduje się w `assets/fonts/OFL.txt`. Fonty są lokalne. Eksport PPTX osadza te trzy pliki w prezentacji; licencja OFL i flagi fontów (fsType 0) na to pozwalają.
 
 ## Autorski przykład i grafika
 
@@ -58,3 +60,5 @@ Postać „Homo Urgens” (dziewczynka w czerwonej sukience, włosy do ramion) j
 ## Kod
 
 Sterowanie zachowuje semantykę odsłaniania i normalizację klikera z lokalnego `tgc-presentation`. Edytor tekstów/pozycji i format eksportu zaadaptowano z tego repo, usuwając zależności od starych slajdów, migracji i wariantów. Nowa prezentacja korzysta z własnych kluczy zapisu.
+
+Eksport PPTX (`pptx-writer.js`, `pptx-export.js`) to autorski kod bez zewnętrznych bibliotek. Format pliku opiera się na normie [ECMA-376 Office Open XML](https://ecma-international.org/publications-and-standards/standards/ecma-376/) i dokumentacji rozszerzeń PowerPointa [MS-PPTX](https://learn.microsoft.com/en-us/openspecs/office_standards/ms-pptx/) (przejście Morph, osadzone fonty).
