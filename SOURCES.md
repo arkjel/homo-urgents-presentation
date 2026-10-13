@@ -6,16 +6,18 @@ Materiał dostarczony przez użytkownika: `PUBLIKACJA 6.10 INQ.pdf`, 26 stron, r
 
 | Slajd | Strona PDF | Wartości i znaczenie |
 |---|---|---|
-| 5–6 | — | Schemat dwóch planów i ilustracyjna potrzeba antyperspirantu. |
-| 7 | 5 | Homo Urgens jest trybem sytuacyjnym, nie trwałym segmentem lub generacją. |
-| 8 | 6 | 78% chce produktu/usługi wtedy, kiedy ich potrzebuje. |
-| 9 | 11 | Otwarty wybór marki w ilustracyjnym przykładzie antyperspirantu. Slajd narracyjny. |
-| 10 | 11 | 55% zawsze lub często zna mniej więcej potrzebę, ale konkretny produkt wybiera podczas przeglądania aplikacji. 41% wybiera markę podczas przeglądania oferty. |
-| 11 | 14, 17 | Retail Media towarzyszy decyzji: pokazuje opcję, pomaga rozważyć konkretny produkt i wspiera domknięcie zakupu. Model jakościowy. |
-| 13 | 14 | 48% uważa, że trafne rekomendacje pomagają szybciej znaleźć produkt. |
-| 14 | — | Ogólny schemat natłoku komunikacji. Nie jest interfejsem ani opisem działań Glovo. |
-| 16–18 | 11, 17, 22 | Ilustracja roli Retail Media: zapytanie o produkt → pasujący wynik sponsorowany → wybór marki → koszyk. |
-| 19 | 19, 24, 25 | Implikacje i ograniczenie: zakup po ekspozycji nie jest sam w sobie dowodem przyczynowego wpływu reklamy. |
+| 2 | 22 | Trzy zdania głosu konsumenta z raportu: „Pokaż mi coś, co rzeczywiście może mi się przydać.”, „Pomóż mi zdecydować.”, „Pomóż mi upewnić się i zakończyć zakup.” To sformułowania syntezy raportu, nie wypowiedzi konkretnych osób. Publikacja nie zawiera dosłownych cytatów z FGI. |
+| 6 | — | Schemat „kiedyś i teraz”: jeden sklep w okolicy kontra aplikacja szybkich dostaw. Bez danych o odległościach. |
+| 7 | 6 | 78% chce produktu/usługi wtedy, kiedy ich potrzebuje. |
+| 8 | 5 | Homo Urgens jest trybem sytuacyjnym, nie trwałym segmentem lub generacją. |
+| 9–12 | — | Historia „Goście za 20 minut”: wiadomość, lodówka, dwa plany, potrzeba czekolady. Slajdy narracyjne. |
+| 13 | 11 | 55% zawsze lub często zna mniej więcej potrzebę, ale konkretny produkt wybiera podczas przeglądania aplikacji. 41% wybiera markę podczas przeglądania oferty. |
+| 14–17 | 9, 11, 14, 17, 21, 22 (notatki) | Ilustracja czterech etapów w aplikacji: banner → produkt sponsorowany → wybór po packshocie, wariancie i cenie → rekomendacja przy koszyku. W notatkach kontekst: 19% wskazuje gości lub przygotowanie spotkania (s. 9), 31% zaczyna od wyszukania konkretnego produktu (s. 11), kryteria wyboru: cena 55%, wariant/rodzaj/wielkość 20%, zdjęcie 15% (s. 21). |
+| 18 | 41 raportu, 15 publikacji | 27% osób, które zmieniały plany lub zainteresowały się innym produktem (N=619), wskazuje dopasowanie do pozostałych zakupów jako powód zwrócenia uwagi na nieplanowany produkt. Numer strony 41 i podstawa N=619 pochodzą od użytkownika (pełny raport); w dostarczonej 26-stronicowej publikacji wartość 27% jest na s. 15 bez podanej liczebności. |
+| 19 | 17, 22 | Retail Media towarzyszy decyzji: pokazuje produkt, pomaga wybrać, pomaga domknąć zakup. Formaty z historii nazwane po kolei. Model jakościowy. |
+| 20 | 14 | 48% uważa, że trafne rekomendacje pomagają szybciej znaleźć produkt. |
+| 21 | 19, 24, 25 | Implikacje i ograniczenie: zakup po ekspozycji nie jest sam w sobie dowodem przyczynowego wpływu reklamy. |
+| 22 | — | Finał historii: nakryty stół. Slajd narracyjny. |
 
 Metodologia (s. 4 raportu): CAWI objęło N=1002 mieszkańców miast, 18+. FGI to 2 grupy, łącznie 12 osób. Decision Lab obejmuje 11 ścieżek zakupowych w Glovo. Metodologia pozostaje w dokumentacji; osobny slajd został usunięty na prośbę użytkownika.
 
@@ -43,11 +45,13 @@ Lato Regular, Bold i Black pobrano z [repozytorium Google Fonts](https://github.
 
 ## Autorski przykład i grafika
 
-Ekrany zakupów, marki A–C i potrzeba antyperspirantu służą ilustracji wniosków. Nie są zrzutami prawdziwego interfejsu, aktualną ofertą, deklaracją czasu dostawy ani case study kampanii. Cena 18,99 zł jest umowna, bez wyliczania dostawy i opłat. Konsument w tym przykładzie wybiera pasujący produkt sponsorowany; jest to autorska scena, nie zmierzony efekt reklamy.
+Historia „Goście za 20 minut”, ekrany aplikacji, marki A–D, produkty i ceny służą ilustracji wniosków. Nie są zrzutami prawdziwego interfejsu, aktualną ofertą, deklaracją czasu dostawy ani case study kampanii. Makieta nosi nazwę „Aplikacja szybkich dostaw” i ma neutralne kolory (biel, szarości, czerwień konferencji), bez logo i barw konkretnej platformy. Ceny są umowne, bez wyliczania dostawy i opłat. Bohaterka wybiera sponsorowane produkty; jest to autorska scena, nie zmierzony efekt reklamy.
 
-Podział ekranu na plan marki i plan konsumenta, ilustracja opakowania antyperspirantu oraz ogólny schemat komunikacji na slajdzie 14 są autorskimi elementami HTML/CSS. Nazwa Glovo jest tekstem wewnątrz schematu zakupów; schemat nie jest kopią interfejsu platformy.
+Zegar opowieści (slajdy 9–18) jest tarczą bez cyfr; jeden obrót to 20 minut do przyjścia gości z wiadomości. Nie przedstawia czasu dostawy.
 
-Grafika `assets/images/party-groceries.png` powstała przy użyciu wbudowanego narzędzia imagegen. Zachowano przezroczystość. Nie przedstawia konkretnej marki ani rzeczywistego produktu. Po zmianie przykładu na antyperspirant grafika pozostaje opcjonalnym zasobem i nie jest wyświetlana na slajdach.
+Mapa „kiedyś”, lista sklepów „teraz”, powiadomienie, lodówka, tabliczka czekolady, opakowania w aplikacji i nakryty stół są autorskimi elementami HTML/CSS i SVG (wyłącznie wielokąty i koła, żeby późniejszy eksport PPTX odwzorował je jako kształty).
+
+Grafika `assets/images/party-groceries.png` powstała przy użyciu wbudowanego narzędzia imagegen. Zachowano przezroczystość. Nie przedstawia konkretnej marki ani rzeczywistego produktu. Grafika pozostaje opcjonalnym zasobem i nie jest wyświetlana na slajdach.
 
 Prompt:
 
@@ -55,7 +59,7 @@ Prompt:
 
 ## Ruch i postać
 
-Postać „Homo Urgens” (dziewczynka w czerwonej sukience, włosy do ramion) jest autorską grafiką SVG w stylu low-poly serca. Nie przedstawia konkretnej osoby. Występuje tylko w otwarciu (slajdy 1–3) i w finale (slajd 20). Tła z fasetek, mozaika przejść, konfetti i kursor w scenie zakupowej są generowane w kodzie. Prezentacja nie używa dźwięku ani zewnętrznych bibliotek animacji.
+Postać „Homo Urgens” (dziewczynka w czerwonej sukience, włosy do ramion) jest autorską grafiką SVG w stylu low-poly serca. Nie przedstawia konkretnej osoby. Występuje przy loaderze (slajdy 3–5), jako bohaterka historii przy lodówce (slajd 10) i w finale (slajd 23). Tła z fasetek, mozaika przejść, konfetti i kursor w scenie zakupowej są generowane w kodzie. Prezentacja nie używa dźwięku ani zewnętrznych bibliotek animacji.
 
 ## Kod
 

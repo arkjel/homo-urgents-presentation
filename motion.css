@@ -2,7 +2,7 @@
 /* motion.js owns entries and reveals; the older CSS one-shots would fight it. */
 html[data-motion="normal"] .reveal{transition:none}
 html[data-motion="normal"] .orbit-fragments i{animation:none;transform:translate(var(--fx,40px),var(--fy,40px));opacity:.65}
-html[data-motion="normal"] .message,html[data-motion="normal"] .relevant-offer{animation:none}
+html[data-motion="normal"] .relevant-offer{animation:none}
 html[data-motion="normal"] .type-query{animation:none;width:auto}
 html[data-motion="normal"] .ring-value{transition-duration:1.2s;transition-timing-function:cubic-bezier(.16,1,.3,1)}
 .deck-progress{transform-origin:left}
@@ -24,14 +24,15 @@ html[data-motion="normal"] .ring-value{transition-duration:1.2s;transition-timin
 .mo-mascot svg{display:block;width:100%;height:auto;overflow:visible}
 .mo-heart{position:absolute;z-index:0;overflow:visible;pointer-events:none}
 .mo-meter{position:absolute;left:-18px;top:-18px;width:calc(100% + 36px);height:calc(100% + 36px);overflow:visible;pointer-events:none}
-.mo-phase-fill{position:absolute;left:0;right:0;top:300px;height:2px;background:var(--red);transform-origin:left}
+.mo-phase-fill{position:absolute;left:0;right:0;top:215px;height:2px;background:var(--red);transform-origin:left}
 .mo-rule{position:absolute;left:0;top:-2px;width:100%;height:3px;transform-origin:left;pointer-events:none}
 .mo-sheen-host{position:relative;overflow:hidden}
 .mo-sheen{position:absolute;top:0;bottom:0;left:0;width:38%;background:linear-gradient(100deg,#fff0,#ffffffc0,#fff0);pointer-events:none}
 .mo-cursor{position:absolute;left:0;top:0;z-index:56;width:46px;overflow:visible;pointer-events:none}
 
-/* Slide 14: once the need is named, the shouting quiets down. */
-body:not(.editing-text) .layout-communication-noise[data-reveal-index="1"] .message{opacity:.28;filter:blur(3px);scale:.97;transition:opacity .6s ease,filter .6s ease,scale .6s ease}
+/* The guests message: someone is typing before the text lands. */
+.mo-typing{position:absolute;left:340px;top:360px;display:flex;gap:14px;padding:34px 40px;border-radius:44px;background:#262626;border:1px solid #3a3a3a;transform-origin:0 100%;pointer-events:none}
+.mo-typing i{width:22px;height:22px;border-radius:50%;background:#bbb}
 
 /* View Transitions: shared elements glide between slides instead of being redrawn. */
 .mo-vt .deck-progress{view-transition-name:mo-progress}
@@ -42,6 +43,7 @@ body:not(.editing-text) .layout-communication-noise[data-reveal-index="1"] .mess
 .mo-vt-loader .mo-mascot{view-transition-name:mo-mascot}
 .mo-vt-loader .mo-backdrop{view-transition-name:mo-backdrop}
 .mo-vt-shop .shopping-frame{view-transition-name:mo-shop}
+.mo-vt .story-clock{view-transition-name:mo-clock}
 ::view-transition-group(*){animation-duration:.55s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
 ::view-transition-old(root){animation-duration:.22s}
 ::view-transition-new(root){animation-duration:.34s}

@@ -1,5 +1,20 @@
 # Sprawdzenie prezentacji
 
+## Historia „Goście za 20 minut” (13 października 2026, tylko HTML)
+
+Wersja HTML: **23 slajdy, 50 stanów odsłonięć, pięć wartości z raportu (78%, 55%, 41%, 27%, 48%)**. Suma planowanych czasów to **15:15** przy limicie 18 minut (plan, nie pomiar próby na głos).
+
+- `npm test` (16 testów) i `npm run validate` przechodzą. Walidacja sprawdza teraz także: okładkę jako pierwszy slajd, loader 4 + 6 s do 99%, zegar opowieści na każdym slajdzie 9–18 z rosnącą wartością i brak nazwy platformy w makiecie aplikacji.
+- Chrome (bez interfejsu), okno 1280×720: zrzuty końcowego stanu wszystkich 23 slajdów i automatyczna kontrola geometrii (tekst i grafiki w granicach slajdu, bez kolizji ze źródłem, numerem slajdu i zegarem). Po poprawkach brak problemów i błędów konsoli. Zrzuty przejrzano ręcznie.
+- Odtworzenie do przodu z animacjami przez 49 przejść, ze zrzutami w trakcie ruchu na nowych scenach (kropki „pisze…”, lodówka i postać, wskazówka zegara, kliknięcia kursorem, stół). Po zakończeniu nie zostały warstwy przejść, kursor ani wskaźnik pisania. Szybkie przeklikanie (co 25 ms) do końca i z powrotem na początek bez błędów i bez pozostałości.
+- `?motion=off`: przejście przez wszystkie stany bez błędów, postać przy lodówce widoczna statycznie. Edytor **E** na slajdzie z aplikacją: 23 edytowalne teksty, wszystkie odsłonięcia widoczne. **R** wraca do okładki.
+
+Nie sprawdzono: 1920×1080 na projektorze, docelowy laptop, próba na głos. Strona 41 i N=619 dla wyniku 27% pochodzą z pełnego raportu, którego nie było w materiałach; w publikacji wartość jest na s. 15.
+
+**`exports/Homo-Urgens.pptx` jest nieaktualny** (poprzednia wersja, 20 slajdów). Eksport po zakończeniu poprawek. Nowe grafiki rysowano wyłącznie z elementów, które eksport już obsługuje; w `pptx-export.js` nazwa roli „Telefon – Glovo” wymaga wtedy zmiany na „Telefon – aplikacja”.
+
+Sekcje poniżej opisują poprzednią wersję (antyperspirant, 20 slajdów) i pozostają jako historia kontroli.
+
 Wersja z 8 października 2026: **20 slajdów, 44 stany odsłonięć i cztery metryki raportu: 78%, 55%, 41%, 48%**. Suma planowanych czasów w notatkach wynosi **15:40**, przy limicie 18 minut. Jest to plan czasu, nie wynik próby wystąpienia na głos.
 
 ## Treść
