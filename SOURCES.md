@@ -29,7 +29,9 @@ N=1002 nie jest automatycznie podstawą wszystkich procentów dotyczących użyt
 - `assets/brand/conference-heart.png`: oryginalny przezroczysty obraz Image8 ze strony 2 PDF szablonu.
 - `assets/brand/conference-logo-stacked.png`: oryginalny przezroczysty obraz Image9 ze strony 2.
 
-Obrazy wyodrębniono z PDF bez przerysowywania logotypu. Loader i wykresy danych są elementami HTML/CSS/SVG. Logo konferencji nie jest animowane ani przekształcane.
+Obrazy wyodrębniono z PDF bez przerysowywania logotypu. Loader i wykresy danych są elementami HTML/CSS/SVG. Logo konferencji z napisem nie jest animowane ani przekształcane.
+
+Serce konferencji (`conference-heart.png`) na okładce składa się w animacji z ośmiu fasetek SVG. Wierzchołki i kolory (#ee312f, #cf1723, #95161d) zmierzono z oryginalnego pliku. Po złożeniu fasetki ustępują oryginalnej grafice PNG, więc stan końcowy to niezmieniony plik brandu. Animacja serca została zaakceptowana przez użytkownika.
 
 Podpisy prowadzących: [program organizatora](https://sprawnymarketing.pl/konferencja/poznan/), odczytany 8 października 2026. Zachowano nazwiska zgodne z aktualnym wpisem: Uliana Jelonek i Joanna Wysocka.
 
@@ -48,6 +50,10 @@ Grafika `assets/images/party-groceries.png` powstała przy użyciu wbudowanego n
 Prompt:
 
 > Use case: product-mockup. Asset type: transparent photographic cutout for a Polish conference HTML presentation. A single beautiful unbranded kraft paper grocery bag standing upright, viewed slightly from above at a three-quarter angle, overflowing with recognizable party groceries: a large matte red bag of potato chips with NO writing, a glass bottle of sparkling orange beverage with a minimal plain cream label with NO writing, a small glass jar of green olives, a lemon and some green herbs. Premium advertising still-life photography, crisp realistic paper and glass textures, natural soft shadows tightly around the base. Compact asymmetrical arrangement, bag fills the frame, isolated with generous margin on an ACTUAL fully transparent background. Warm welcoming studio lighting, red and citrus yellow accents. No people, no logos, no letters, no numbers, no badges, no decorations outside the grocery arrangement. Not a scene or a mockup of a slide, just the grocery bag cutout.
+
+## Ruch i postać
+
+Postać „Homo Urgens” (dziewczynka w czerwonej sukience, włosy do ramion) jest autorską grafiką SVG w stylu low-poly serca. Nie przedstawia konkretnej osoby. Występuje tylko w otwarciu (slajdy 1–3) i w finale (slajd 20). Tła z fasetek, mozaika przejść, konfetti i kursor w scenie zakupowej są generowane w kodzie. Prezentacja nie używa dźwięku ani zewnętrznych bibliotek animacji.
 
 ## Kod
 

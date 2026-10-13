@@ -6,7 +6,7 @@ Prezentacja dla Uliany Jelonek i Joanny Wysockiej z Glovo.
 
 ## Uruchomienie
 
-Otwórz `index.html` w Chrome lub Edge. Wszystkie zasoby są lokalne; internet i instalowanie pakietów nie są potrzebne. Pełny ekran włącz klawiszem **F**. Na drugim komputerze przenieś cały folder.
+Otwórz `index.html` w Chrome lub Edge (płynne przejścia między slajdami wymagają wersji 111 lub nowszej). Wszystkie zasoby są lokalne; internet i instalowanie pakietów nie są potrzebne. Pełny ekran włącz klawiszem **F**. Na drugim komputerze przenieś cały folder.
 
 Pierwsze dwa slajdy zaplanowano na 4 i 6 sekund. Zmiany slajdów wykonuje prowadząca. Loader nie przełącza slajdów i nie blokuje klikera. **R** powtarza otwarcie; użyj go, jeśli pierwszy slajd był otwarty długo przed wejściem na scenę.
 
@@ -41,7 +41,13 @@ Treści, czasy, dane badania i notatki są w `slides.js`. Liczby wykresów zmien
 
 CAWI N=1002 dotyczy całej próby mieszkańców miast 18+; raport nie podaje liczebności wszystkich podgrup q-commerce. Decision Lab N=11 opisuje ścieżki jakościowe, nie rozkład w populacji. Retail Media może współtworzyć wybór w aplikacji; sam zakup po reklamie nie jest dowodem jej przyczynowego wpływu.
 
-Tryb ograniczonego ruchu respektuje ustawienia systemowe. Możesz też otworzyć `index.html?motion=off`.
+## Ruch
+
+Animacje są w jednym, geometrycznym stylu fasetek serca konferencji (`motion.js`, `motion.css`, postać w `mascot.js`). Otwarcie: loader zacina się, a postać „Homo Urgens” (dziewczynka low-poly) czeka coraz bardziej zniecierpliwiona. Kliknięcie przy 99% rozbija ekran na czerwone fasetki, a serce na okładce składa się z trójkątów. Finał wraca do loadera: 99% → 100%. W środku prezentacji ruch jest spokojny: nagłówki wyłaniają się wierszami, liczby metryk liczą się razem z pierścieniem, a ekran zakupów płynnie przechodzi między slajdami.
+
+Ruch nie zmienia czasów ani kolejności: nic nie przełącza się samo, a każde kliknięcie przerywa trwającą animację. Cofnięcie pokazuje od razu stan końcowy slajdu. W trybie edycji **E** animacji nie ma. Prezentacja nie ma dźwięku.
+
+Tryb ograniczonego ruchu respektuje ustawienia systemowe. Możesz też otworzyć `index.html?motion=off`; postać jest wtedy widoczna, ale się nie porusza.
 
 ## Kontrole lokalne
 

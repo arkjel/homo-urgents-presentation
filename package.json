@@ -3,5 +3,5 @@
   "version":"1.0.0",
   "private":true,
   "description":"Offline conference presentation for Uliana Jelonek and Joanna Wysocka",
-  "scripts":{"test":"node --test scripts/test-navigation.mjs scripts/test-editor.mjs","validate":"node scripts/validate-deck.mjs"}
+  "scripts":{"test":"node --test scripts/test-navigation.mjs scripts/test-editor.mjs scripts/test-motion.mjs","validate":"node scripts/validate-deck.mjs"}
 }

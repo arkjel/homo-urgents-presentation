@@ -17,6 +17,7 @@
   function stopAnimation(){
     cancelAnimationFrame(loaderFrame);cancelAnimationFrame(drawFrame);
     loaderFrame=drawFrame=0;
+    window.DECK_MOTION?.stop();
   }
   function setLoader(value){
     const number=stage.querySelector('[data-loader-value]'),track=stage.querySelector('.loading-track');
@@ -34,8 +35,8 @@
     function frame(now){
       if(nav.state().id!==id||editing())return;
       const t=Math.min(1,(now-began)/duration);
-      // Fast initial response, a long final approach: theater, never real loading.
-      const value=from+(to-from)*(1-Math.pow(1-t,2));
+      // Bursts and stalls toward the final value: theater, never real loading.
+      const value=window.DECK_MOTION?window.DECK_MOTION.loaderValue(t,from,to):from+(to-from)*(1-Math.pow(1-t,2));
       setLoader(value);
       if(t<1)loaderFrame=requestAnimationFrame(frame);
       else loaderFrame=0;
@@ -59,10 +60,24 @@
     next.disabled=index===slides.length-1&&step===(slide.reveals||0);
   }
   function render(animate=false,source='jump'){
+    // Forward moves, the opening and its replay are choreographed; going back shows the final state.
+    const play=!reduced()&&!editing()&&(animate?source!=='back':['initial','restart'].includes(source));
+    const shown=stage.querySelector('.slide'),before=shown&&slides[Number(shown.dataset.slideIndex)];
+    if(play&&window.DECK_MOTION?.useViewTransition(before,slides[nav.state().index],source)){
+      const transition=document.startViewTransition(()=>commit(play,source));
+      transition.ready.catch(()=>{});
+      transition.finished.catch(()=>{}).then(()=>window.DECK_MOTION.endViewTransition());
+    }else commit(play,source);
+    const hash='#'+slides[nav.state().index].id;
+    if(location.hash!==hash){
+      try{history.replaceState(null,'',hash);}catch{location.hash=hash;}
+    }
+  }
+  function commit(play,source){
     stopAnimation();
-    const {index}=nav.state(),slide=slides[index];
+    const {index}=nav.state(),slide=slides[index],shown=stage.querySelector('.slide');
     document.documentElement.dataset.motion=reduced()?'reduce':'normal';
-    stage.innerHTML='<article class="slide theme-'+slide.theme+' layout-'+slide.layout.split(' ').join(' layout-')+(animate&&!reduced()&&!editing()?' entry':'')+'" data-slide-id="'+slide.id+'" data-slide-index="'+index+'" data-reveal-index="0">'+
+    stage.innerHTML='<article class="slide theme-'+slide.theme+' layout-'+slide.layout.split(' ').join(' layout-')+'" data-slide-id="'+slide.id+'" data-slide-index="'+index+'" data-reveal-index="0">'+
       '<img class="brand-top" src="assets/brand/conference-logo.png" alt="I love marketing & technology">'+
       '<img class="corner-heart" src="assets/brand/conference-heart.png" alt="">'+
       slide.html+'<footer class="slide-footer"><p class="source-note">'+escape(slide.source||'')+'</p><span class="slide-number">'+String(index+1).padStart(2,'0')+' / '+slides.length+'</span></footer>'+
@@ -72,11 +87,8 @@
     // Commit the zero-length arcs before drawing; otherwise a fresh DOM skips the transition.
     stage.querySelectorAll('.ring-value').forEach(el=>getComputedStyle(el).strokeDasharray);
     drawFrame=requestAnimationFrame(()=>{syncReveals();drawFrame=0;});
+    window.DECK_MOTION?.enter(slide,stage.firstElementChild,{play,source,previous:shown,index});
     startLoader(slide,source!=='back'&&source!=='refresh');
-    const hash='#'+slide.id;
-    if(location.hash!==hash){
-      try{history.replaceState(null,'',hash);}catch{location.hash=hash;}
-    }
   }
   function show(index,step=0,source='jump'){
     const before=nav.state();nav.show(index,step);
@@ -88,7 +100,7 @@
     nav[direction]();
     const after=nav.state();
     if(before.index!==after.index)render(true,direction==='previous'?'back':'next');
-    else syncReveals();
+    else{syncReveals();window.DECK_MOTION?.reveal(slides[after.index],stage.firstElementChild,after.step,before.step);}
   }
   window.DECK_NAV={show,next:()=>move('next'),previous:()=>move('previous'),getState:nav.state,syncReveals,refresh:()=>render(false,'refresh')};
   function showControls(){
@@ -140,7 +152,10 @@
   window.addEventListener('hashchange',()=>{if(nav.state().id!==location.hash.slice(1))show(fromHash(),0,'hash');});
   window.addEventListener('resize',fitStage);
   motion.addEventListener('change',()=>render(false,'refresh'));
-  document.addEventListener('visibilitychange',()=>document.documentElement.classList.toggle('deck-hidden',document.hidden));
+  document.addEventListener('visibilitychange',()=>{
+    document.documentElement.classList.toggle('deck-hidden',document.hidden);
+    window.DECK_MOTION?.setHidden(document.hidden);
+  });
   show(fromHash(),0,'initial');showControls();
   // Fonts and assets are local. This hook also lets visual checks wait for settled loading.
   window.DECK_READY=Promise.all([document.fonts.ready,...Array.from(document.images,im=>im.decode().catch(()=>{}))]);

@@ -1,0 +1,47 @@
+/* Motion layer. Decorative elements are aria-hidden and never needed to read a slide. */
+/* motion.js owns entries and reveals; the older CSS one-shots would fight it. */
+html[data-motion="normal"] .reveal{transition:none}
+html[data-motion="normal"] .orbit-fragments i{animation:none;transform:translate(var(--fx,40px),var(--fy,40px));opacity:.65}
+html[data-motion="normal"] .message,html[data-motion="normal"] .relevant-offer{animation:none}
+html[data-motion="normal"] .type-query{animation:none;width:auto}
+html[data-motion="normal"] .ring-value{transition-duration:1.2s;transition-timing-function:cubic-bezier(.16,1,.3,1)}
+.deck-progress{transform-origin:left}
+
+/* The clip margin keeps accents and descenders visible without changing line spacing. */
+.mo-line{display:block;overflow:clip;overflow-clip-margin:.24em}
+.mo-line.mo-open{overflow:visible}
+.mo-line-i{display:block}
+.mo-char{display:inline-block}
+.mo-caret{display:inline-block;width:2px;height:1.05em;margin-left:2px;vertical-align:-.18em;background:currentColor;animation:mo-caret 1s steps(1) infinite}
+@keyframes mo-caret{50%{opacity:0}}
+
+.mo-overlay{position:absolute;inset:0;z-index:60;pointer-events:none}
+.mo-overlay>svg{position:absolute;left:0;top:0;width:100%;height:100%}
+.mo-ghost{position:absolute!important;left:0;top:0;background:transparent!important}
+.mo-fx{position:absolute;left:0;top:0;width:100%;height:100%;z-index:55;overflow:visible;pointer-events:none}
+.mo-backdrop{position:absolute;left:0;top:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.mo-mascot{position:absolute;z-index:10;pointer-events:none}
+.mo-mascot svg{display:block;width:100%;height:auto;overflow:visible}
+.mo-heart{position:absolute;z-index:0;overflow:visible;pointer-events:none}
+.mo-meter{position:absolute;left:-18px;top:-18px;width:calc(100% + 36px);height:calc(100% + 36px);overflow:visible;pointer-events:none}
+.mo-phase-fill{position:absolute;left:0;right:0;top:300px;height:2px;background:var(--red);transform-origin:left}
+.mo-rule{position:absolute;left:0;top:-2px;width:100%;height:3px;transform-origin:left;pointer-events:none}
+.mo-sheen-host{position:relative;overflow:hidden}
+.mo-sheen{position:absolute;top:0;bottom:0;left:0;width:38%;background:linear-gradient(100deg,#fff0,#ffffffc0,#fff0);pointer-events:none}
+.mo-cursor{position:absolute;left:0;top:0;z-index:56;width:46px;overflow:visible;pointer-events:none}
+
+/* Slide 14: once the need is named, the shouting quiets down. */
+body:not(.editing-text) .layout-communication-noise[data-reveal-index="1"] .message{opacity:.28;filter:blur(3px);scale:.97;transition:opacity .6s ease,filter .6s ease,scale .6s ease}
+
+/* View Transitions: shared elements glide between slides instead of being redrawn. */
+.mo-vt .deck-progress{view-transition-name:mo-progress}
+.mo-vt-loader .loader-orbit{view-transition-name:mo-orbit}
+.mo-vt-loader .loading-track{view-transition-name:mo-track}
+.mo-vt-loader .loader-percent{view-transition-name:mo-percent}
+.mo-vt-loader .waiting-content h1{view-transition-name:mo-wait-title}
+.mo-vt-loader .mo-mascot{view-transition-name:mo-mascot}
+.mo-vt-loader .mo-backdrop{view-transition-name:mo-backdrop}
+.mo-vt-shop .shopping-frame{view-transition-name:mo-shop}
+::view-transition-group(*){animation-duration:.55s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+::view-transition-old(root){animation-duration:.22s}
+::view-transition-new(root){animation-duration:.34s}
