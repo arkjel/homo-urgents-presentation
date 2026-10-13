@@ -3,4 +3,3 @@ work/
 .DS_Store
 *.log
 .playwright-mcp/
-exports/
