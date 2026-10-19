@@ -305,31 +305,56 @@
   // The heart, rebuilt facet by facet from the conference artwork (2492 × 2054 px, measured).
   const HV={ls:[152,225],lt:[614,0],n:[998,277],rt:[1382,0],rs:[1845,225],l:[0,563],r:[1997,563],lb:[152,866],rb:[1845,866],c:[998,727],b:[998,1646]};
   const HEART=[['ls lt c',MID],['lt n c',RED],['n rt c',MID],['rt rs c',RED],['rs r rb c',MID],['ls l lb c',DARK],['lb c b',MID],['c rb b',DARK]];
-  function heartOver(img){
-    const field=svg('svg',{class:'mo-heart',viewBox:'0 0 2000 1648','aria-hidden':'true'});
-    // The cover is now the first slide: its image may still be decoding, so the height comes from the artwork's proportions.
-    Object.assign(field.style,{left:img.offsetLeft+'px',top:img.offsetTop+'px',width:img.offsetWidth+'px',height:(img.offsetHeight||img.offsetWidth*1648/2000)+'px',translate:img.style.translate||''});
-    const facets=HEART.map(([names,fill])=>{
-      const p=svg('polygon',{points:pts(names.split(' ').map(n=>HV[n])),fill,stroke:fill,'stroke-width':'3','stroke-linejoin':'round'},field);
-      p.style.transformBox='fill-box';p.style.transformOrigin='center';
-      return p;
+  // The organizer's cover: its cropped heart (slides.js) cut into triangular shards that fly in from beyond the right
+  // edge, fanning around the centre vertex, then hand over to the resting facets, which beat once.
+  const COVER_C=[1925,463];
+  function coverShards(art,maxArea=26000){
+    const area=([a,b,c])=>Math.abs((b[0]-a[0])*(c[1]-a[1])-(c[0]-a[0])*(b[1]-a[1]))/2,shards=[];
+    const split=(t,fill)=>{
+      if(area(t)<1)return;
+      if(area(t)<=maxArea){shards.push({t,fill});return;}
+      // Halve across the longest edge: shards stay compact, never slivers.
+      const e=t.map((p,i)=>Math.hypot(t[(i+1)%3][0]-p[0],t[(i+1)%3][1]-p[1])),i=e.indexOf(Math.max(...e));
+      const a=t[i],b=t[(i+1)%3],c=t[(i+2)%3],m=[(a[0]+b[0])/2,(a[1]+b[1])/2];
+      split([a,m,c],fill);split([m,b,c],fill);
+    };
+    $$(art,'polygon').forEach(p=>{
+      const list=p.getAttribute('points').trim().split(/\s+/).map(q=>q.split(',').map(Number)),fill=p.getAttribute('fill');
+      const o=[list.reduce((s,q)=>s+q[0],0)/list.length,list.reduce((s,q)=>s+q[1],0)/list.length];
+      list.forEach((q,i)=>split([o,q,list[(i+1)%list.length]],fill));
     });
-    img.after(field);
-    return {field,facets};
+    const total=shards.reduce((s,{t})=>s+area(t),0);
+    const center=[0,1].map(k=>shards.reduce((s,{t})=>s+centroid(t)[k]*area(t),0)/(total||1));
+    return {shards,center};
   }
-  function assembleHeart(img,{delay=0,seed=13}={}){
-    if(!img)return;
-    const {field,facets}=heartOver(img),random=rng(seed),landed=delay+1250;
-    if(recorder)img.dataset.pptxSkip='1';
-    facets.forEach((p,i)=>{
-      const ang=random()*Math.PI*2,d=1500+random()*1300;
-      A(p,[{transform:'translate('+(Math.cos(ang)*d).toFixed(0)+'px,'+(Math.sin(ang)*d).toFixed(0)+'px) rotate('+((random()-.5)*400).toFixed(0)+'deg) scale(.35)',opacity:0},{opacity:1,offset:.25},{transform:'none',opacity:1}],{duration:1000,delay:delay+i*65,easing:EASE.spring});
+  function assembleCover(art,{delay=0,seed=13}={}){
+    if(!art)return;
+    const facets=$$(art,'polygon'),random=rng(seed);
+    const flight=(p,{x,y,turn},at)=>A(p,[{transform:'translate('+x.toFixed(0)+'px,'+y.toFixed(0)+'px) rotate('+turn.toFixed(0)+'deg) scale(.35)',opacity:0},{opacity:1,offset:.25},{transform:'none',opacity:1}],{duration:1000,delay:at,easing:EASE.spring});
+    const from=(g,psi)=>{const ang=psi*.55+(random()-.5)*.5,d=1000+random()*600;return {x:Math.cos(ang)*d,y:Math.sin(ang)*d,turn:(random()-.5)*360};};
+    const fan=g=>Math.atan2(g[1]-COVER_C[1],COVER_C[0]-g[0]);
+    facets.forEach(p=>{p.style.transformBox='fill-box';p.style.transformOrigin='center';});
+    // The exporter keeps the four clean facets and gives them the same entrance.
+    if(recorder){
+      facets.forEach((p,i)=>{const t=p.getBBox(),g=[t.x+t.width/2,t.y+t.height/2];flight(p,from(g,fan(g)),delay+i*90);});
+      return;
+    }
+    const {shards}=coverShards(art),field=svg('svg',{class:'mo-heart',viewBox:'0 0 1920 1080','aria-hidden':'true'});
+    Object.assign(field.style,{left:'0',top:'0',width:W+'px',height:H+'px'});
+    const order=shards.map(s=>({...s,g:centroid(s.t)})).map(s=>({...s,psi:fan(s.g)})).sort((p,q)=>p.psi-q.psi),fanOut=520;
+    order.forEach((s,i)=>{
+      const p=svg('polygon',{points:pts(s.t),fill:s.fill,stroke:s.fill,'stroke-width':'1.6','stroke-linejoin':'round'},field);
+      p.style.transformBox='fill-box';p.style.transformOrigin='center';
+      flight(p,from(s.g,s.psi),delay+i*fanOut/order.length+random()*60);
     });
-    // The original artwork takes over, so the resting state is the brand file itself.
-    if(recorder)return;
-    A(img,[{opacity:0},{opacity:0,offset:landed/(landed+260)},{opacity:1}],{duration:landed+260,easing:'linear'});
-    A(field,[{opacity:1},{opacity:0}],{duration:260,delay:landed,fill:'forwards'});
-    later(landed+300,()=>field.remove());
+    art.after(field);
+    // The resting facets take over once every shard is down; they are drawn identically, so only the seams go.
+    const landed=delay+fanOut+60+1000;
+    A(art,[{opacity:0},{opacity:0}],{duration:landed,easing:'linear'});
+    A(field,[{opacity:1},{opacity:0}],{duration:200,delay:landed,fill:'forwards'});
+    later(landed+240,()=>discard(field));
+    art.style.transformOrigin=COVER_C[0]+'px '+COVER_C[1]+'px';
+    A(art,[{transform:'scale(1)'},{transform:'scale(1.022)',offset:.14},{transform:'scale(1)',offset:.34},{transform:'scale(1.012)',offset:.48},{transform:'scale(1)',offset:.72},{transform:'scale(1)'}],{duration:900,delay:landed+120,easing:'ease-in-out',fill:'none'});
   }
 
   // Character placement: standing at the end of the loading bar.
@@ -359,7 +384,7 @@
   }
 
   // Shared vocabulary for content slides.
-  const CHROME='.brand-top,.corner-heart,.slide-footer,.deck-progress,.slide-heading,.reveal,.mo-overlay,.mo-fx,.mo-backdrop,.mo-mascot,.mo-heart,.story-clock,.mo-typing';
+  const CHROME='.brand-top,.corner-heart,.cover-template,.slide-footer,.deck-progress,.slide-heading,.reveal,.mo-overlay,.mo-fx,.mo-backdrop,.mo-mascot,.mo-heart,.story-clock,.mo-typing';
   const WRAPPERS='.shopping-copy,.metrics-pair,.relevance-metric,.decision-cards,.phase-line,.lessons,.onsite-points,.mechanism-line';
   function blocks(root){
     const out=[];
@@ -568,13 +593,14 @@
     'tytul':{
       custom:true,
       enter(ctx){
-        const a=ctx.article,img=$(a,'.cover-heart');
+        const a=ctx.article,art=$(a,'.cover-template');
         const t0=ctx.prev?380:140;
-        if(ctx.prev&&img){
-          const b=box(img,a),random=rng(41);
-          sweep(ctx,{origin:[b.cx,b.cy],reverse:true,cols:13,rows:7,seed:17,spread:440,duration:520,colorOf:ctx.prevSlide.theme==='red'?()=>SHADES[Math.floor(random()*3)]:colorFor(ctx.prevSlide),toward:[b.cx,b.cy],rotate:120,ghostOut:220});
+        // Coming back (R from a later slide): the previous slide collapses into the heart before it lands.
+        if(ctx.prev&&art){
+          const c=coverShards(art).center,random=rng(41);
+          sweep(ctx,{origin:c,reverse:true,cols:13,rows:7,seed:17,spread:440,duration:520,colorOf:ctx.prevSlide.theme==='red'?()=>SHADES[Math.floor(random()*3)]:colorFor(ctx.prevSlide),toward:c,rotate:120,ghostOut:220});
         }else if(ctx.prev)sweep(ctx);
-        assembleHeart(img,{delay:t0});
+        assembleCover(art,{delay:t0});
         fadeUp($(a,'.cover-copy .kicker'),t0+80,{distance:14});
         rise($(a,'.cover-copy h1'),t0+160,{stagger:120,duration:950});
         rise($(a,'.cover-subtitle'),t0+480,{stagger:90});
