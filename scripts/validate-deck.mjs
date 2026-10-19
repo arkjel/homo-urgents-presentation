@@ -6,8 +6,8 @@ import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),ctx={window:{}};
 vm.runInNewContext(fs.readFileSync(path.join(root,'slides.js'),'utf8'),ctx);
 const {slides,totalDurationSeconds,limitSeconds}=ctx.window.HOMO_DECK;
-assert.equal(slides.length,23);assert.equal(new Set(slides.map(s=>s.id)).size,23);
-assert.equal(totalDurationSeconds,915);assert.equal(limitSeconds,1080);
+assert.equal(slides.length,24);assert.equal(new Set(slides.map(s=>s.id)).size,24);
+assert.equal(totalDurationSeconds,925);assert.equal(limitSeconds,1080);
 const expected={'kontrola':[78],'wybor-w-aplikacji':[55,41],dopasowanie:[27],trafnosc:[48]};
 assert.equal(slides.reduce((n,s)=>n+(s.metrics?.length||0),0),5,'exactly five research metrics');
 for(const slide of slides){
@@ -34,7 +34,13 @@ clocked.forEach((s,i)=>{assert.ok(!i||s.clock>clocked[i-1].clock,s.id+': clock m
 assert.ok(slides.filter(s=>!Number.isInteger(s.clock)).every(s=>!s.html.includes('story-clock')));
 // The app mock-up carries no platform name or logo.
 for(const slide of slides)for(const m of slide.html.matchAll(/<section class="shopping-frame[\s\S]*?<\/section>/g))assert.ok(!/glovo/i.test(m[0]),slide.id+': no platform name in the app mock-up');
-assert.ok(slides.at(-1).html.includes('100'));
+assert.ok(slides.find(s=>s.id==='potrzeba-zalatwiona').html.includes('100'),'the loader completes at 100%');
+// The organizer requires its own closing slide, last: thanks, its logo, no deck chrome or reveals.
+const thanks=slides.at(-1);
+assert.equal(thanks.id,'dziekujemy');assert.equal(thanks.layout,'thanks');assert.equal(thanks.reveals,0);
+assert.ok(thanks.html.includes('Dziękujemy')&&thanks.html.includes('assets/brand/organizer-thanks-logo.png'));
+assert.equal((thanks.html.match(/data-facet="/g)||[]).length,8,'eight heart facets');
+for(const m of thanks.html.matchAll(/points="([^"]+)"/g))for(const pair of m[1].split(' ')){const [x,y]=pair.split(',').map(Number);assert.ok(x>=0&&x<=1920&&y>=0&&y<=1080,'thanks shapes stay inside the slide');}
 const all=[fs.readFileSync(path.join(root,'index.html'),'utf8'),fs.readFileSync(path.join(root,'styles.css'),'utf8'),...slides.map(s=>s.html)].join('\n');
 const files=new Set([...Array.from(all.matchAll(/(?:src|href)="([^"#]+)"/g),m=>m[1]),...Array.from(all.matchAll(/url\("([^"]+)"\)/g),m=>m[1])]);
 for(const file of files){assert.ok(!/^https?:/.test(file),'offline asset: '+file);assert.ok(fs.existsSync(path.join(root,file)),'missing: '+file);}

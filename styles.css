@@ -239,6 +239,16 @@ dialog h2{font-size:30px;line-height:1.2;margin:12px 0 24px}
 .closing-content>.reveal{grid-area:auto;position:absolute;left:690px;top:450px}
 .closing-speakers{font-size:30px;line-height:1.35}
 .closing-speakers span{color:#aaa;font-size:25px}
+/* The organizer's closing slide, measured from last-slide.svg: no deck chrome, only its own composition. */
+.layout-thanks .brand-top,.layout-thanks .corner-heart,.layout-thanks .slide-footer,.layout-thanks .deck-progress{display:none}
+.thanks-bg,.thanks-panel{position:absolute;left:0;top:0;width:1920px;height:1080px}
+.thanks-bg{transform-origin:1730.5px 635.4px}
+.thanks-logo{position:absolute;left:1246.1px;top:429.1px;width:568.4px}
+.thanks-logo img{display:block;width:100%;height:auto}
+.thanks-copy{position:absolute;left:82px;top:401px}
+.thanks-copy h1{font-size:114px;line-height:1;font-weight:900;letter-spacing:2.4px;white-space:nowrap;color:#fff}
+/* Lato 2 kerns "y!" tighter than the organizer's Lato; the gap is restored so the mark sits where theirs does. */
+.thanks-bang{margin-left:5px}
 /* Quotes from the report. */
 .quote-grid{position:absolute;left:130px;right:130px;top:500px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:65px}
 .quote-card{position:relative;border-top:3px solid var(--ink);padding-top:22px}

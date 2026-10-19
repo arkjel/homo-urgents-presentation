@@ -847,6 +847,64 @@
         m.setPose('thumb');m.setFace('happy');
         if(ctx.ambient){m.loop('blink');m.loop('breathe');}
       }
+    },
+    // The organizer's closing slide: the heart assembles where the 100% meter stood, then the camera dives into it
+    // until its facets are the organizer's background. The resting polygons are the same facets, clipped to the slide.
+    'dziekujemy':{
+      custom:true,
+      enter(ctx){
+        const a=ctx.article,fit=ctx.slide.heartFit,bg=$(a,'.thanks-bg'),panel=$(a,'.thanks-panel');
+        if(recorder||!fit||!bg||!panel)return;
+        const organizer=Object.fromEntries($$(bg,'polygon').map(p=>[p.dataset.facet,p.getAttribute('fill')]));
+        const layer=overlay(a);
+        layer.style.zIndex='auto';panel.before(layer);
+        const under=svg('svg',{viewBox:'0 0 1920 1080',preserveAspectRatio:'none'},layer);
+        svg('rect',{width:W,height:H,fill:ctx.prevSlide?colorFor(ctx.prevSlide)([[480,540],[480,540],[480,540]]):'#111'},under);
+        const old=ghost(layer,ctx.prev),meter=$(old,'.closing-meter');
+        const b=meter?box(meter,a):{cx:W/2,cy:H/2};
+        if(old){
+          $$(old,':scope > *:not(.mo-backdrop):not(.closing-content), .closing-content > *:not(.closing-meter)').forEach((el,i)=>A(el,[{opacity:1},{opacity:0}],{duration:320,delay:i*40,fill:'forwards',easing:EASE.accel}));
+          A(meter,[{opacity:1,transform:'none'},{opacity:0,transform:'scale(.55)'}],{duration:460,delay:120,fill:'forwards',easing:EASE.accel});
+        }
+        // Heart units (the 2000 × 1648 artwork); c is the centre vertex, 96 units above the middle of the heart.
+        const field=svg('svg',{viewBox:'0 0 1920 1080',preserveAspectRatio:'none'},layer),group=svg('g',{},field);
+        group.style.transformOrigin='0 0';
+        const [hx,hy]=HV.c,s0=.22,s1=fit.scale,c0=[b.cx,b.cy-96*s0],c1=[fit.x,fit.y];
+        const place=(c,s)=>'translate('+c[0].toFixed(2)+'px,'+c[1].toFixed(2)+'px) scale('+s.toFixed(5)+') translate('+(-hx)+'px,'+(-hy)+'px)';
+        group.style.transform=place(c0,s0);
+        const random=rng(29),facets=HEART.map(([names,fill],i)=>{
+          const p=svg('polygon',{points:pts(names.split(' ').map(n=>HV[n])),fill,stroke:fill,'stroke-width':'1.6','stroke-linejoin':'round','vector-effect':'non-scaling-stroke'},group);
+          p.style.transformBox='fill-box';p.style.transformOrigin='center';
+          const ang=random()*Math.PI*2,d=1500+random()*1300;
+          A(p,[{transform:'translate('+(Math.cos(ang)*d).toFixed(0)+'px,'+(Math.sin(ang)*d).toFixed(0)+'px) rotate('+((random()-.5)*400).toFixed(0)+'deg) scale(.35)',opacity:0},{opacity:1,offset:.25},{transform:'none',opacity:1}],{duration:950,delay:160+i*55,easing:EASE.spring});
+          return [p,fill,organizer[i]||fill];
+        });
+        // The dive: a true zoom about the one screen point that both placements share, exponential in scale.
+        const dive=1150,length=1150,end=dive+length,ease=bezier(.62,0,.22,1);
+        const focus=[c0[0]+(c1[0]-c0[0])*s0/(s0-s1),c0[1]+(c1[1]-c0[1])*s0/(s0-s1)];
+        const zoom=Array.from({length:25},(_,k)=>{
+          const u=ease(k/24),s=s0*Math.pow(s1/s0,u),c=k===24?c1:[focus[0]+(c0[0]-focus[0])*s/s0,focus[1]+(c0[1]-focus[1])*s/s0];
+          return {offset:k/24,transform:place(c,k===24?s1:s)};
+        });
+        A(group,zoom,{duration:length,delay:dive,easing:'linear',fill:'forwards'});
+        facets.forEach(([p,from,to])=>A(p,[{fill:from,stroke:from},{fill:to,stroke:to}],{duration:800,delay:dive+250,easing:'ease-in-out',fill:'forwards'}));
+        // The clipped resting facets take over where the zoom ends; they are drawn identically.
+        A(bg,[{opacity:0},{opacity:0}],{duration:end,easing:'linear'});
+        later(end+80,()=>discard(layer));
+        A(panel,[{transform:'translateX(1000px)'},{transform:'none'}],{duration:850,delay:dive+780,easing:EASE.expo});
+        fadeUp($(a,'.thanks-logo'),dive+1000,{distance:30,duration:800});
+        const chars=splitChars($(a,'.thanks-copy h1')),t0=dive+880;
+        // Fully below the mask before they start, and faded while their tops cross its edge: no white slivers.
+        chars.forEach((c,i)=>A(c,[{transform:'translateY(140%)',opacity:0},{opacity:0,offset:.2},{opacity:1,offset:.6},{transform:'none',opacity:1}],{duration:760,delay:t0+i*42,easing:EASE.expo}));
+        later(t0+chars.length*42+380,()=>{
+          const bang=$(a,'.thanks-bang');
+          if(!bang)return;
+          const m=box(bang,a);
+          sparkle(a,m.cx,m.y+m.h*.25,{n:7,colors:['#fff','#ffd0cf',organizer[1]||RED],reach:[60,150],seed:6});
+        });
+        // One double beat once everything has landed, then the slide rests.
+        A(bg,[{transform:'scale(1)'},{transform:'scale(1.03)',offset:.12},{transform:'scale(1)',offset:.3},{transform:'scale(1.018)',offset:.44},{transform:'scale(1)',offset:.68},{transform:'scale(1)'}],{duration:1000,delay:end+1250,easing:'ease-in-out',fill:'none'});
+      }
     }
   };
   function sheen(ctx,target,delay){
