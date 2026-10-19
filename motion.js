@@ -305,10 +305,11 @@
   // The heart, rebuilt facet by facet from the conference artwork (2492 × 2054 px, measured).
   const HV={ls:[152,225],lt:[614,0],n:[998,277],rt:[1382,0],rs:[1845,225],l:[0,563],r:[1997,563],lb:[152,866],rb:[1845,866],c:[998,727],b:[998,1646]};
   const HEART=[['ls lt c',MID],['lt n c',RED],['n rt c',MID],['rt rs c',RED],['rs r rb c',MID],['ls l lb c',DARK],['lb c b',MID],['c rb b',DARK]];
-  // The organizer's cover: its cropped heart (slides.js) cut into triangular shards that fly in from beyond the right
-  // edge, fanning around the centre vertex, then hand over to the resting facets, which beat once.
-  const COVER_C=[1925,463];
-  function coverShards(art,maxArea=26000){
+  // The organizer's cover. Its heart (the conference heart, vertices measured from the template; slides.js) forms small in
+  // the middle of the slide from shards, drawn from the top notch down both sides to the tip, beats once, crouches and
+  // swells into its cropped place; the clipped resting facets take over and keep a slow lub-dub.
+  const COVER_C=[1925,463],COVER_SMALL={s:.22,c:[960,520]};
+  function coverShards(V,maxArea=42000){
     const area=([a,b,c])=>Math.abs((b[0]-a[0])*(c[1]-a[1])-(c[0]-a[0])*(b[1]-a[1]))/2,shards=[];
     const split=(t,fill)=>{
       if(area(t)<1)return;
@@ -318,43 +319,60 @@
       const a=t[i],b=t[(i+1)%3],c=t[(i+2)%3],m=[(a[0]+b[0])/2,(a[1]+b[1])/2];
       split([a,m,c],fill);split([m,b,c],fill);
     };
-    $$(art,'polygon').forEach(p=>{
-      const list=p.getAttribute('points').trim().split(/\s+/).map(q=>q.split(',').map(Number)),fill=p.getAttribute('fill');
-      const o=[list.reduce((s,q)=>s+q[0],0)/list.length,list.reduce((s,q)=>s+q[1],0)/list.length];
+    HEART.forEach(([names,fill])=>{
+      const list=names.split(' ').map(n=>V[n]),o=[0,1].map(k=>list.reduce((s,q)=>s+q[k],0)/list.length);
       list.forEach((q,i)=>split([o,q,list[(i+1)%list.length]],fill));
     });
-    const total=shards.reduce((s,{t})=>s+area(t),0);
-    const center=[0,1].map(k=>shards.reduce((s,{t})=>s+centroid(t)[k]*area(t),0)/(total||1));
-    return {shards,center};
+    return shards;
   }
-  function assembleCover(art,{delay=0,seed=13}={}){
-    if(!art)return;
-    const facets=$$(art,'polygon'),random=rng(seed);
-    const flight=(p,{x,y,turn},at)=>A(p,[{transform:'translate('+x.toFixed(0)+'px,'+y.toFixed(0)+'px) rotate('+turn.toFixed(0)+'deg) scale(.35)',opacity:0},{opacity:1,offset:.25},{transform:'none',opacity:1}],{duration:1000,delay:at,easing:EASE.spring});
-    const from=(g,psi)=>{const ang=psi*.55+(random()-.5)*.5,d=1000+random()*600;return {x:Math.cos(ang)*d,y:Math.sin(ang)*d,turn:(random()-.5)*360};};
-    const fan=g=>Math.atan2(g[1]-COVER_C[1],COVER_C[0]-g[0]);
-    facets.forEach(p=>{p.style.transformBox='fill-box';p.style.transformOrigin='center';});
-    // The exporter keeps the four clean facets and gives them the same entrance.
+  // A damped spring from 0 to 1 over t in [0, 1]; with zeta .8 it overshoots by about 1.5%.
+  const springAt=(t,zeta=.8,omega=10)=>{const wd=omega*Math.sqrt(1-zeta*zeta);return t>=1?1:1-Math.exp(-zeta*omega*t)*(Math.cos(wd*t)+zeta*omega/wd*Math.sin(wd*t));};
+  function heartbeat(art,delay=0){
+    if(!art||recorder)return;
+    art.style.transformOrigin=COVER_C[0]+'px '+COVER_C[1]+'px';
+    const up='cubic-bezier(.3,0,.25,1)',down='cubic-bezier(.45,0,.55,1)';
+    A(art,[{transform:'scale(1)',easing:up},{transform:'scale(1.022)',offset:.11,easing:down},{transform:'scale(1.003)',offset:.25,easing:up},{transform:'scale(1.012)',offset:.34,easing:down},{transform:'scale(1)',offset:.56},{transform:'scale(1)'}],{duration:1050,delay,iterations:Infinity,easing:'linear',fill:'none'});
+  }
+  // Returns when the heart has landed and when the copy may start (as it swells).
+  function coverHeartIn(ctx,start){
+    const a=ctx.article,art=$(a,'.cover-template'),V=ctx.slide.coverHeart,random=rng(13);
+    if(!art||!V)return {landed:start,copy:start};
+    const fly=(p,{x,y,turn},at,duration=1000)=>A(p,[{transform:'translate('+x.toFixed(0)+'px,'+y.toFixed(0)+'px) rotate('+turn.toFixed(0)+'deg) scale(.35)',opacity:0},{opacity:1,offset:.25},{transform:'none',opacity:1}],{duration,delay:at,easing:EASE.spring});
+    const away=reach=>{const ang=random()*Math.PI*2,d=reach*(1+random()*.6);return {x:Math.cos(ang)*d,y:Math.sin(ang)*d,turn:(random()-.5)*360};};
+    // The exporter keeps the four clean facets and gives them a plain entrance; the copy follows at once.
     if(recorder){
-      facets.forEach((p,i)=>{const t=p.getBBox(),g=[t.x+t.width/2,t.y+t.height/2];flight(p,from(g,fan(g)),delay+i*90);});
-      return;
+      $$(art,'polygon').forEach((p,i)=>{p.style.transformBox='fill-box';p.style.transformOrigin='center';fly(p,away(1500),start+i*90);});
+      return {landed:start+1300,copy:start};
     }
-    const {shards}=coverShards(art),field=svg('svg',{class:'mo-heart',viewBox:'0 0 1920 1080','aria-hidden':'true'});
+    const {s:s0,c:c0}=COVER_SMALL,[hx,hy]=COVER_C;
+    const place=(c,s)=>'translate('+c[0].toFixed(2)+'px,'+c[1].toFixed(2)+'px) scale('+s.toFixed(5)+') translate('+(-hx)+'px,'+(-hy)+'px)';
+    const field=svg('svg',{class:'mo-heart',viewBox:'0 0 1920 1080','aria-hidden':'true'}),group=svg('g',{},field);
     Object.assign(field.style,{left:'0',top:'0',width:W+'px',height:H+'px'});
-    const order=shards.map(s=>({...s,g:centroid(s.t)})).map(s=>({...s,psi:fan(s.g)})).sort((p,q)=>p.psi-q.psi),fanOut=520;
-    order.forEach((s,i)=>{
-      const p=svg('polygon',{points:pts(s.t),fill:s.fill,stroke:s.fill,'stroke-width':'1.6','stroke-linejoin':'round'},field);
-      p.style.transformBox='fill-box';p.style.transformOrigin='center';
-      flight(p,from(s.g,s.psi),delay+i*fanOut/order.length+random()*60);
-    });
+    group.style.transformOrigin='0 0';group.style.transform=place(c0,s0);
     art.after(field);
-    // The resting facets take over once every shard is down; they are drawn identically, so only the seams go.
-    const landed=delay+fanOut+60+1000;
+    // Shards land in heart units (the group is scaled), so their flights are divided by the scale.
+    const fromTop=t=>{const g=centroid(t);return Math.abs(Math.atan2(g[0]-hx,hy-g[1]))/Math.PI;};
+    coverShards(V).map(sh=>({...sh,k:fromTop(sh.t)})).sort((p,q)=>p.k-q.k).forEach(sh=>{
+      const p=svg('polygon',{points:pts(sh.t),fill:sh.fill,stroke:sh.fill,'stroke-width':'1.6','stroke-linejoin':'round','vector-effect':'non-scaling-stroke'},group);
+      p.style.transformBox='fill-box';p.style.transformOrigin='center';
+      fly(p,away(900/s0),start+sh.k*650+random()*90,950);
+    });
+    // One heartbeat, a crouch, then a true zoom (exponential in scale, about the one point both poses share) on a spring.
+    const beat=start+1650,crouch=600,zoom=1000,total=crouch+160+zoom,sA=s0*.9;
+    const F=[0,1].map(k=>c0[k]+(COVER_C[k]-c0[k])*sA/(sA-1));
+    const frames=[[0,s0,'cubic-bezier(.3,0,.25,1)'],[110,s0*1.14,'cubic-bezier(.45,0,.55,1)'],[230,s0*.99,'cubic-bezier(.3,0,.25,1)'],[320,s0*1.08,'cubic-bezier(.45,0,.55,1)'],[470,s0,'linear'],[crouch,s0,'cubic-bezier(.5,0,.75,0)'],[crouch+160,sA,'linear']]
+      .map(([ms,s,easing])=>({offset:ms/total,transform:place(c0,s),easing}));
+    for(let k=1;k<=24;k++){
+      const u=springAt(k/24),s=sA*Math.pow(1/sA,u),c=k===24?COVER_C:[F[0]+(c0[0]-F[0])*s/sA,F[1]+(c0[1]-F[1])*s/sA];
+      frames.push({offset:(crouch+160+zoom*k/24)/total,transform:place(c,k===24?1:s),easing:'linear'});
+    }
+    A(group,frames,{duration:total,delay:beat,easing:'linear',fill:'forwards'});
+    // The resting facets are the same shapes clipped to the slide: the swap only drops the shard seams.
+    const landed=beat+total;
     A(art,[{opacity:0},{opacity:0}],{duration:landed,easing:'linear'});
     A(field,[{opacity:1},{opacity:0}],{duration:200,delay:landed,fill:'forwards'});
     later(landed+240,()=>discard(field));
-    art.style.transformOrigin=COVER_C[0]+'px '+COVER_C[1]+'px';
-    A(art,[{transform:'scale(1)'},{transform:'scale(1.022)',offset:.14},{transform:'scale(1)',offset:.34},{transform:'scale(1.012)',offset:.48},{transform:'scale(1)',offset:.72},{transform:'scale(1)'}],{duration:900,delay:landed+120,easing:'ease-in-out',fill:'none'});
+    return {landed,copy:beat+crouch+160+180};
   }
 
   // Character placement: standing at the end of the loading bar.
@@ -593,20 +611,21 @@
     'tytul':{
       custom:true,
       enter(ctx){
-        const a=ctx.article,art=$(a,'.cover-template');
-        const t0=ctx.prev?380:140;
-        // Coming back (R from a later slide): the previous slide collapses into the heart before it lands.
-        if(ctx.prev&&art){
-          const c=coverShards(art).center,random=rng(41);
-          sweep(ctx,{origin:c,reverse:true,cols:13,rows:7,seed:17,spread:440,duration:520,colorOf:ctx.prevSlide.theme==='red'?()=>SHADES[Math.floor(random()*3)]:colorFor(ctx.prevSlide),toward:c,rotate:120,ghostOut:220});
-        }else if(ctx.prev)sweep(ctx);
-        assembleCover(art,{delay:t0});
-        fadeUp($(a,'.cover-copy .kicker'),t0+80,{distance:14});
-        rise($(a,'.cover-copy h1'),t0+160,{stagger:120,duration:950});
-        rise($(a,'.cover-subtitle'),t0+480,{stagger:90});
-        fadeUp($(a,'.speakers'),t0+820,{distance:18,duration:700});
+        const a=ctx.article,t0=ctx.prev?380:140,mid=[COVER_SMALL.c[0],COVER_SMALL.c[1]+COVER_SMALL.s*92];
+        // Coming back (R from a later slide): the previous slide collapses into the spot where the heart forms.
+        if(ctx.prev){
+          const random=rng(41);
+          sweep(ctx,{origin:mid,reverse:true,cols:13,rows:7,seed:17,spread:440,duration:520,colorOf:ctx.prevSlide.theme==='red'?()=>SHADES[Math.floor(random()*3)]:colorFor(ctx.prevSlide),toward:mid,rotate:120,ghostOut:220});
+        }
+        const {landed,copy}=coverHeartIn(ctx,t0);
+        if(ctx.ambient)heartbeat($(a,'.cover-template'),landed+220);
+        fadeUp($(a,'.cover-copy .kicker'),copy,{distance:14});
+        rise($(a,'.cover-copy h1'),copy+100,{stagger:120,duration:950});
+        rise($(a,'.cover-subtitle'),copy+420,{stagger:90});
+        fadeUp($(a,'.speakers'),copy+760,{distance:18,duration:700});
         footerIn(a);
-      }
+      },
+      still(ctx){if(ctx.ambient)heartbeat($(ctx.article,'.cover-template'));}
     },
     'cytaty':{
       enter(ctx){
