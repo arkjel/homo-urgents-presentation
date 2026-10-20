@@ -771,18 +771,18 @@
         footerIn(a);
       },
       reveal:{
+        // "+ Brak czasu" and "= TRYB: TERAZ" share one click; the result wipes in right after the plus lands.
         1(ctx,els){
           els.forEach(el=>{
-            const plus=$(el,'.mechanism-plus');
-            A(plus,[{opacity:0,transform:'rotate(-180deg) scale(.2)'},{opacity:1,transform:'none'}],{duration:640,easing:EASE.back});
-            fadeUp($(el,'p'),140);
-          });
-        },
-        2(ctx,els){
-          els.forEach(el=>{
-            const result=$(el,'.mode-result')||el;
-            A(result,[{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0% 0 0)'}],{duration:620,easing:EASE.snap});
-            later(560,()=>{const b=box(result,ctx.article);sparkle(ctx.article,b.x+20,b.y+4,{n:5,seed:7});});
+            const plus=$(el,'.mechanism-plus'),result=$(el,'.mode-result');
+            if(plus){
+              A(plus,[{opacity:0,transform:'rotate(-180deg) scale(.2)'},{opacity:1,transform:'none'}],{duration:640,easing:EASE.back});
+              fadeUp($(el,'p'),140);
+            }
+            if(result){
+              A(result,[{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0% 0 0)'}],{duration:620,delay:600,easing:EASE.snap});
+              later(1160,()=>{const b=box(result,ctx.article);sparkle(ctx.article,b.x+20,b.y+4,{n:5,seed:7});});
+            }
           });
         }
       }
