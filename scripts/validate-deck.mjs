@@ -18,7 +18,7 @@ for(const slide of slides){
   if(expected[slide.id]){
     assert.deepEqual(Array.from(slide.metrics),expected[slide.id]);
     assert.deepEqual(Array.from(slide.html.matchAll(/data-value="(\d+)"/g),m=>Number(m[1])),expected[slide.id]);
-    assert.ok(slide.source.includes('Inquiry / Glovo'));
+    assert.ok(slide.source.includes('Badanie Inquiry'));
   }
 }
 const waiting=slides.filter(s=>s.loader);

@@ -28,7 +28,7 @@ Wersja z 8 października 2026: **20 slajdów, 44 stany odsłonięć i cztery met
 
 ## Treść
 
-Wartości i etykiety pozostałych wykresów porównano z dostarczonym PDF-em Inquiry / Glovo. Każdy slajd danych wskazuje stronę raportu oraz właściwą podstawę. Rozróżniono całą próbę CAWI, podgrupy q-commerce i obserwacje jakościowe. Źródła opisuje `SOURCES.md`.
+Wartości i etykiety pozostałych wykresów porównano z dostarczonym PDF-em Inquiry / Glovo. Stopka każdego slajdu danych podaje „Źródło: Badanie Inquiry - Homo Urgens 2026”, a stronę raportu i podstawę każdego slajdu wskazuje `SOURCES.md`. Rozróżniono całą próbę CAWI, podgrupy q-commerce i obserwacje jakościowe. Źródła opisuje `SOURCES.md`.
 
 Scena antyperspirantu jest oznaczonym przykładem. Wybór marki A ilustruje możliwą rolę Retail Media; nie jest wynikiem kampanii ani dowodem przyczynowego wpływu reklamy.
 
