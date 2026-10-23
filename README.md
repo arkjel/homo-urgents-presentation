@@ -2,7 +2,7 @@
 
 Prezentacja dla Uliany Jelonek i Joanny Wysockiej z Glovo.
 
-**23 slajdy. Pięć wartości z raportu. Scenariusz 15:15. Limit 18 minut.**
+**23 slajdy. Cztery wartości z raportu. Scenariusz 15:15. Limit 18 minut.**
 
 ## Uruchomienie
 

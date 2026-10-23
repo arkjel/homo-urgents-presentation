@@ -8,8 +8,8 @@ vm.runInNewContext(fs.readFileSync(path.join(root,'slides.js'),'utf8'),ctx);
 const {slides,totalDurationSeconds,limitSeconds}=ctx.window.HOMO_DECK;
 assert.equal(slides.length,24);assert.equal(new Set(slides.map(s=>s.id)).size,24);
 assert.equal(totalDurationSeconds,925);assert.equal(limitSeconds,1080);
-const expected={'kontrola':[78],'wybor-w-aplikacji':[55,41],dopasowanie:[27],trafnosc:[48]};
-assert.equal(slides.reduce((n,s)=>n+(s.metrics?.length||0),0),5,'exactly five research metrics');
+const expected={'kontrola':[78],'wybor-w-aplikacji':[55],dopasowanie:[27],trafnosc:[48]};
+assert.equal(slides.reduce((n,s)=>n+(s.metrics?.length||0),0),4,'exactly four research metrics');
 for(const slide of slides){
   assert.ok(slide.notes&&slide.speaker&&slide.seconds>0,slide.id+': speaker notes and timing');
   const steps=Array.from(slide.html.matchAll(/data-reveal="(\d+)"/g),m=>Number(m[1]));

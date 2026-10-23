@@ -11,7 +11,7 @@ Materiał dostarczony przez użytkownika: `PUBLIKACJA 6.10 INQ.pdf`, 26 stron, r
 | 7 | 6 | 78% chce produktu/usługi wtedy, kiedy ich potrzebuje. |
 | 8 | 5 | Homo Urgens jest trybem sytuacyjnym, nie trwałym segmentem lub generacją. |
 | 9–12 | — | Historia „Goście za 20 minut”: wiadomość, lodówka, dwa plany, potrzeba czekolady. Slajdy narracyjne. |
-| 13 | 11 | 55% zawsze lub często zna mniej więcej potrzebę, ale konkretny produkt wybiera podczas przeglądania aplikacji. 41% wybiera markę podczas przeglądania oferty. |
+| 13 | 11 | 55% zawsze lub często zna mniej więcej potrzebę, ale konkretny produkt wybiera podczas przeglądania aplikacji. |
 | 14–17 | 9, 11, 14, 17, 21, 22 (notatki) | Ilustracja czterech etapów w aplikacji: banner → produkt sponsorowany → wybór po packshocie, wariancie i cenie → rekomendacja przy koszyku. W notatkach kontekst: 19% wskazuje gości lub przygotowanie spotkania (s. 9), 31% zaczyna od wyszukania konkretnego produktu (s. 11), kryteria wyboru: cena 55%, wariant/rodzaj/wielkość 20%, zdjęcie 15% (s. 21). |
 | 18 | 41 raportu, 15 publikacji | 27% osób, które zmieniały plany lub zainteresowały się innym produktem (N=619), wskazuje dopasowanie do pozostałych zakupów jako powód zwrócenia uwagi na nieplanowany produkt. Numer strony 41 i podstawa N=619 pochodzą od użytkownika (pełny raport); w dostarczonej 26-stronicowej publikacji wartość 27% jest na s. 15 bez podanej liczebności. |
 | 19 | 17, 22 | Retail Media towarzyszy decyzji: pokazuje produkt, pomaga wybrać, pomaga domknąć zakup. Formaty z historii nazwane po kolei. Model jakościowy. |
