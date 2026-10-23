@@ -55,9 +55,11 @@
   };
 
   // Product art: small packs for lists, a chocolate bar for packshots.
-  const pack=(kind,brand='')=>'<span class="pack pack-'+kind+(brand?' brand-'+brand.toLowerCase():'')+'" aria-hidden="true">'+(brand?'<b>'+brand+'</b>':'')+'</span>';
-  const bar=(brand,label)=>'<span class="choc brand-'+brand.toLowerCase()+'" aria-hidden="true"><b>'+brand+'</b><i>'+label+'</i></span>';
-  const row=(kind,brand,name,detail,price,cls='')=>'<div class="product-row '+cls+'">'+pack(kind,brand)+'<div><strong data-edit>'+name+'</strong><span class="product-detail" data-edit>'+detail+'</span></div><b data-edit>'+price+'</b><span class="product-add" aria-hidden="true">+</span></div>';
+  // A branded bar opens like the packshots; the plain one stays a category icon.
+  const pack=(kind,brand='')=>kind==='bar'&&brand?'<span class="pack pack-bar pack-open" aria-hidden="true">'+barIcon+'<span class="pack-sleeve brand-'+brand.toLowerCase()+'"><b>'+brand+'</b></span></span>':
+    '<span class="pack pack-'+kind+(brand?' brand-'+brand.toLowerCase():'')+'" aria-hidden="true">'+(brand?'<b>'+brand+'</b>':'')+'</span>';
+  const bar=(brand,label)=>'<span class="choc" aria-hidden="true">'+barOpen+'<span class="choc-sleeve brand-'+brand.toLowerCase()+'"><b>'+brand+'</b><i>'+label+'</i></span></span>';
+  const row=(kind,brand,name,detail,price,cls='')=>'<div class="product-row '+cls+'">'+(snackArt[kind]?snack(kind,brand):pack(kind,brand))+'<div><strong data-edit>'+name+'</strong><span class="product-detail" data-edit>'+detail+'</span></div><b data-edit>'+price+'</b><span class="product-add" aria-hidden="true">+</span></div>';
   const ad='<span class="ad-disclosure" data-edit>Sponsorowane · przykład</span>';
   const appHeader='<header class="shop-header"><span class="shop-wordmark" data-edit>Aplikacja szybkich dostaw</span><span class="shop-cart-icon" aria-hidden="true">▣</span></header>';
   const frame=(mode,body)=>'<section class="shopping-frame app-'+mode+'" data-move aria-label="Ilustracyjny ekran aplikacji szybkich dostaw">'+appHeader+'<div class="shop-body">'+body+'</div></section>';
@@ -79,6 +81,52 @@
     chocPart(box(156,152,188,190),'#5a3321')+[[160,155],[175,155],[160,173],[175,173]].map(([x,y])=>chocPart(box(x,y,x+11,y+14),'#7a4a2e')).join('')+
     chocPart([[146,150],[158,150],[154,157],[160,164],[154,171],[160,178],[155,185],[158,192],[146,192]],'#d6b15e')+
     chocPart(box(44,150,150,192),'#23305e')+chocPart(box(44,158,150,163),'#d6b15e')+chocPart(box(56,172,112,181),'#fff')+'</svg>';
+  // A square of chocolate, bevelled and lit from the top left.
+  const chocSquare=(x,y,w,h,b=10)=>{const r=x+w,d=y+h;
+    return poly([[x,y],[r,y],[r-b,y+b],[x+b,y+b]],'#85512f')+poly([[x,y],[x+b,y+b],[x+b,d-b],[x,d]],'#7a4a2e')+
+      poly([[r,y],[r,d],[r-b,d-b],[r-b,y+b]],'#5a3321')+poly([[x,d],[x+b,d-b],[r-b,d-b],[r,d]],'#4a2a1a')+poly(box(x+b,y+b,r-b,d-b),'#6d4029');};
+  // What a packshot bar shows past its sleeve (the sleeve ends at 140): torn foil, then two columns of squares.
+  const barOpen='<svg viewBox="0 0 196 76">'+poly(box(122,69,194,75),'#3d2214')+poly(box(122,5,194,71),'#331c11')+
+    [0,1,2].flatMap(c=>[0,1,2].map(r=>chocSquare(123+c*24,6+r*22,22,20,3.5))).join('')+
+    poly([[130,3],[146,3],[142,10],[150,18],[143,26],[151,34],[144,42],[150,50],[142,58],[149,66],[143,75],[130,75]],'#c9ccd2')+
+    poly([[130,4],[142,4],[139,11],[146,19],[140,27],[147,35],[141,43],[146,51],[139,59],[145,67],[140,74],[130,74]],'#e8eaee')+
+    poly([[140,30],[144,36],[140,40]],'#f6f7f9')+poly([[140,4],[142,-4],[150,-7],[156,-2],[149,3],[151,6]],'#c9ccd2')+'</svg>';
+  // The same in a list's 58 px slot (the sleeve ends at 36).
+  const barIcon='<svg viewBox="0 0 58 36">'+poly(box(27,31,57,35),'#3d2214')+poly(box(27,3,57,33),'#331c11')+
+    [0,1,2].flatMap(c=>[0,1,2].map(r=>chocSquare(27.5+c*10,3.5+r*10,9,9,1.8))).join('')+
+    poly([[31,1.5],[38,1.5],[36.5,5],[39.5,9],[37,13],[40,17],[37.5,21],[40,25],[37,29],[39.5,32],[37.5,35],[31,35]],'#c9ccd2')+
+    poly([[31,2],[36.5,2],[35.5,5.5],[37.5,9.5],[35.5,13.5],[38,17.5],[36,21.5],[38,25.5],[35.5,29.5],[37.5,33],[36,34.5],[31,34.5]],'#e8eaee')+
+    poly([[34,2],[35,-1.5],[38.5,-3],[41,-.8],[38,1.5],[38.8,2.8]],'#c9ccd2')+'</svg>';
+  // Search results: each snack in its real pack, drawn on a 64 × 72 grid, lit from the top left; the brand letter is HTML over it.
+  // A pillow bag: crimped seals, a puffed body (lit side, shade, dark edge laid over its colour) and a window onto what is inside.
+  const crimp=(x0,x1,y,dy,n)=>Array.from({length:n+1},(_,i)=>[x0+(x1-x0)*i/n,y+(i%2?dy:0)]);
+  const bagLeft=[[10,13],[8,19],[6.5,28],[6,37],[6.5,46],[8,54],[10,60]],bagRight=bagLeft.map(([x,y])=>[64-x,y]).reverse();
+  const pillow=([light,mid,shade,dark],seal,inside)=>
+    poly([...bagLeft,...bagRight],mid)+poly([...bagLeft,[19,60],[19,13]],light)+poly([[42,13],[42,60],...bagRight],shade)+poly([[50,13],[50,60],...bagRight],dark)+
+    poly([...crimp(7,57,6,3,10),[57,13],[7,13]],seal)+poly([[7,60],[57,60],...crimp(57,7,66,-3,10)],seal)+ellipse(32,43,12.5,12.5,'#fff4d8')+inside;
+  const snackArt={
+    // Nachos A, as in the banner: two chips in the window.
+    nachos:pillow(['#eba142','#e2932b','#d6861f','#c4741a'],'#b5661a',poly([[23.5,48],[31,34],[37,47]],'#f6c445')+poly([[29.5,51],[38.5,39.5],[41,51.5]],'#e9a72f')),
+    // Paprika chips B: two chips dusted red, and a pepper.
+    chips:pillow(['#2d3c72','#23305e','#1d2850','#161d3a'],'#121830',
+      poly(turn(arc(28,40,8.5,5.6,0,360,18).slice(0,-1),28,40,-24),'#f2b84b')+poly(turn(arc(34,44,8.5,5.6,0,360,18).slice(0,-1),34,44,18),'#e9a03b')+
+      [[25,39],[29,37.5],[31,41],[33,43.5],[37,45],[34,46.5]].map(([x,y])=>ellipse(x,y,.9,.9,'#c7372a')).join('')+
+      poly([[35,50],[39.5,47],[44,49],[42.5,54.5],[38,55.5],[35.5,53.5]],'#d9342b')+poly([[36.5,50],[39.5,48.2],[40,50.5],[37.5,52]],'#ef5a45')+poly([[39.2,47.5],[40.5,44],[42,44.6],[40.6,47.8]],'#3f8a3a')),
+    // Salt sticks C: a tall narrow bag, the sticks behind a clear window.
+    sticks:poly([[18,10],[46,10],[47.5,24],[48,36],[47.5,48],[46,62],[18,62],[16.5,48],[16,36],[16.5,24]],'#2f7d5b')+
+      poly([[18,10],[24,10],[24,62],[18,62],[16.5,48],[16,36],[16.5,24]],'#3a8f69')+poly([[41,10],[46,10],[47.5,24],[48,36],[47.5,48],[46,62],[41,62]],'#276b4d')+
+      poly([...crimp(18,46,3,3,8),[46,10],[18,10]],'#1f5c42')+poly([[18,62],[46,62],...crimp(46,18,69,-3,8)],'#1f5c42')+
+      poly([[24,27],[40,27],[42,29],[42,56],[40,58],[24,58],[22,56],[22,29]],'#eef4ef')+
+      [[23.5,56,32],[27,56.5,29],[30.5,55,30.5],[34,56.5,32],[28.5,48,40]].map(([x,y0,y1],i)=>poly([[x,y0],[x+2.6,y0],[x+2.6+(y0-y1)*.2,y1],[x+(y0-y1)*.2,y1]],['#d9a05b','#e8b874','#d9a05b','#e8b874','#cf9450'][i])).join('')+
+      [[25,51],[26.6,40],[29,48],[30.4,36],[33,52],[34.6,40],[36.6,33],[32,45]].map(([x,y])=>ellipse(x,y,.7,.7,'#fff')).join('')+
+      poly([[38.5,29],[42,29],[42,56],[40,58],[38.5,58]],'#fff',' fill-opacity=".45"'),
+    // Butter popcorn D: a striped paper bag filled over the top, like the popcorn on the table.
+    popcorn:[0,1,2,3,4,5].map(i=>{const t=13+6.4*i,b=18.5+4.5*i;return poly([[t,28],[t+6.4,28],[b+4.5,68],[b,68]],i%2?(i<3?'#fff4e6':'#f1e6d4'):(i<3?'#7a3e22':'#65321b'));}).join('')+
+      [[17,26],[25,24],[33,26],[41,24],[48,27],[21,18],[30,16],[38,17],[45,20],[33,9],[25,10.5]].map(([x,y],i)=>
+        ellipse(x+.5,y+.8,5,4.6,'#e7cf8a')+ellipse(x,y,4.6,4.3,i%2?'#f8e7b0':'#fff1c4')+ellipse(x-1.2,y-1.2,2.1,1.9,'#fffdf4')).join('')+
+      ellipse(32,49,9.5,9.5,'#fff4e6')+ellipse(32,49,7.8,7.8,'#7a3e22')
+  };
+  const snack=(kind,brand)=>'<span class="snack snack-'+kind+'" aria-hidden="true"><svg viewBox="0 0 64 72">'+snackArt[kind]+'</svg><b>'+brand+'</b></span>';
   const app={
     home:frame('home',top('Dzień dobry!','Czego dziś potrzebujesz?')+
       '<div class="shop-search"><span aria-hidden="true">⌕</span><span data-edit>Szukaj produktów</span></div>'+
@@ -87,15 +135,15 @@
       [['bottle','Napoje'],['bag','Przekąski'],['bar','Słodycze'],['fruit','Owoce']].map(([kind,name])=>'<span class="app-cat"><span class="cat-icon">'+pack(kind)+'</span><span data-edit>'+name+'</span></span>').join('')+'</div>'),
     search:frame('search',top('Na spotkanie','Znajdź produkt')+
       '<div class="shop-search"><span aria-hidden="true">⌕</span><span class="type-query" data-edit>przekąski</span></div>'+
-      reveal(1,'<div class="relevant-offer">'+pack('bag','A')+'<div>'+ad+'<strong data-edit>Nachosy solone · marka A</strong><span data-edit>200 g</span></div><b data-edit>8,99 zł</b><span class="product-add" aria-hidden="true">+</span></div>'+
-        row('bag','B','Chipsy paprykowe · marka B','150 g','6,99 zł')+row('bag','C','Paluszki solone · marka C','200 g','4,49 zł')+row('bag','D','Popcorn maślany · marka D','90 g','5,49 zł'),'shop-results')+
+      reveal(1,'<div class="relevant-offer">'+snack('nachos','A')+'<div>'+ad+'<strong data-edit>Nachosy solone · marka A</strong><span data-edit>200 g</span></div><b data-edit>8,99 zł</b><span class="product-add" aria-hidden="true">+</span></div>'+
+        row('chips','B','Chipsy paprykowe · marka B','150 g','6,99 zł')+row('sticks','C','Paluszki solone · marka C','200 g','4,49 zł')+row('popcorn','D','Popcorn maślany · marka D','90 g','5,49 zł'),'shop-results')+
       '<div class="shop-bottom"><span data-edit>Szukam kategorii. Marka jest otwarta.</span></div>'),
     shelf:frame('shelf',top('Słodycze','Czekolady')+'<div class="app-grid">'+
       [['B','Czekolada z orzechami','Z ORZECHAMI','marka B · 100 g','6,49 zł','sponsored selected'],['A','Czekolada gorzka 70%','GORZKA 70%','marka A · 100 g','7,29 zł',''],['C','Czekolada mleczna','MLECZNA','marka C · 90 g','5,49 zł',''],['D','Czekolada z karmelem','Z KARMELEM','marka D · 100 g','6,99 zł','']]
         .map(([brand,name,label,detail,price,cls])=>'<div class="app-tile '+cls+'">'+(cls.includes('sponsored')?'<span class="tile-tag" data-edit>Sponsorowane</span>':'')+'<div class="tile-shot">'+bar(brand,label)+'</div><strong data-edit>'+name+'</strong><span class="product-detail" data-edit>'+detail+'</span><div class="tile-foot"><b data-edit>'+price+'</b><span class="product-add" aria-hidden="true">+</span></div></div>').join('')+'</div>'+
       reveal(1,'<p class="selection-feedback" data-edit>Dodano do koszyka: czekolada z orzechami</p>')),
     cart:frame('cart',top('Mój koszyk','Twój koszyk')+
-      row('bottle','C','Lemoniada · marka C','1 l','7,99 zł')+row('bag','A','Nachosy solone · marka A','200 g','8,99 zł')+row('bar','B','Czekolada z orzechami · marka B','100 g','6,49 zł')+
+      row('bottle','C','Lemoniada · marka C','1 l','7,99 zł')+row('nachos','A','Nachosy solone · marka A','200 g','8,99 zł')+row('bar','B','Czekolada z orzechami · marka B','100 g','6,49 zł')+
       '<div class="cart-suggestion"><p><strong data-edit>Pasuje do Twojego koszyka</strong>'+ad+'</p>'+row('jar','A','Dip salsa · marka A','200 g · do nachosów','9,99 zł','suggested')+'</div>'+
       '<div class="shop-cta" data-edit>Przejdź do podsumowania</div><p class="shop-cart-note" data-edit>Przykładowe ceny. Dostawa i opłaty widoczne przed zakupem.</p>')
   };
@@ -361,10 +409,7 @@
   }).join('')+'</svg>';
 
   // Slide 13's chocolate, in the pack's own pixels: the sleeve slid back, the foil torn open over three columns of squares,
-  // the top-right square broken off (it lies on the table with another). Each square is bevelled, lit from the top left.
-  const chocSquare=(x,y,w,h,b=10)=>{const r=x+w,d=y+h;
-    return poly([[x,y],[r,y],[r-b,y+b],[x+b,y+b]],'#85512f')+poly([[x,y],[x+b,y+b],[x+b,d-b],[x,d]],'#7a4a2e')+
-      poly([[r,y],[r,d],[r-b,d-b],[r-b,y+b]],'#5a3321')+poly([[x,d],[x+b,d-b],[r-b,d-b],[r,d]],'#4a2a1a')+poly(box(x+b,y+b,r-b,d-b),'#6d4029');};
+  // the top-right square broken off (it lies on the table with another).
   const chocPiece=cls=>'<svg class="choc-piece '+cls+'" viewBox="0 0 86 94">'+poly(box(6,12,86,94),'#000',' fill-opacity=".1"')+poly(box(0,76,80,86),'#3d2214')+chocSquare(0,0,80,78)+'</svg>';
   const openChocolate='<svg class="choc-open" viewBox="0 0 680 330">'+
     poly(box(340,316,672,328),'#3d2214')+poly([[340,72],[589,72],[589,154],[672,154],[672,318],[340,318]],'#331c11')+

@@ -206,6 +206,9 @@ dialog h2{font-size:30px;line-height:1.2;margin:12px 0 24px}
 .pack b{font-weight:900}
 .pack-bag{width:44px;height:58px;border-radius:7px 7px 10px 10px;border-top:6px solid #0003;border-bottom:6px solid #0003}
 .pack-bar{width:58px;height:36px;border-radius:5px;border-left:11px solid #d6b15e}
+.pack-open{background:none;border-left:0}
+.pack-open svg{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible}
+.pack-sleeve{position:absolute;left:0;top:0;width:36px;height:36px;display:grid;place-items:center;border-radius:5px;border-left:9px solid #d6b15e}
 .pack-bottle{width:30px;height:60px;margin-top:12px;border-radius:9px 9px 7px 7px}
 .pack-bottle::before{content:"";position:absolute;left:8px;top:-12px;width:14px;height:14px;border-radius:3px;background:#c4c4c4}
 .pack-jar{width:48px;height:46px;margin-top:8px;border-radius:9px}
@@ -217,6 +220,13 @@ dialog h2{font-size:30px;line-height:1.2;margin:12px 0 24px}
 .product-row .pack-bar{margin:0}
 .product-row .pack-jar{margin:8px 5px 0}
 .brand-a{background:#e2932b}.brand-b{background:#23305e}.brand-c{background:#2f7d5b}.brand-d{background:#7a3e22}
+/* Search results: snacks in their real packs (drawn in slides.js on a 64 × 72 grid), the brand letter above the window. */
+.snack{position:relative;flex-shrink:0;display:block;width:56px;height:63px;margin:0 1px;color:#fff}
+.snack svg{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible}
+.snack>b{position:absolute;left:0;right:0;top:11px;text-align:center;font-size:15px;line-height:1;font-weight:900;white-space:nowrap}
+.snack-sticks>b,.snack-popcorn>b{font-size:12px}
+.snack-sticks>b{top:10px}
+.snack-popcorn>b{top:36.5px}
 /* Home screen: banner and categories. */
 .app-banner{position:relative;display:flex;flex-direction:column;align-items:flex-start;height:256px;border-radius:16px;padding:20px 24px 22px;background:linear-gradient(120deg,#ee312f,#b81d1f);color:#fff;overflow:hidden;margin-bottom:18px}
 .app-banner .ad-disclosure{color:#ffffffc8;font-size:14px}
@@ -239,7 +249,10 @@ dialog h2{font-size:30px;line-height:1.2;margin:12px 0 24px}
 .tile-tag{position:absolute;left:14px;top:12px;z-index:2;padding:4px 8px;border-radius:6px;background:#fff;font-size:13px;color:#7a7a7a;letter-spacing:.02em}
 .tile-foot{display:flex;align-items:center;justify-content:space-between;margin-top:9px}
 .tile-foot b{font-size:22px}
-.choc{position:relative;display:block;width:168px;height:76px;border-radius:6px;border-left:20px solid #d6b15e;rotate:-6deg;box-shadow:0 8px 12px #0002;color:#fff}
+/* Each bar is half out of its sleeve: the open chocolate (squares and torn foil) lies under it. */
+.choc{position:relative;display:block;width:196px;height:76px;rotate:-6deg;color:#fff}
+.choc svg{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible}
+.choc-sleeve{position:absolute;left:0;top:0;width:140px;height:76px;border-radius:6px;border-left:20px solid #d6b15e;box-shadow:0 8px 12px #0002}
 .choc b{position:absolute;left:12px;top:4px;font-size:40px;line-height:1;font-weight:900}
 .choc i{position:absolute;left:12px;bottom:9px;font-style:normal;font-size:13px;font-weight:900;letter-spacing:.05em}
 .app-grid .selected .tile-shot{background:#f1ece4}
