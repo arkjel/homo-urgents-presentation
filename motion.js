@@ -434,6 +434,11 @@
     A(layer,[{opacity:1},{opacity:1,offset:.15},{opacity:0,offset:.55},{opacity:0}],{duration:D,easing:'linear'});
     later(D,()=>discard(layer));
   }
+  // The lemon rocks gently on its shelf for as long as the slide is on screen.
+  function lemonRock(article,delay=0){
+    const sway=deg=>({transform:'rotate('+deg+'deg)',easing:'ease-in-out'});
+    A($(article,'.inside-lemon'),[sway(0),{...sway(-3),offset:.25},{...sway(0),offset:.5},{...sway(3),offset:.75},sway(0)],{duration:2600,delay,iterations:Infinity,easing:'linear',fill:'none'});
+  }
   function fridgeMascot(ctx,width=210){
     if(!global.DECK_MASCOT)return null;
     const m=global.DECK_MASCOT.create({width});
@@ -765,10 +770,11 @@
         const t=ctx.prev&&!ctx.capture?fridgeZoomIn(ctx):0;
         A(title,[{opacity:0,transform:'translateY(-40px) scale(.7)'},{opacity:1,transform:'scale(1.06)',offset:.65},{opacity:1,transform:'none'}],{duration:640,delay:t+150,easing:EASE.out});
         later(t+800,()=>shake(title,{amount:8,duration:300}));
-        A($(a,'.inside-lemon'),[{transform:'none'},{transform:'rotate(-5deg)',offset:.3},{transform:'rotate(4deg)',offset:.65},{transform:'none'}],{duration:900,delay:t+700,easing:EASE.inOut});
+        lemonRock(a,t+700);
         ctx.clockDelay=t+400;
         footerIn(a);
-      }
+      },
+      still(ctx){if(ctx.ambient)lemonRock(ctx.article);}
     },
     'lodowka':{
       custom:prev=>prev.id==='pusta-lodowka',

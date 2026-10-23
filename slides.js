@@ -30,8 +30,7 @@
     const shade=(tri,i)=>{const cx=tri.reduce((s,p)=>s+p[0],0)/3/166,cy=tri.reduce((s,p)=>s+p[1],0)/3/118;
       const b=Math.min(1,Math.max(0,.5+.5*(-.55*cx-.83*cy)*1.25+(i%2?.05:-.05)));return b<.5?mix('#cf980c','#f4cf3c',b*2):mix('#f4cf3c','#fdeb98',(b-.5)*2);};
     const facets=rim.flatMap((p,i)=>{const n=(i+1)%rim.length;return [[p,rim[n],inner[n]],[p,inner[n],inner[i]],[H,inner[i],inner[n]]];});
-    const lemon=facets.map((tri,i)=>poly(tri.map(at),shade(tri,i))).join('')
-      +poly([[-165,-4],[-187,-12],[-185,10]].map(at),'#c79a10')+poly([[166,2],[187,-6],[187,14]].map(at),'#c79a10');
+    const lemon=facets.map((tri,i)=>poly(tri.map(at),shade(tri,i))).join('');
     return '<svg viewBox="0 0 1920 1080" aria-hidden="true">'
       +poly([[0,0],[1920,0],[1363,313],[557,313]],'#fbf6ea')
       +poly([[700,215],[1220,215],[1180,300],[740,300]],'#fff9ec')+poly([[795,243],[1125,243],[1101,286],[819,286]],'#fffdf8')
