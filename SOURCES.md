@@ -10,14 +10,14 @@ Materiał dostarczony przez użytkownika: `PUBLIKACJA 6.10 INQ.pdf`, 26 stron, r
 | 6 | — | Schemat „kiedyś i teraz”: jeden sklep w okolicy kontra aplikacja szybkich dostaw. Bez danych o odległościach. |
 | 7 | 6 | 78% chce produktu/usługi wtedy, kiedy ich potrzebuje. |
 | 8 | 5 | Homo Urgens jest trybem sytuacyjnym, nie trwałym segmentem lub generacją. |
-| 9–12 | — | Historia „Goście za 20 minut”: wiadomość, lodówka, dwa plany, potrzeba czekolady. Slajdy narracyjne. |
-| 13 | 11 | 55% zawsze lub często zna mniej więcej potrzebę, ale konkretny produkt wybiera podczas przeglądania aplikacji. |
-| 14–17 | 9, 11, 14, 17, 21, 22 (notatki) | Ilustracja czterech etapów w aplikacji: banner → produkt sponsorowany → wybór po packshocie, wariancie i cenie → rekomendacja przy koszyku. W notatkach kontekst: 19% wskazuje gości lub przygotowanie spotkania (s. 9), 31% zaczyna od wyszukania konkretnego produktu (s. 11), kryteria wyboru: cena 55%, wariant/rodzaj/wielkość 20%, zdjęcie 15% (s. 21). |
-| 18 | 41 raportu, 15 publikacji | 27% osób, które zmieniały plany lub zainteresowały się innym produktem (N=619), wskazuje dopasowanie do pozostałych zakupów jako powód zwrócenia uwagi na nieplanowany produkt. Numer strony 41 i podstawa N=619 pochodzą od użytkownika (pełny raport); w dostarczonej 26-stronicowej publikacji wartość 27% jest na s. 15 bez podanej liczebności. |
-| 19 | 17, 22 | Retail Media towarzyszy decyzji: pokazuje produkt, pomaga wybrać, pomaga domknąć zakup. Formaty z historii nazwane po kolei. Model jakościowy. |
-| 20 | 14 | 48% uważa, że trafne rekomendacje pomagają szybciej znaleźć produkt. |
-| 21 | 19, 24, 25 | Implikacje i ograniczenie: zakup po ekspozycji nie jest sam w sobie dowodem przyczynowego wpływu reklamy. |
-| 22 | — | Finał historii: nakryty stół. Slajd narracyjny. |
+| 9–13 | — | Historia „Goście za 20 minut”: wiadomość, wnętrze lodówki z cytryną („o-shit commerce”), lodówka, dwa plany, potrzeba czekolady. Slajdy narracyjne. |
+| 14 | 11 | 55% zawsze lub często zna mniej więcej potrzebę, ale konkretny produkt wybiera podczas przeglądania aplikacji. Wykres „Kategoria: czekolada” (fraza „czekolada” wobec nazw marek i wariantów) odwzorowuje wykres dostarczony przez prowadzące; długości słupków odczytano z obrazu, bez wartości. Źródło danych do potwierdzenia. |
+| 15–18 | 9, 11, 14, 17, 21, 22 (notatki) | Ilustracja czterech etapów w aplikacji: banner → produkt sponsorowany → wybór po packshocie, wariancie i cenie → rekomendacja przy koszyku. W notatkach kontekst: 19% wskazuje gości lub przygotowanie spotkania (s. 9), 31% zaczyna od wyszukania konkretnego produktu (s. 11), kryteria wyboru: cena 55%, wariant/rodzaj/wielkość 20%, zdjęcie 15% (s. 21). |
+| 19 | 41 raportu, 15 publikacji | 27% osób, które zmieniały plany lub zainteresowały się innym produktem (N=619), wskazuje dopasowanie do pozostałych zakupów jako powód zwrócenia uwagi na nieplanowany produkt. Numer strony 41 i podstawa N=619 pochodzą od użytkownika (pełny raport); w dostarczonej 26-stronicowej publikacji wartość 27% jest na s. 15 bez podanej liczebności. |
+| 20 | 17, 22 | Retail Media towarzyszy decyzji: pokazuje produkt, pomaga wybrać, pomaga domknąć zakup. Formaty z historii nazwane po kolei. Model jakościowy. |
+| 21 | 14 | 48% uważa, że trafne rekomendacje pomagają szybciej znaleźć produkt. |
+| 22 | 19, 24, 25 | Implikacje i ograniczenie: zakup po ekspozycji nie jest sam w sobie dowodem przyczynowego wpływu reklamy. |
+| 23 | — | Finał historii: nakryty stół. Slajd narracyjny. |
 
 Metodologia (s. 4 raportu): CAWI objęło N=1002 mieszkańców miast, 18+. FGI to 2 grupy, łącznie 12 osób. Decision Lab obejmuje 11 ścieżek zakupowych w Glovo. Metodologia pozostaje w dokumentacji; osobny slajd został usunięty na prośbę użytkownika.
 
@@ -49,7 +49,7 @@ Historia „Goście za 20 minut”, ekrany aplikacji, marki A–D, produkty i ce
 
 Zegar opowieści (slajdy 9–18) jest tarczą bez cyfr; jeden obrót to 20 minut do przyjścia gości z wiadomości. Nie przedstawia czasu dostawy.
 
-Mapa „kiedyś”, lista sklepów „teraz”, powiadomienie, lodówka, tabliczka czekolady, opakowania w aplikacji i nakryty stół są autorskimi elementami HTML/CSS i SVG (wyłącznie wielokąty i koła, żeby późniejszy eksport PPTX odwzorował je jako kształty).
+Mapa „kiedyś”, lista sklepów „teraz”, powiadomienie, lodówka i jej wnętrze z cytryną, tabliczka czekolady, opakowania w aplikacji i nakryty stół są autorskimi elementami HTML/CSS i SVG (wyłącznie wielokąty i koła, żeby późniejszy eksport PPTX odwzorował je jako kształty).
 
 Grafika `assets/images/party-groceries.png` powstała przy użyciu wbudowanego narzędzia imagegen. Zachowano przezroczystość. Nie przedstawia konkretnej marki ani rzeczywistego produktu. Grafika pozostaje opcjonalnym zasobem i nie jest wyświetlana na slajdach.
 

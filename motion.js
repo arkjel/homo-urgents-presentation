@@ -393,6 +393,47 @@
     return m;
   }
 
+  function openFridge(fridge,delay){
+    A($(fridge,'.fridge-door'),[{transform:'scaleX(.04)'},{transform:'scaleX(1.05)',offset:.75},{transform:'none'}],{duration:900,delay,easing:EASE.out});
+    // The inside light flickers on as the door opens.
+    A($(fridge,'.fridge-inside'),[{opacity:.12},{opacity:.12,offset:.3},{opacity:1,offset:.42},{opacity:.35,offset:.52},{opacity:1,offset:.66},{opacity:1}],{duration:1100,delay,easing:'linear'});
+    A($(fridge,'.fridge-glow'),[{opacity:0},{opacity:1}],{duration:900,delay:delay+380});
+  }
+  // The camera links the empty-fridge slide with the fridge slide: 6× onto the drawn lemon puts it where the inside view has its lemon.
+  const ZOOM={scale:6,target:[960,700]};
+  const cameraOn=(c,origin={x:0,y:0})=>'translate('+(ZOOM.target[0]-origin.x-ZOOM.scale*(c.cx-origin.x)).toFixed(1)+'px,'+(ZOOM.target[1]-origin.y-ZOOM.scale*(c.cy-origin.y)).toFixed(1)+'px) scale('+ZOOM.scale+')';
+  function zoomLayer(ctx,dark){
+    const layer=doc().createElement('div');
+    layer.className='mo-zoom'+(dark?' is-dark':'');layer.setAttribute('aria-hidden','true');layer.style.opacity='0';
+    ctx.article.append(layer);
+    return layer;
+  }
+  // In: the fridge of the next slide opens in the dark and the camera flies onto its lemon. Returns when the inside view is clear.
+  function fridgeZoomIn(ctx){
+    const tpl=doc().createElement('div');
+    tpl.innerHTML=global.HOMO_DECK?.slides.find(s=>s.id==='lodowka')?.html||'';
+    const fridge=$(tpl,'.fridge');
+    if(!fridge)return 0;
+    const layer=zoomLayer(ctx,true),D=2600;
+    layer.append(fridge);
+    const camera=cameraOn(box($(fridge,'.item-lemon'),ctx.article));
+    A(fridge,[{opacity:0},{opacity:1}],{duration:400,delay:80});
+    openFridge(fridge,320);
+    A(layer,[{transform:'none'},{transform:'none',offset:.42,easing:'cubic-bezier(.5,0,.15,1)'},{transform:camera,offset:.86},{transform:camera}],{duration:D,easing:'linear'});
+    A(layer,[{opacity:1},{opacity:1,offset:.8},{opacity:0}],{duration:D,easing:'linear'});
+    later(D,()=>discard(layer));
+    return D;
+  }
+  // Out: the inside view shrinks onto the drawn lemon while the fridge pulls back to its place.
+  function fridgeZoomOut(ctx,fridge,D){
+    const a=ctx.article,lemon=box($(fridge,'.item-lemon'),a),f=box(fridge,a),ease='cubic-bezier(.55,0,.2,1)';
+    A(fridge,[{transformOrigin:'0 0',transform:cameraOn(lemon,f)},{transformOrigin:'0 0',transform:'none'}],{duration:D,easing:ease});
+    const layer=zoomLayer(ctx,false),S=ZOOM.scale;
+    $$(ctx.prev,'.inside-scene,.inside-title').forEach(el=>layer.append(el.cloneNode(true)));
+    A(layer,[{transform:'none'},{transform:'translate('+(lemon.cx-ZOOM.target[0]/S).toFixed(1)+'px,'+(lemon.cy-ZOOM.target[1]/S).toFixed(1)+'px) scale('+(1/S).toFixed(4)+')'}],{duration:D,easing:ease});
+    A(layer,[{opacity:1},{opacity:1,offset:.15},{opacity:0,offset:.55},{opacity:0}],{duration:D,easing:'linear'});
+    later(D,()=>discard(layer));
+  }
   function fridgeMascot(ctx,width=210){
     if(!global.DECK_MASCOT)return null;
     const m=global.DECK_MASCOT.create({width});
@@ -435,6 +476,13 @@
       sparkle(ctx.article,b.cx+Math.cos(a)*r,b.cy+Math.sin(a)*r,{n:5,seed:value});
     });
   }
+  // Bars grow from the baseline in rank order; the longest ends with the same sparkle as a ring.
+  function barsIn(ctx,chart,delay=0){
+    const bars=$$(chart,'.bar-track i');
+    bars.forEach((bar,i)=>A(bar,[{transform:'scaleX(0)'},{transform:'none'}],{duration:900,delay:delay+220+i*70,easing:EASE.expo}));
+    if(!bars.length)return;
+    later(delay+1000,()=>{const b=box(bars[0],ctx.article);sparkle(ctx.article,b.right,b.cy,{n:5,seed:bars.length});});
+  }
   function defaultEnter(ctx){
     const a=ctx.article;
     headingIn(a);
@@ -450,6 +498,7 @@
     const targets=getComputedStyle(el).display==='contents'?Array.from(el.children):[el];
     targets.forEach((t,i)=>fadeUp(t,delay+i*80,{distance:26,duration:620}));
     $$(el,'.metric').forEach(figure=>metricIn(ctx,figure,delay));
+    $$(el,'.bar-chart').forEach(chart=>barsIn(ctx,chart,delay));
   }
   function progressIn(ctx){
     const bar=$(ctx.article,'.deck-progress');
@@ -505,6 +554,13 @@
     fadeUp(card,delay,{distance:30,duration:700});
     A($(card,'.quote-mark'),[{opacity:0,transform:'scale(.3) rotate(-18deg)'},{opacity:1,transform:'scale(1.12)',offset:.6},{opacity:1,transform:'none'}],{duration:640,delay:delay+140,easing:EASE.out});
     rule(card,{delay:delay+60,color:RED,duration:1100});
+  }
+  function consumerIn(consumer,delay){
+    if(!consumer)return;
+    A(consumer,[{opacity:0,transform:'translateX(80px)'},{opacity:1,transform:'none'}],{duration:850,delay,easing:EASE.expo});
+    rise($(consumer,'h1'),delay+80);
+    fadeUp($(consumer,'.consumer-need'),delay+380,{distance:18});
+    fadeUp($(consumer,'.world-quote'),delay+560,{distance:12});
   }
   // A product falls onto the slide and settles with a small squash.
   const DROP=[
@@ -702,22 +758,36 @@
       },
       reveal:{1(ctx,els){els.forEach(el=>rise($(el,'.message-twist')||el,0,{duration:760}));}}
     },
+    'pusta-lodowka':{
+      custom:true,
+      enter(ctx){
+        const a=ctx.article,title=$(a,'.inside-title');
+        const t=ctx.prev&&!ctx.capture?fridgeZoomIn(ctx):0;
+        A(title,[{opacity:0,transform:'translateY(-40px) scale(.7)'},{opacity:1,transform:'scale(1.06)',offset:.65},{opacity:1,transform:'none'}],{duration:640,delay:t+150,easing:EASE.out});
+        later(t+800,()=>shake(title,{amount:8,duration:300}));
+        A($(a,'.inside-lemon'),[{transform:'none'},{transform:'rotate(-5deg)',offset:.3},{transform:'rotate(4deg)',offset:.65},{transform:'none'}],{duration:900,delay:t+700,easing:EASE.inOut});
+        ctx.clockDelay=t+400;
+        footerIn(a);
+      }
+    },
     'lodowka':{
+      custom:prev=>prev.id==='pusta-lodowka',
       enter(ctx){
         const a=ctx.article,fridge=$(a,'.fridge');
-        headingIn(a);
-        A(fridge,[{opacity:0,transform:'translateX(90px)'},{opacity:1,transform:'none'}],{duration:850,delay:120,easing:EASE.expo});
-        A($(fridge,'.fridge-door'),[{transform:'scaleX(.04)'},{transform:'scaleX(1.05)',offset:.75},{transform:'none'}],{duration:900,delay:620,easing:EASE.out});
-        // The inside light flickers on as the door opens.
-        A($(fridge,'.fridge-inside'),[{opacity:.12},{opacity:.12,offset:.3},{opacity:1,offset:.42},{opacity:.35,offset:.52},{opacity:1,offset:.66},{opacity:1}],{duration:1100,delay:620,easing:'linear'});
-        A($(fridge,'.fridge-glow'),[{opacity:0},{opacity:1}],{duration:900,delay:1000});
-        $$(fridge,'.fridge-item').forEach((item,i)=>fadeUp(item,1250+i*120,{distance:12,duration:500}));
+        const zoom=ctx.prev&&ctx.prevSlide?.id==='pusta-lodowka'&&!ctx.capture,t=zoom?700:0;
+        headingIn(a,zoom?1250:60);
+        if(zoom){fridgeZoomOut(ctx,fridge,1500);ctx.clockDelay=1400;}
+        else{
+          A(fridge,[{opacity:0,transform:'translateX(90px)'},{opacity:1,transform:'none'}],{duration:850,delay:120,easing:EASE.expo});
+          openFridge(fridge,620);
+          $$(fridge,'.fridge-item').forEach((item,i)=>fadeUp(item,1250+i*120,{distance:12,duration:500}));
+        }
         const m=fridgeMascot(ctx);
         if(m){
-          m.assemble({delay:900,stagger:420,duration:700,distance:240});
-          later(1900,()=>m.loop('blink'));
-          later(2100,()=>{m.pose('watch',{duration:520});m.face('annoyed');});
-          later(3200,()=>m.loop('tap',{period:560}));
+          m.assemble({delay:900+t,stagger:420,duration:700,distance:240});
+          later(1900+t,()=>m.loop('blink'));
+          later(2100+t,()=>{m.pose('watch',{duration:520});m.face('annoyed');});
+          later(3200+t,()=>m.loop('tap',{period:560}));
         }
         footerIn(a);
       },
@@ -729,16 +799,17 @@
       }
     },
     'dwa-plany':{
+      // The consumer's plan stays hidden until the first click; it answers the brand's from the right.
       enter(ctx){
-        const a=ctx.article,brand=$(a,'.world-brand'),consumer=$(a,'.world-consumer');
+        const a=ctx.article,brand=$(a,'.world-brand');
         A(brand,[{opacity:0,transform:'translateX(-80px)'},{opacity:1,transform:'none'}],{duration:850,delay:140,easing:EASE.expo});
-        A(consumer,[{opacity:0,transform:'translateX(80px)'},{opacity:1,transform:'none'}],{duration:850,delay:240,easing:EASE.expo});
-        rise($(brand,'h1'),220);rise($(consumer,'h1'),320);
+        rise($(brand,'h1'),220);
         $$(brand,'.brand-goals p').forEach((p,i)=>fadeUp(p,440+i*80,{distance:18}));
         fadeUp($(brand,'.world-quote'),780,{distance:12});
+        if(ctx.step>=1)consumerIn($(a,'.world-consumer'),240);
         footerIn(a);
       },
-      reveal:{2(ctx,els){
+      reveal:{1(ctx,els){els.forEach(el=>consumerIn($(el,'.world-consumer'),0));},2(ctx,els){
         els.forEach(el=>{
           const bridge=$(el,'.world-bridge');
           if(!bridge)return defaultReveal(ctx,el);
@@ -1036,7 +1107,8 @@
 
   function transitionFor(prev,next){
     if(!prev||!next||prev.id===next.id)return {type:'none'};
-    if(SCENES[next.id]?.custom)return {type:next.id==='tryb-teraz'&&prev.layout==='waiting'?'breakthrough':'wave',custom:true};
+    const custom=SCENES[next.id]?.custom;
+    if(typeof custom==='function'?custom(prev):custom)return {type:next.id==='tryb-teraz'&&prev.layout==='waiting'?'breakthrough':'wave',custom:true};
     return {type:themeKey(prev)!==themeKey(next)?'wave':'morph'};
   }
   function enter(slide,article,{play=false,source='jump',previous=null,index=0}={}){

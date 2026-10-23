@@ -2,7 +2,7 @@
 
 Prezentacja dla Uliany Jelonek i Joanny Wysockiej z Glovo.
 
-**23 slajdy. Cztery wartości z raportu. Scenariusz 15:15. Limit 18 minut.**
+**25 slajdów. Cztery wartości z raportu. Scenariusz 15:35. Limit 18 minut.**
 
 ## Uruchomienie
 
@@ -39,15 +39,15 @@ Treści, czasy, dane badania i notatki są w `slides.js`. Liczby wykresów zmien
 
 Źródła, podstawy badania, strony PDF oraz pochodzenie grafik opisano w `SOURCES.md`.
 
-Prezentację prowadzi jedna historia: **„Goście za 20 minut”**. Bohaterka dostaje wiadomość „Będziemy za 20 minut 😊”, otwiera prawie pustą lodówkę i potrzebuje napojów, przekąsek i czegoś słodkiego (czekolada). W aplikacji przechodzi cztery etapy: banner na spotkanie („Nie wiem, od czego zacząć.”), sponsorowane nachosy po wpisaniu „przekąski” („Gdzie są przekąski?”), wybór czekolady po packshocie, wariancie i cenie („Które kupić?”) oraz dip do nachosów przy koszyku („Nie szukałam, ale tego mi brakowało.”). Potem pada wynik 27%, nazwy formatów i wnioski, a finał to nakryty stół: „Marka dostała miejsce przy stole, bo pomogła go przygotować”.
+Prezentację prowadzi jedna historia: **„Goście za 20 minut”**. Bohaterka dostaje wiadomość „Będziemy za 20 minut 😊”, otwiera prawie pustą lodówkę (w środku tylko cytryna: „o-shit commerce”) i potrzebuje napojów, przekąsek i czegoś słodkiego (czekolada). W aplikacji przechodzi cztery etapy: banner na spotkanie („Nie wiem, od czego zacząć.”), sponsorowane nachosy po wpisaniu „przekąski” („Gdzie są przekąski?”), wybór czekolady po packshocie, wariancie i cenie („Które kupić?”) oraz dip do nachosów przy koszyku („Nie szukałam, ale tego mi brakowało.”). Potem pada wynik 27%, nazwy formatów i wnioski, a finał to nakryty stół: „Marka dostała miejsce przy stole, bo pomogła go przygotować”.
 
-Na slajdach 9–18 w prawym górnym rogu jest zegar opowieści: tarcza bez cyfr, jeden obrót to 20 minut do przyjścia gości. Zegar buduje napięcie; nie pokazuje i nie obiecuje czasu dostawy. Ekrany pokazują ilustracyjną „Aplikację szybkich dostaw” w neutralnych kolorach, bez logo i barw konkretnej platformy. Marki A–D, produkty i ceny są umowne. Scena nie jest wynikiem kampanii.
+Na slajdach 9–19 w prawym górnym rogu jest zegar opowieści: tarcza bez cyfr, jeden obrót to 20 minut do przyjścia gości. Zegar buduje napięcie; nie pokazuje i nie obiecuje czasu dostawy. Ekrany pokazują ilustracyjną „Aplikację szybkich dostaw” w neutralnych kolorach, bez logo i barw konkretnej platformy. Marki A–D, produkty i ceny są umowne. Scena nie jest wynikiem kampanii.
 
 Cytaty na slajdzie 2 to trzy sformułowania raportu (s. 22) oddające głos konsumenta, nie wypowiedzi konkretnych osób. CAWI N=1002 dotyczy całej próby mieszkańców miast 18+; raport nie podaje liczebności wszystkich podgrup q-commerce. Wynik 27% ma podstawę N=619 (osoby, które zmieniały plany lub zainteresowały się innym produktem) według s. 41 pełnego raportu; w publikacji jest na s. 15. Decision Lab N=11 opisuje ścieżki jakościowe, nie rozkład w populacji. Retail Media może współtworzyć wybór w aplikacji; sam zakup po reklamie nie jest dowodem jej przyczynowego wpływu.
 
 ## Ruch
 
-Animacje są w jednym, geometrycznym stylu fasetek serca konferencji (`motion.js`, `motion.css`, postać w `mascot.js`). Serce na okładce składa się z trójkątów. Na slajdach 3–4 loader zacina się, a postać „Homo Urgens” (dziewczynka low-poly) czeka coraz bardziej zniecierpliwiona; kliknięcie przy 99% rozbija ekran na czerwone fasetki. Ta sama postać jest bohaterką historii: przy lodówce patrzy na zegarek. W historii wiadomość poprzedzają kropki „pisze…”, lodówka otwiera się i zapala światło, wskazówka zegara przesuwa się z każdym slajdem, kursor klika banner, czekoladę i dip, a na stół spadają produkty, nachosy z fasetek. Finał wraca do loadera: 99% → 100%. Pozostałe slajdy są spokojne: nagłówki wyłaniają się wierszami, liczby metryk liczą się razem z pierścieniem, a ekran aplikacji płynnie przechodzi między slajdami.
+Animacje są w jednym, geometrycznym stylu fasetek serca konferencji (`motion.js`, `motion.css`, postać w `mascot.js`). Serce na okładce składa się z trójkątów. Na slajdach 3–4 loader zacina się, a postać „Homo Urgens” (dziewczynka low-poly) czeka coraz bardziej zniecierpliwiona; kliknięcie przy 99% rozbija ekran na czerwone fasetki. Ta sama postać jest bohaterką historii: przy lodówce patrzy na zegarek. W historii wiadomość poprzedzają kropki „pisze…”, lodówka otwiera się w ciemności i zapala światło, kamera wjeżdża do środka aż do cytryny („o-shit commerce”), a na następnym slajdzie odjeżdża z powrotem do bohaterki, wskazówka zegara przesuwa się z każdym slajdem, kursor klika banner, czekoladę i dip, a na stół spadają produkty, nachosy z fasetek. Finał wraca do loadera: 99% → 100%. W Prezentacjach Google oba przejścia lodówki są zwykłym przenikaniem. Pozostałe slajdy są spokojne: nagłówki wyłaniają się wierszami, liczby metryk liczą się razem z pierścieniem, a ekran aplikacji płynnie przechodzi między slajdami.
 
 Ruch nie zmienia czasów ani kolejności: nic nie przełącza się samo, a każde kliknięcie przerywa trwającą animację. Cofnięcie pokazuje od razu stan końcowy slajdu. W trybie edycji **E** animacji nie ma. Prezentacja nie ma dźwięku.
 
