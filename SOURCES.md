@@ -37,6 +37,8 @@ Serce konferencji (`conference-heart.png`) na okładce składa się w animacji z
 
 W eksporcie PPTX logo i serce w rogu to te same oryginalne pliki PNG. Serce na okładce pozostaje złożone z ośmiu wektorowych fasetek o tych samych wierzchołkach i kolorach; plik PPTX nie podmienia ich na PNG po złożeniu.
 
+Logo Glovo (okładka i slajd z podziękowaniem): plik PNG od użytkownika (23 października 2026), białe logo z żółtą pinezką. Załącznik dotarł bez przezroczystości, na tle #f7f7f7; tło usunięto, a logo przycięto. `assets/brand/glovo-logo-white.png` zachowuje oryginalne kolory. W `assets/brand/glovo-logo-black.png` biały napis zmieniono na czarny (#151515, kolor tekstu prezentacji), pinezka pozostała żółta.
+
 Podpisy prowadzących: [program organizatora](https://sprawnymarketing.pl/konferencja/poznan/), odczytany 8 października 2026. Zachowano nazwiska zgodne z aktualnym wpisem: Uliana Jelonek i Joanna Wysocka.
 
 ## Fonty

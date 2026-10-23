@@ -684,6 +684,7 @@
         rise($(a,'.cover-copy h1'),copy+100,{stagger:120,duration:950});
         rise($(a,'.cover-subtitle'),copy+420,{stagger:90});
         fadeUp($(a,'.speakers'),copy+760,{distance:18,duration:700});
+        fadeUp($(a,'.speakers-logo'),copy+880,{distance:18,duration:700});
         footerIn(a);
       },
       still(ctx){if(ctx.ambient)heartbeat($(ctx.article,'.cover-template'));}
@@ -1049,6 +1050,7 @@
         const chars=splitChars($(a,'.thanks-copy h1')),t0=dive+880;
         // Fully below the mask before they start, and faded while their tops cross its edge: no white slivers.
         chars.forEach((c,i)=>A(c,[{transform:'translateY(140%)',opacity:0},{opacity:0,offset:.2},{opacity:1,offset:.6},{transform:'none',opacity:1}],{duration:760,delay:t0+i*42,easing:EASE.expo}));
+        fadeUp($(a,'.thanks-speakers'),t0+chars.length*42+200,{distance:24,duration:800});
         later(t0+chars.length*42+380,()=>{
           const bang=$(a,'.thanks-bang');
           if(!bang)return;
