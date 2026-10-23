@@ -114,8 +114,7 @@
       .map(([name,color])=>'<span class="now-shop"><i style="background:'+color+'"></i><span data-edit>'+name+'</span></span>').join('')+'</div>'+
     reveal(2,'<div class="now-sponsor">'+ad+'<strong data-edit>Polecane na wieczór ze znajomymi</strong></div>')+'</div>';
 
-  // The needs behind 78%: four authored still lifes, no people. Each holds the same phone: the need gets settled now.
-  const place=(list,x,y,s=1,r=0)=>{const a=r*Math.PI/180,c=Math.cos(a),n=Math.sin(a);return list.map(([px,py])=>[x+s*(px*c-py*n),y+s*(px*n+py*c)]);};
+  // The needs behind 78%: four authored still lifes, no people.
   // A fruit, scoop or kernel, faceted like the story's lemon: an outer and an inner ring, lit from the top left.
   const gem=(cx,cy,rx,ry,[light,mid,dark],n=10)=>{
     const rim=arc(cx,cy,rx,ry,0,360,n).slice(0,-1),H=[cx-rx*.18,cy-ry*.2],inner=rim.map(([x,y])=>[H[0]+(x-H[0])*.56,H[1]+(y-H[1])*.56]);
@@ -123,9 +122,6 @@
     const shade=(tri,i)=>{const x=(tri.reduce((s,p)=>s+p[0],0)/3-cx)/rx,y=(tri.reduce((s,p)=>s+p[1],0)/3-cy)/ry;
       const b=Math.min(1,Math.max(0,.5+.5*(-.55*x-.83*y)*1.25+(i%2?.05:-.05)));return b<.5?mix(dark,mid,b*2):mix(mid,light,(b-.5)*2);};
     return rim.flatMap((p,i)=>{const k=(i+1)%n;return [[p,rim[k],inner[k]],[p,inner[k],inner[i]],[H,inner[i],inner[k]]];}).map((tri,i)=>{const fill=shade(tri,i);return poly(tri,fill,' stroke="'+fill+'" stroke-width=".6" stroke-linejoin="round"');}).join('');};
-  const phone=(x,y,r=0,s=.8)=>{const p=list=>place(list,x,y,s,r),[w1,w2]=p([[-6,14],[7,14]]);
-    return poly(p([[-26,-46],[-22,-50],[22,-50],[26,-46],[26,46],[22,50],[-22,50],[-26,46]]),'#151515')+poly(p([[-21,-41],[21,-41],[21,40],[-21,40]]),'#ee312f')+poly(p([[-21,-41],[21,-41],[-21,6]]),'#f25553')+
-      poly(p([[-17,-12],[-11,-12],[-8,-5],[13,-5],[9,8],[-6,8]]),'#fff')+ellipse(w1[0],w1[1],3.4*s,3.4*s,'#fff')+ellipse(w2[0],w2[1],3.4*s,3.4*s,'#fff');};
   const needScene=(bg,body)=>'<svg class="need-art" viewBox="0 0 400 280" aria-hidden="true">'+poly([[0,0],[400,0],[400,280],[0,280]],bg)+body+'</svg>';
   const shelf=y=>poly([[40,y],[360,y],[400,y+12],[0,y+12]],'#ede6d4')+poly([[0,y+12],[400,y+12],[400,y+20],[0,y+20]],'#d9ccb0');
   const needArt=[
@@ -136,7 +132,7 @@
       poly([[138,116],[138,64],[146,48],[164,48],[172,64],[172,116]],'#cf1723')+poly([[138,116],[138,64],[146,48],[155,48],[155,116]],'#ee312f')+poly([[147,34],[163,34],[164,48],[146,48]],'#151515')+
       poly([[214,116],[214,58],[226,40],[266,40],[278,58],[278,116]],'#efe4cc',' stroke="#c9b993" stroke-width="3" stroke-dasharray="9 7" stroke-linejoin="round"')+
       poly([[300,116],[346,116],[346,96],[300,104]],'#f4cf3c')+poly([[300,104],[346,96],[338,90]],'#fdeb98')+
-      gem(110,186,34,22,['#fdeb98','#f4cf3c','#cf980c'],12)+phone(300,166,-8)+
+      gem(110,186,34,22,['#fdeb98','#f4cf3c','#cf980c'],12)+
       poly([[24,238],[376,238],[384,280],[16,280]],'#e9e0cb')+poly([[24,238],[376,238],[376,244],[24,244]],'#fbf6ea')+poly([[170,256],[230,256],[226,264],[174,264]],'#cfc2a6')),
     // The pharmacy: water, a bag with the green cross (the pharmacy's colour on slide 6), pills and a thermometer.
     needScene('#e6eef0',poly([[250,0],[320,0],[240,170],[170,170]],'#eef4f6')+poly([[0,178],[400,160],[400,280],[0,280]],'#d6a774')+poly([[0,178],[400,160],[400,168],[0,186]],'#e4bb8c')+
@@ -145,7 +141,7 @@
       poly([[158,104],[176,104],[176,150],[158,150]],'#2f7d5b')+poly([[144,118],[190,118],[190,136],[144,136]],'#2f7d5b')+
       poly([[236,206],[318,194],[332,232],[250,244]],'#d3d8de')+poly([[236,206],[318,194],[325,213],[243,225]],'#e6e9ed')+
       [0,1,2,3].flatMap(i=>[0,1].map(j=>{const s=(i+.5)/4,t=(j+.5)/2;return ellipse(236+82*s+14*t,206-12*s+38*t,8,6,'#fff',' stroke="#bcc2ca" stroke-width="1.5"');})).join('')+
-      poly([[48,238],[176,214],[178,222],[50,246]],'#fff')+poly([[48,238],[64,235],[66,243],[50,246]],'#ee312f')+poly([[136,222],[160,218],[162,226],[138,230]],'#cfd6dd')+phone(354,150,10)),
+      poly([[48,238],[176,214],[178,222],[50,246]],'#fff')+poly([[48,238],[64,235],[66,243],[50,246]],'#ee312f')+poly([[136,222],[160,218],[162,226],[138,230]],'#cfd6dd')),
     // Everyday groceries: a paper bag with a baguette, greens and milk; an apple on the counter.
     needScene('#f3efe8',[70,140].map(y=>poly([[0,y],[400,y],[400,y+3],[0,y+3]],'#e2dacd')).join('')+[80,160,240,320].map(x=>poly([[x,0],[x+3,0],[x+3,200],[x,200]],'#e2dacd')).join('')+
       poly([[0,200],[400,200],[400,280],[0,280]],'#e9e0cb')+poly([[0,200],[400,200],[400,208],[0,208]],'#fbf6ea')+ellipse(186,228,96,10,'#d9ccb0')+
@@ -153,17 +149,17 @@
       poly([[122,104],[96,40],[112,44],[134,100]],'#3f7a3a')+poly([[128,104],[124,28],[140,34],[138,102]],'#5a9b4c')+poly([[134,104],[156,50],[164,60],[142,104]],'#7cbb5f')+
       poly([[200,110],[200,54],[209,40],[223,40],[232,54],[232,110]],'#fff')+poly([[216,40],[223,40],[232,54],[232,110],[216,110]],'#eef1f4')+poly([[207,28],[225,28],[224,40],[208,40]],'#3a8fc2')+poly([[200,72],[232,72],[232,92],[200,92]],'#cfe3f1')+
       poly([[236,98],[268,110],[272,214],[244,226]],'#9c6438')+poly([[110,98],[236,98],[244,226],[102,226]],'#c8925e')+poly([[110,98],[236,98],[237,112],[109,112]],'#d8a774')+poly([[106,170],[240,170],[240,173],[106,173]],'#b47f4f')+
-      gem(306,206,26,24,['#ff6b5e','#ee312f','#95161d'])+poly([[305,184],[309,184],[311,170],[307,170]],'#5a3321')+poly([[310,176],[326,166],[318,180]],'#5a9b4c')+phone(352,166,10)),
-    // A sudden craving: a night window, popcorn and ice cream, a phone glowing on the table.
+      gem(306,206,26,24,['#ff6b5e','#ee312f','#95161d'])+poly([[305,184],[309,184],[311,170],[307,170]],'#5a3321')+poly([[310,176],[326,166],[318,180]],'#5a9b4c')),
+    // A sudden craving: a night window, popcorn and ice cream on the table.
     needScene('#1d2240',poly([[28,18],[206,18],[206,150],[28,150]],'#2d3566')+poly([[38,28],[196,28],[196,140],[38,140]],'#28306a')+ellipse(150,62,20,20,'#fbe78a')+ellipse(160,56,18,18,'#28306a')+
       poly([[38,140],[38,110],[62,110],[62,96],[86,96],[86,118],[112,118],[112,88],[134,88],[134,114],[160,114],[160,102],[196,102],[196,140]],'#161b3a')+
       [[46,118],[70,104],[74,122],[94,126],[120,96],[124,108],[142,122],[170,110],[182,120]].map(([x,y])=>poly([[x,y],[x+6,y],[x+6,y+6],[x,y+6]],'#ffc244')).join('')+
       poly([[115,28],[119,28],[119,140],[115,140]],'#2d3566')+poly([[38,82],[196,82],[196,86],[38,86]],'#2d3566')+
-      poly([[0,196],[400,182],[400,280],[0,280]],'#5a3a2a')+poly([[0,196],[400,182],[400,190],[0,204]],'#6d4029')+ellipse(350,212,52,12,'#7a3328')+
+      poly([[0,196],[400,182],[400,280],[0,280]],'#5a3a2a')+poly([[0,196],[400,182],[400,190],[0,204]],'#6d4029')+
       [[86,118,'#fff6d6'],[104,110,'#f8e7b0'],[122,114,'#fff6d6'],[140,116,'#f8e7b0'],[96,124,'#f8e7b0'],[132,124,'#fff6d6'],[114,124,'#fff6d6']].map(([x,y,c])=>gem(x,y,12,10,['#fffdf4',c,'#e7cf8a'],7)).join('')+
       [0,1,2,3,4].map(i=>poly([[76+16*i,124],[92+16*i,124],[84+12.8*(i+1),206],[84+12.8*i,206]],i%2?'#fff':'#ee312f')).join('')+
       poly([[228,146],[300,146],[292,210],[236,210]],'#f6d2dc')+poly([[264,146],[300,146],[292,210],[264,210]],'#ecbccb')+poly([[228,146],[300,146],[299,156],[229,156]],'#ee312f')+
-      gem(250,140,22,16,['#fff3d6','#f6dfae','#d9b77a'],9)+gem(280,136,22,16,['#a5694a','#7a4627','#5d331c'],9)+poly([[286,122],[318,84],[324,88],[292,126]],'#c9ccd2')+phone(352,168,-10))
+      gem(250,140,22,16,['#fff3d6','#f6dfae','#d9b77a'],9)+gem(280,136,22,16,['#a5694a','#7a4627','#5d331c'],9)+poly([[286,122],[318,84],[324,88],[292,126]],'#c9ccd2'))
   ];
   const needs='<div class="needs-grid" data-move>'+['Brakujący produkt<br>spożywczy','Leki lub produkty<br>z apteki','Zwykłe zakupy<br>spożywcze','Produkty pod wpływem<br>chwilowej ochoty']
     .map((caption,i)=>'<figure class="need-card">'+needArt[i]+'<figcaption data-edit>'+caption+'</figcaption></figure>').join('')+'</div>';
