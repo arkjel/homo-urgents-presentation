@@ -147,6 +147,12 @@ dialog h2{font-size:30px;line-height:1.2;margin:12px 0 24px}
 .relevance-copy h2{font-size:72px;line-height:1.12;letter-spacing:-.03em}
 .relevance-line{display:block;width:260px;height:5px;background:var(--red);margin-top:43px;transform-origin:left;transform:scaleX(0);transition:transform .5s ease}
 .reveal.is-visible .relevance-line,.editing-text .relevance-line{transform:scaleX(1)}
+/* Needs behind 78%: the ring stays left, four needs fill the right half of slide 6's split. */
+.layout-needs .then-divider{height:740px}
+.needs-grid{position:absolute;left:1030px;top:175px;width:760px;display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.need-card{margin:0;border-radius:22px;overflow:hidden;background:var(--ink);box-shadow:0 18px 50px #0000000f}
+.need-art{display:block;width:100%;height:auto;transform-origin:0 0}
+.need-card figcaption{padding:20px 22px 24px;font-size:28px;line-height:1.2;font-weight:900;letter-spacing:-.01em;color:#fff}
 .phase-line{position:absolute;left:130px;right:130px;top:475px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:65px}
 .phase-line::after{content:"";position:absolute;left:0;right:0;top:215px;height:2px;background:#ddd;z-index:-1}
 .phase-number{font-size:84px;color:var(--red);font-weight:900;line-height:1;letter-spacing:-.05em}
@@ -208,12 +214,11 @@ dialog h2{font-size:30px;line-height:1.2;margin:12px 0 24px}
 .product-row .pack-jar{margin:8px 5px 0}
 .brand-a{background:#e2932b}.brand-b{background:#23305e}.brand-c{background:#2f7d5b}.brand-d{background:#7a3e22}
 /* Home screen: banner and categories. */
-.app-banner{position:relative;height:232px;border-radius:16px;padding:18px 22px;background:linear-gradient(120deg,#ee312f,#b81d1f);color:#fff;overflow:hidden;margin-bottom:18px}
-.app-banner .ad-disclosure{color:#ffffffc8}
-.app-banner strong{display:block;font-size:31px;line-height:1.1;margin-top:8px;letter-spacing:-.02em;max-width:330px}
-.app-banner>span:nth-of-type(2){display:block;font-size:20px;line-height:1.25;margin-top:8px;max-width:250px}
-.banner-cta{position:absolute;left:22px;bottom:18px;padding:9px 16px;border-radius:20px;background:#fff;color:#b8201e;font-size:19px;font-weight:900}
-.banner-art{position:absolute;right:10px;top:22px;width:190px;height:152px}
+.app-banner{position:relative;display:flex;flex-direction:column;align-items:flex-start;height:256px;border-radius:16px;padding:20px 24px 22px;background:linear-gradient(120deg,#ee312f,#b81d1f);color:#fff;overflow:hidden;margin-bottom:18px}
+.app-banner .ad-disclosure{color:#ffffffc8;font-size:14px}
+.app-banner strong{display:block;font-size:40px;line-height:1.04;font-weight:900;margin-top:14px;letter-spacing:-.025em;max-width:290px;text-shadow:0 2px 0 #0000002e}
+.banner-cta{margin-top:auto;padding:9px 18px;border-radius:20px;background:#fff;color:#b8201e;font-size:17px;font-weight:900}
+.banner-art{position:absolute;right:8px;bottom:8px;width:240px;height:210px}
 .app-section{font-size:20px;font-weight:700;color:#777;margin-bottom:10px}
 .app-cats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .app-cat{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:19px;font-weight:700}

@@ -8,7 +8,7 @@ Materiał dostarczony przez użytkownika: `PUBLIKACJA 6.10 INQ.pdf`, 26 stron, r
 |---|---|---|
 | 2 | 22 | Trzy zdania głosu konsumenta z raportu: „Pokaż mi coś, co rzeczywiście może mi się przydać.”, „Pomóż mi zdecydować.”, „Pomóż mi upewnić się i zakończyć zakup.” To sformułowania syntezy raportu, nie wypowiedzi konkretnych osób. Publikacja nie zawiera dosłownych cytatów z FGI. |
 | 6 | — | Schemat „kiedyś i teraz”: jeden sklep w okolicy kontra aplikacja szybkich dostaw. Bez danych o odległościach. |
-| 7 | 6 | 78% chce produktu/usługi wtedy, kiedy ich potrzebuje. |
+| 7 | 6 | 78% chce produktu/usługi wtedy, kiedy ich potrzebuje. Cztery karty obok (brakujący produkt spożywczy, leki lub produkty z apteki, zwykłe zakupy spożywcze, produkty pod wpływem chwilowej ochoty) to autorskie ilustracje przykładowych potrzeb, bez wartości. |
 | 8 | 5 | Homo Urgens jest trybem sytuacyjnym, nie trwałym segmentem lub generacją. |
 | 9–13 | — | Historia „Goście za 20 minut”: wiadomość, wnętrze lodówki z cytryną („o-shit commerce”), lodówka, dwa plany, potrzeba czekolady. Slajdy narracyjne. |
 | 14 | 11 | 55% zawsze lub często zna mniej więcej potrzebę, ale konkretny produkt wybiera podczas przeglądania aplikacji. Wykres „Kategoria: czekolada” (fraza „czekolada” wobec nazw marek i wariantów) odwzorowuje wykres dostarczony przez prowadzące; długości słupków odczytano z obrazu, bez wartości. Źródło danych do potwierdzenia. |
@@ -49,7 +49,7 @@ Historia „Goście za 20 minut”, ekrany aplikacji, marki A–D, produkty i ce
 
 Zegar opowieści (slajdy 9–18) jest tarczą bez cyfr; jeden obrót to 20 minut do przyjścia gości z wiadomości. Nie przedstawia czasu dostawy.
 
-Mapa „kiedyś”, lista sklepów „teraz”, powiadomienie, lodówka i jej wnętrze z cytryną, tabliczka czekolady, opakowania w aplikacji i nakryty stół są autorskimi elementami HTML/CSS i SVG (wyłącznie wielokąty i koła, żeby późniejszy eksport PPTX odwzorował je jako kształty).
+Mapa „kiedyś”, lista sklepów „teraz”, cztery sceny potrzeb przy 78% (lodówka, apteczka, torba z zakupami, wieczorna zachcianka), powiadomienie, lodówka i jej wnętrze z cytryną, tabliczka czekolady, opakowania w aplikacji i nakryty stół są autorskimi elementami HTML/CSS i SVG (wyłącznie wielokąty i koła, żeby późniejszy eksport PPTX odwzorował je jako kształty).
 
 Grafika `assets/images/party-groceries.png` powstała przy użyciu wbudowanego narzędzia imagegen. Zachowano przezroczystość. Nie przedstawia konkretnej marki ani rzeczywistego produktu. Grafika pozostaje opcjonalnym zasobem i nie jest wyświetlana na slajdach.
 

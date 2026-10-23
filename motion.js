@@ -740,6 +740,37 @@
         }
       }
     },
+    // 78% splits into four needs: once the ring is full, a facet leaves its tip for each card and the card unfolds from it.
+    'kontrola':{
+      enter(ctx){
+        const a=ctx.article,figure=$(a,'.relevance-metric .metric'),cards=$$(a,'.need-card');
+        headingIn(a);
+        A($(a,'.then-divider'),[{transform:'scaleY(0)'},{transform:'none'}],{duration:900,delay:200,easing:EASE.expo});
+        fadeUp(figure,240);
+        metricIn(ctx,figure,240);
+        cards.forEach((card,i)=>{
+          const start=1500+i*650,flight=560,land=start+flight-40;
+          A(card,[{clipPath:'polygon(0% 0%,0% 0%,0% 0%,0% 0%)'},{clipPath:'polygon(0% 0%,100% 0%,100% 0%,0% 100%)',offset:.5},{clipPath:'polygon(0% 0%,100% 0%,100% 100%,0% 100%)'}],{duration:720,delay:land,easing:EASE.out});
+          A($(card,'.need-art'),[{transform:'scale(1.12)'},{transform:'none'}],{duration:1200,delay:land,easing:EASE.expo});
+          rise($(card,'figcaption'),land+340);
+          later(start,()=>{
+            const disc=$(figure,'.metric-disc'),d=box(disc,a),value=Number($(figure,'.metric-value')?.dataset.value)||0;
+            const ang=(-90+3.6*value)*Math.PI/180,r=d.w*146/320,from=[d.cx+Math.cos(ang)*r,d.cy+Math.sin(ang)*r];
+            const c=box(card,a),to=[c.x+12,c.y+12],mid=[(from[0]+to[0])/2,Math.min(from[1],to[1])-170-i*25];
+            const at=t=>{const u=1-t;return [u*u*from[0]+2*u*t*mid[0]+t*t*to[0],u*u*from[1]+2*u*t*mid[1]+t*t*to[1]];};
+            A(disc,[{transform:'none'},{transform:'scale(1.03)',offset:.35},{transform:'none'}],{duration:420,easing:EASE.out});
+            const layer=fxLayer(a),spark=svg('polygon',{points:pts(triangle(22,rng(i+7))),fill:SHADES[i%3]},layer);
+            spark.style.transformBox='view-box';spark.style.transformOrigin='0 0';
+            spark.animate([0,.2,.4,.6,.8,1].map(t=>{const [x,y]=at(t);return {offset:t,opacity:t?1:0,transform:'translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) rotate('+Math.round(t*540)+'deg)'};}),
+              {duration:flight,easing:EASE.inOut,fill:'both'}).onfinish=()=>spark.remove();
+            // A short trail: small facets drop off the path behind the spark.
+            [.3,.55,.8].forEach((t,k)=>later(flight*t,()=>{const [x,y]=at(t);flyingFacet(layer,{x,y,size:6+k*2,fill:SHADES[(i+k)%3],dx:(k-1)*14,dy:26,spin:200,duration:520});}));
+            later(flight,()=>sparkle(a,to[0],to[1],{n:5,reach:[30,90],seed:i+3}));
+          });
+        });
+        footerIn(a);
+      }
+    },
     'goscie':{
       enter(ctx){
         const a=ctx.article,card=$(a,'.notification');

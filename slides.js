@@ -62,17 +62,32 @@
   const appHeader='<header class="shop-header"><span class="shop-wordmark" data-edit>Aplikacja szybkich dostaw</span><span class="shop-cart-icon" aria-hidden="true">▣</span></header>';
   const frame=(mode,body)=>'<section class="shopping-frame app-'+mode+'" data-move aria-label="Ilustracyjny ekran aplikacji szybkich dostaw">'+appHeader+'<div class="shop-body">'+body+'</div></section>';
   const top=(context,title)=>'<p class="shop-context" data-edit>'+context+'</p><h2 data-edit>'+title+'</h2>';
-  const nachosArt='<svg class="banner-art" viewBox="0 0 200 160" aria-hidden="true">'+ellipse(132,112,40,40,'#fff')+ellipse(132,112,30,30,'#95161d')+
-    poly([[38,46],[98,22],[82,96]],'#ffd77d')+poly([[70,74],[132,48],[112,122]],'#f2a93b')+poly([[18,96],[70,84],[50,146]],'#ffc85a')+poly([[148,18],[196,44],[160,82]],'#ffd77d')+'</svg>';
+  // Banner still life: lemonade, a can and a bag of nachos behind a half-open chocolate bar. Tilted parts are rotated point by point.
+  const turn=(list,cx,cy,deg)=>{const a=deg*Math.PI/180,c=Math.cos(a),s=Math.sin(a);return list.map(([x,y])=>[cx+(x-cx)*c-(y-cy)*s,cy+(x-cx)*s+(y-cy)*c]);};
+  const box=(x0,y0,x1,y1)=>[[x0,y0],[x1,y0],[x1,y1],[x0,y1]];
+  const bagSide=Array.from({length:11},(_,i)=>[142+i*6.8,i%2?31:26]);
+  const bag=(list,fill,extra)=>poly(turn(list,176,100,8),fill,extra);
+  const chocPart=(list,fill,extra)=>poly(turn(list,116,171,-7),fill,extra);
+  const nachosArt='<svg class="banner-art" viewBox="0 0 240 210" aria-hidden="true">'+ellipse(124,104,100,100,'#fff',' fill-opacity=".13"')+ellipse(122,200,104,8,'#5a0d10',' fill-opacity=".35"')+
+    bag([...bagSide,[212,60],[213,100],[212,140],...bagSide.map(([x,y])=>[x,y===26?172:167]).reverse(),[140,140],[139,100],[140,60]],'#e2932b')+
+    bag(box(142,31,210,40),'#c4741a')+bag(box(142,158,210,167),'#c4741a')+bag(box(154,52,198,63),'#fff')+
+    bag(arc(176,112,26,26,0,360,36).slice(0,-1),'#fff4d8')+bag([[160,122],[176,94],[188,120]],'#f6c445')+bag([[172,127],[190,104],[195,128]],'#e9a72f')+
+    poly(box(41,12,59,26),'#1f5c42')+poly([[43,26],[57,26],[57,44],[70,58],[73,70],[73,180],[69,186],[31,186],[27,180],[27,70],[30,58],[43,44]],'#ffe7a0')+
+    poly(box(33,74,39,170),'#fff',' fill-opacity=".55"')+poly(box(27,104,73,146),'#2f7d5b')+ellipse(50,125,11,11,'#f6d33c')+ellipse(50,125,6,6,'#fff3b0')+
+    ellipse(100,160,20,6,'#2c6f98')+poly(box(80,72,120,160),'#3a8fc2')+poly([[80,100],[120,92],[120,104],[80,112]],'#fff')+poly(box(86,80,91,152),'#fff',' fill-opacity=".35"')+
+    ellipse(100,72,20,6,'#dfe5ea')+ellipse(100,72,14,3.6,'#b9c2ca')+
+    chocPart(box(156,152,188,190),'#5a3321')+[[160,155],[175,155],[160,173],[175,173]].map(([x,y])=>chocPart(box(x,y,x+11,y+14),'#7a4a2e')).join('')+
+    chocPart([[146,150],[158,150],[154,157],[160,164],[154,171],[160,178],[155,185],[158,192],[146,192]],'#d6b15e')+
+    chocPart(box(44,150,150,192),'#23305e')+chocPart(box(44,158,150,163),'#d6b15e')+chocPart(box(56,172,112,181),'#fff')+'</svg>';
   const app={
     home:frame('home',top('Dzień dobry!','Czego dziś potrzebujesz?')+
       '<div class="shop-search"><span aria-hidden="true">⌕</span><span data-edit>Szukaj produktów</span></div>'+
-      '<div class="app-banner">'+ad+'<strong data-edit>Spotkanie ze znajomymi?</strong><span data-edit>Napoje i przekąski<br>w jednym miejscu</span><span class="banner-cta" data-edit>Zobacz produkty →</span>'+nachosArt+'</div>'+
+      '<div class="app-banner">'+ad+'<strong data-edit>Spotkanie ze znajomymi?</strong><span class="banner-cta" data-edit>Zobacz produkty →</span>'+nachosArt+'</div>'+
       '<p class="app-section" data-edit>Kategorie</p><div class="app-cats">'+
       [['bottle','Napoje'],['bag','Przekąski'],['bar','Słodycze'],['fruit','Owoce']].map(([kind,name])=>'<span class="app-cat"><span class="cat-icon">'+pack(kind)+'</span><span data-edit>'+name+'</span></span>').join('')+'</div>'),
     search:frame('search',top('Na spotkanie','Znajdź produkt')+
       '<div class="shop-search"><span aria-hidden="true">⌕</span><span class="type-query" data-edit>przekąski</span></div>'+
-      reveal(1,'<div class="relevant-offer">'+pack('bag','A')+'<div>'+ad+'<strong data-edit>Nachosy solone · marka A</strong><span data-edit>200 g · pasuje do zapytania</span></div><b data-edit>8,99 zł</b><span class="product-add" aria-hidden="true">+</span></div>'+
+      reveal(1,'<div class="relevant-offer">'+pack('bag','A')+'<div>'+ad+'<strong data-edit>Nachosy solone · marka A</strong><span data-edit>200 g</span></div><b data-edit>8,99 zł</b><span class="product-add" aria-hidden="true">+</span></div>'+
         row('bag','B','Chipsy paprykowe · marka B','150 g','6,99 zł')+row('bag','C','Paluszki solone · marka C','200 g','4,49 zł')+row('bag','D','Popcorn maślany · marka D','90 g','5,49 zł'),'shop-results')+
       '<div class="shop-bottom"><span data-edit>Szukam kategorii. Marka jest otwarta.</span></div>'),
     shelf:frame('shelf',top('Słodycze','Czekolady')+'<div class="app-grid">'+
@@ -98,6 +113,60 @@
     [['Market','#ee312f'],['Apteka','#2f7d5b'],['Drogeria','#6c72b3'],['Piekarnia','#e2932b'],['Kwiaciarnia','#d9668f'],['Napoje','#3a8fc2'],['Zoologiczny','#8a6d3b'],['Elektronika','#555']]
       .map(([name,color])=>'<span class="now-shop"><i style="background:'+color+'"></i><span data-edit>'+name+'</span></span>').join('')+'</div>'+
     reveal(2,'<div class="now-sponsor">'+ad+'<strong data-edit>Polecane na wieczór ze znajomymi</strong></div>')+'</div>';
+
+  // The needs behind 78%: four authored still lifes, no people. Each holds the same phone: the need gets settled now.
+  const place=(list,x,y,s=1,r=0)=>{const a=r*Math.PI/180,c=Math.cos(a),n=Math.sin(a);return list.map(([px,py])=>[x+s*(px*c-py*n),y+s*(px*n+py*c)]);};
+  // A fruit, scoop or kernel, faceted like the story's lemon: an outer and an inner ring, lit from the top left.
+  const gem=(cx,cy,rx,ry,[light,mid,dark],n=10)=>{
+    const rim=arc(cx,cy,rx,ry,0,360,n).slice(0,-1),H=[cx-rx*.18,cy-ry*.2],inner=rim.map(([x,y])=>[H[0]+(x-H[0])*.56,H[1]+(y-H[1])*.56]);
+    const rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),mix=(p,q,t)=>'#'+rgb(p).map((v,i)=>Math.round(v+(rgb(q)[i]-v)*t).toString(16).padStart(2,'0')).join('');
+    const shade=(tri,i)=>{const x=(tri.reduce((s,p)=>s+p[0],0)/3-cx)/rx,y=(tri.reduce((s,p)=>s+p[1],0)/3-cy)/ry;
+      const b=Math.min(1,Math.max(0,.5+.5*(-.55*x-.83*y)*1.25+(i%2?.05:-.05)));return b<.5?mix(dark,mid,b*2):mix(mid,light,(b-.5)*2);};
+    return rim.flatMap((p,i)=>{const k=(i+1)%n;return [[p,rim[k],inner[k]],[p,inner[k],inner[i]],[H,inner[i],inner[k]]];}).map((tri,i)=>{const fill=shade(tri,i);return poly(tri,fill,' stroke="'+fill+'" stroke-width=".6" stroke-linejoin="round"');}).join('');};
+  const phone=(x,y,r=0,s=.8)=>{const p=list=>place(list,x,y,s,r),[w1,w2]=p([[-6,14],[7,14]]);
+    return poly(p([[-26,-46],[-22,-50],[22,-50],[26,-46],[26,46],[22,50],[-22,50],[-26,46]]),'#151515')+poly(p([[-21,-41],[21,-41],[21,40],[-21,40]]),'#ee312f')+poly(p([[-21,-41],[21,-41],[-21,6]]),'#f25553')+
+      poly(p([[-17,-12],[-11,-12],[-8,-5],[13,-5],[9,8],[-6,8]]),'#fff')+ellipse(w1[0],w1[1],3.4*s,3.4*s,'#fff')+ellipse(w2[0],w2[1],3.4*s,3.4*s,'#fff');};
+  const needScene=(bg,body)=>'<svg class="need-art" viewBox="0 0 400 280" aria-hidden="true">'+poly([[0,0],[400,0],[400,280],[0,280]],bg)+body+'</svg>';
+  const shelf=y=>poly([[40,y],[360,y],[400,y+12],[0,y+12]],'#ede6d4')+poly([[0,y+12],[400,y+12],[400,y+20],[0,y+20]],'#d9ccb0');
+  const needArt=[
+    // The fridge: a jar, ketchup, the story's lemon, and only a dashed outline where the milk should be.
+    needScene('#f6eedc',poly([[0,0],[400,0],[360,22],[40,22]],'#fbf6ea')+poly([[0,0],[40,22],[40,252],[0,280]],'#ebe1ca')+poly([[400,0],[360,22],[360,252],[400,280]],'#e7ddc5')+
+      poly([[40,22],[360,22],[360,64],[40,64]],'#f9f3e5')+poly([[160,22],[240,22],[232,34],[168,34]],'#fffdf8')+shelf(112)+shelf(206)+
+      poly([[70,64],[118,64],[120,116],[68,116]],'#cfe0b4')+poly([[76,70],[88,70],[86,110],[74,110]],'#e6f0d8')+poly([[96,80],[112,84],[108,106],[94,100]],'#8fb36a')+poly([[72,50],[116,50],[118,64],[70,64]],'#ee312f')+poly([[72,50],[116,50],[116,55],[72,55]],'#f25553')+
+      poly([[138,116],[138,64],[146,48],[164,48],[172,64],[172,116]],'#cf1723')+poly([[138,116],[138,64],[146,48],[155,48],[155,116]],'#ee312f')+poly([[147,34],[163,34],[164,48],[146,48]],'#151515')+
+      poly([[214,116],[214,58],[226,40],[266,40],[278,58],[278,116]],'#efe4cc',' stroke="#c9b993" stroke-width="3" stroke-dasharray="9 7" stroke-linejoin="round"')+
+      poly([[300,116],[346,116],[346,96],[300,104]],'#f4cf3c')+poly([[300,104],[346,96],[338,90]],'#fdeb98')+
+      gem(110,186,34,22,['#fdeb98','#f4cf3c','#cf980c'],12)+phone(300,166,-8)+
+      poly([[24,238],[376,238],[384,280],[16,280]],'#e9e0cb')+poly([[24,238],[376,238],[376,244],[24,244]],'#fbf6ea')+poly([[170,256],[230,256],[226,264],[174,264]],'#cfc2a6')),
+    // The pharmacy: water, a bag with the green cross (the pharmacy's colour on slide 6), pills and a thermometer.
+    needScene('#e6eef0',poly([[250,0],[320,0],[240,170],[170,170]],'#eef4f6')+poly([[0,178],[400,160],[400,280],[0,280]],'#d6a774')+poly([[0,178],[400,160],[400,168],[0,186]],'#e4bb8c')+
+      poly([[40,92],[94,92],[88,190],[46,190]],'#d6e9f2')+poly([[43,122],[91,122],[88,190],[46,190]],'#a9d0e4')+poly([[50,98],[60,98],[58,182],[52,182]],'#f4fafd')+ellipse(67,92,27,6,'#eef6fa')+
+      poly([[214,74],[238,86],[242,170],[220,178]],'#dcdcd6')+poly([[118,74],[214,74],[220,178],[112,178]],'#fbfbf9')+poly([[118,74],[134,62],[150,74],[166,62],[182,74],[198,62],[214,74]],'#ecece6')+
+      poly([[158,104],[176,104],[176,150],[158,150]],'#2f7d5b')+poly([[144,118],[190,118],[190,136],[144,136]],'#2f7d5b')+
+      poly([[236,206],[318,194],[332,232],[250,244]],'#d3d8de')+poly([[236,206],[318,194],[325,213],[243,225]],'#e6e9ed')+
+      [0,1,2,3].flatMap(i=>[0,1].map(j=>{const s=(i+.5)/4,t=(j+.5)/2;return ellipse(236+82*s+14*t,206-12*s+38*t,8,6,'#fff',' stroke="#bcc2ca" stroke-width="1.5"');})).join('')+
+      poly([[48,238],[176,214],[178,222],[50,246]],'#fff')+poly([[48,238],[64,235],[66,243],[50,246]],'#ee312f')+poly([[136,222],[160,218],[162,226],[138,230]],'#cfd6dd')+phone(354,150,10)),
+    // Everyday groceries: a paper bag with a baguette, greens and milk; an apple on the counter.
+    needScene('#f3efe8',[70,140].map(y=>poly([[0,y],[400,y],[400,y+3],[0,y+3]],'#e2dacd')).join('')+[80,160,240,320].map(x=>poly([[x,0],[x+3,0],[x+3,200],[x,200]],'#e2dacd')).join('')+
+      poly([[0,200],[400,200],[400,280],[0,280]],'#e9e0cb')+poly([[0,200],[400,200],[400,208],[0,208]],'#fbf6ea')+ellipse(186,228,96,10,'#d9ccb0')+
+      poly([[150,104],[196,18],[214,26],[172,108]],'#e2a65a')+[.3,.5,.7].map(t=>{const x=161+44*t,y=106-84*t;return poly([[x-8,y+2],[x+6,y-6],[x+8,y-2],[x-6,y+6]],'#f6cf8f');}).join('')+
+      poly([[122,104],[96,40],[112,44],[134,100]],'#3f7a3a')+poly([[128,104],[124,28],[140,34],[138,102]],'#5a9b4c')+poly([[134,104],[156,50],[164,60],[142,104]],'#7cbb5f')+
+      poly([[200,110],[200,54],[209,40],[223,40],[232,54],[232,110]],'#fff')+poly([[216,40],[223,40],[232,54],[232,110],[216,110]],'#eef1f4')+poly([[207,28],[225,28],[224,40],[208,40]],'#3a8fc2')+poly([[200,72],[232,72],[232,92],[200,92]],'#cfe3f1')+
+      poly([[236,98],[268,110],[272,214],[244,226]],'#9c6438')+poly([[110,98],[236,98],[244,226],[102,226]],'#c8925e')+poly([[110,98],[236,98],[237,112],[109,112]],'#d8a774')+poly([[106,170],[240,170],[240,173],[106,173]],'#b47f4f')+
+      gem(306,206,26,24,['#ff6b5e','#ee312f','#95161d'])+poly([[305,184],[309,184],[311,170],[307,170]],'#5a3321')+poly([[310,176],[326,166],[318,180]],'#5a9b4c')+phone(352,166,10)),
+    // A sudden craving: a night window, popcorn and ice cream, a phone glowing on the table.
+    needScene('#1d2240',poly([[28,18],[206,18],[206,150],[28,150]],'#2d3566')+poly([[38,28],[196,28],[196,140],[38,140]],'#28306a')+ellipse(150,62,20,20,'#fbe78a')+ellipse(160,56,18,18,'#28306a')+
+      poly([[38,140],[38,110],[62,110],[62,96],[86,96],[86,118],[112,118],[112,88],[134,88],[134,114],[160,114],[160,102],[196,102],[196,140]],'#161b3a')+
+      [[46,118],[70,104],[74,122],[94,126],[120,96],[124,108],[142,122],[170,110],[182,120]].map(([x,y])=>poly([[x,y],[x+6,y],[x+6,y+6],[x,y+6]],'#ffc244')).join('')+
+      poly([[115,28],[119,28],[119,140],[115,140]],'#2d3566')+poly([[38,82],[196,82],[196,86],[38,86]],'#2d3566')+
+      poly([[0,196],[400,182],[400,280],[0,280]],'#5a3a2a')+poly([[0,196],[400,182],[400,190],[0,204]],'#6d4029')+ellipse(350,212,52,12,'#7a3328')+
+      [[86,118,'#fff6d6'],[104,110,'#f8e7b0'],[122,114,'#fff6d6'],[140,116,'#f8e7b0'],[96,124,'#f8e7b0'],[132,124,'#fff6d6'],[114,124,'#fff6d6']].map(([x,y,c])=>gem(x,y,12,10,['#fffdf4',c,'#e7cf8a'],7)).join('')+
+      [0,1,2,3,4].map(i=>poly([[76+16*i,124],[92+16*i,124],[84+12.8*(i+1),206],[84+12.8*i,206]],i%2?'#fff':'#ee312f')).join('')+
+      poly([[228,146],[300,146],[292,210],[236,210]],'#f6d2dc')+poly([[264,146],[300,146],[292,210],[264,210]],'#ecbccb')+poly([[228,146],[300,146],[299,156],[229,156]],'#ee312f')+
+      gem(250,140,22,16,['#fff3d6','#f6dfae','#d9b77a'],9)+gem(280,136,22,16,['#a5694a','#7a4627','#5d331c'],9)+poly([[286,122],[318,84],[324,88],[292,126]],'#c9ccd2')+phone(352,168,-10))
+  ];
+  const needs='<div class="needs-grid" data-move>'+['Brakujący produkt<br>spożywczy','Leki lub produkty<br>z apteki','Zwykłe zakupy<br>spożywcze','Produkty pod wpływem<br>chwilowej ochoty']
+    .map((caption,i)=>'<figure class="need-card">'+needArt[i]+'<figcaption data-edit>'+caption+'</figcaption></figure>').join('')+'</div>';
 
   // The finale: a laid table in the conference heart's facet language.
   const nachos=[[[600,206],[652,130],[690,200]],[[640,200],[700,118],[742,196]],[[690,204],[758,134],[790,206]],[[742,206],[800,150],[836,210]],[[566,212],[598,160],[632,214]],[[620,176],[676,150],[650,214]],[[700,170],[742,150],[728,214]],[[760,180],[812,176],[790,214]]];
@@ -164,7 +233,7 @@
       '<i class="then-divider" aria-hidden="true"></i><section class="then-col" data-move><p class="kicker" data-edit>Kiedyś</p><h2 data-edit>Jeden sklep<br>w okolicy.</h2><p class="then-caption" data-edit>W promieniu kilku kilometrów.<br>Otwarty w swoich godzinach.</p>'+thenMap+'</section>'+
       reveal(1,'<section class="now-col" data-move><p class="kicker" data-edit>Teraz</p><h2 data-edit>Aplikacja<br>szybkich dostaw.</h2><p class="then-caption" data-edit>Wiele sklepów w jednym telefonie.<br>Zakupy wtedy, kiedy pojawia się potrzeba.</p>'+nowApp+'</section>')+
       reveal(2,'<p class="now-plus" data-edit>+ marka w chwili wyboru</p>')},
-    {id:'kontrola',title:'Potrzeba nie może czekać',layout:'relevance',theme:'light',seconds:50,reveals:1,metrics:[78],speaker:'Uliana',source:inquiry,notes:'78% chce mieć produkt lub usługę wtedy, kiedy ich potrzebuje. To kontekst dla Retail Media: marka ma szansę pojawić się, gdy konsument szuka rozwiązania swojej aktywnej potrzeby. Odsłoń rolę komunikacji onsite. Ta liczba opisuje oczekiwanie wobec dostępności, nie wpływ reklamy.',html:heading('Potrzeba nie może<br>czekać.')+'<div class="relevance-metric">'+metric(78,'Chce produktu lub usługi<br>wtedy, kiedy ich potrzebuje')+'</div>'+reveal(1,'<section class="relevance-copy" data-move><p class="kicker" data-edit>Rola Retail Media</p><h2 data-edit>Pokazać produkt<br>w momencie<br><span class="red-text">potrzeby.</span></h2><span class="relevance-line" aria-hidden="true"></span></section>')},
+    {id:'kontrola',title:'Potrzeba nie może czekać',layout:'needs',theme:'light',textVersion:2,seconds:50,reveals:0,metrics:[78],speaker:'Uliana',source:inquiry,notes:'78% chce mieć produkt lub usługę wtedy, kiedy ich potrzebuje. Po doliczeniu do 78% same, bez klikania, pojawiają się cztery przykłady takich potrzeb: brakujący produkt spożywczy, leki lub produkty z apteki, zwykłe zakupy spożywcze i produkty pod wpływem chwilowej ochoty. Karty są ilustracjami, nie danymi. To kontekst dla Retail Media: marka ma szansę pojawić się, gdy konsument szuka rozwiązania swojej aktywnej potrzeby. Powiedz: „Rola Retail Media to pokazać produkt w momencie potrzeby”. Ta liczba opisuje oczekiwanie wobec dostępności, nie wpływ reklamy.',html:heading('Potrzeba nie<br>może czekać.')+'<i class="then-divider" aria-hidden="true"></i><div class="relevance-metric">'+metric(78,'Chce produktu lub usługi<br>wtedy, kiedy ich potrzebuje')+'</div>'+needs},
     {id:'tryb-sytuacyjny',title:'Każdy z nas bywa Homo Urgens',layout:'mechanism',theme:'dark',textVersion:2,seconds:40,reveals:1,speaker:'Uliana',source:inquiry,notes:'Tytuł mówi o pokoleniu, ale badanie nie wyodrębnia generacji. Homo Urgens jest sytuacyjnym trybem działania. Ta sama osoba może działać inaczej zależnie od zadania. Aktywna potrzeba i ograniczenie zasobów uruchamiają ten tryb. Przejście: „Pokażemy to na jednej historii”.',html:heading('Każdy z nas bywa<br>Homo Urgens')+'<div class="mechanism-line"><p data-edit>Potrzeba</p>'+reveal(1,'<span class="mechanism-plus" aria-hidden="true">+</span><p data-edit>Brak czasu</p>')+reveal(1,'<span class="mode-result" data-edit>= TRYB: TERAZ</span>')+'</div>'},
     {id:'goscie',title:'Będziemy za 20 minut',layout:'message',theme:'dark',seconds:25,reveals:1,clock:0,speaker:'Uliana',notes:'Zaczyna się historia. Bohaterka dostaje wiadomość: znajomi będą za 20 minut. Zegar w rogu będzie nam towarzyszył do końca zakupów. To element opowieści, nie czas dostawy. Odsłoń pytanie: „A w lodówce?”. Następne kliknięcie: wjeżdżamy do lodówki.',html:'<p class="kicker message-kicker" data-edit>Zakupowy thriller</p><div class="notification" data-move><div class="notif-top"><span class="notif-icon" aria-hidden="true"><svg viewBox="0 0 40 40">'+poly([[6,8],[34,8],[34,28],[18,28],[10,35],[11,28],[6,28]],'#fff')+'</svg></span><span class="notif-app" data-edit>Znajomi</span><span class="notif-time" data-edit>teraz</span></div><p class="notif-text" data-edit>Będziemy za 20 minut 😊</p></div>'+reveal(1,'<p class="message-twist" data-edit>A w lodówce?</p>')},
     {id:'pusta-lodowka',title:'o-shit commerce',layout:'fridge-inside',theme:'light',seconds:10,reveals:0,clock:1,speaker:'Uliana',notes:'O-shit commerce: goście za 20 minut, a w lodówce tylko cytryna. Krótka pauza na reakcję sali. To moment, w którym zaczyna się pilna potrzeba. Kliknięcie: kamera odjeżdża od lodówki i widzimy bohaterkę.',html:'<div class="inside-scene">'+fridgeInside()+'</div><h1 class="inside-title" data-edit>o-shit commerce</h1>'},
