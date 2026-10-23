@@ -61,7 +61,7 @@ Prompt:
 
 ## Ruch i postać
 
-Postać „Homo Urgens” (dziewczynka w czerwonej sukience, włosy do ramion) jest autorską grafiką SVG w stylu low-poly serca. Nie przedstawia konkretnej osoby. Występuje przy loaderze (slajdy 3–5), jako bohaterka historii przy lodówce (slajd 10) i w finale (slajd 23). Tła z fasetek, mozaika przejść, konfetti i kursor w scenie zakupowej są generowane w kodzie. Prezentacja nie używa dźwięku ani zewnętrznych bibliotek animacji.
+Postać „Homo Urgens” (dziewczynka w czerwonej sukience, włosy do ramion) jest autorską grafiką SVG w stylu low-poly serca. Nie przedstawia konkretnej osoby. Występuje przy loaderze (slajdy 3–5), jako bohaterka historii przy lodówce (slajd 10) i w finale (slajd 23). Samochód z gośćmi na slajdzie 12 to również autorska grafika SVG low-poly; goście nie przedstawiają konkretnych osób. Tła z fasetek, mozaika przejść, konfetti i kursor w scenie zakupowej są generowane w kodzie. Prezentacja nie używa dźwięku ani zewnętrznych bibliotek animacji.
 
 ## Kod
 

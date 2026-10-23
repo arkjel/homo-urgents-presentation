@@ -164,6 +164,49 @@
   const needs='<div class="needs-grid" data-move>'+['Brakujący produkt<br>spożywczy','Leki lub produkty<br>z apteki','Zwykłe zakupy<br>spożywcze','Produkty pod wpływem<br>chwilowej ochoty']
     .map((caption,i)=>'<figure class="need-card">'+needArt[i]+'<figcaption data-edit>'+caption+'</figcaption></figure>').join('')+'</div>';
 
+  // The guests on their way (slide 12): a faceted red estate car with three friends inside, lit from the top left like the heart.
+  // Its ground line (y = 176) lands on the top edge of the red band; motion.js spins the wheels, rocks the body and blows the exhaust.
+  const guestCar=(()=>{
+    const facet=(list,fill)=>poly(list,fill,' stroke="'+fill+'" stroke-width=".8" stroke-linejoin="round"');
+    const reds=['#7d1118','#95161d','#b51a22','#cf1723','#e0262a','#ee312f','#f25553','#f6716d'];
+    // The lower body: two strips of facets (beltline to crease, crease to sill), brighter on top and towards the rear.
+    const xs=[26,56,86,116,146,176,206,236,266,296,326,356,386,414,442];
+    const belt=[96,94,94,94,94,94,94,94,94,94,94,96.5,99,103,122],crease=[122,120,120,120,120,120,120,120,120,120,120,120,121,123,128],sill=[146,154,154,154,154,154,154,154,154,154,154,154,154,152,144];
+    const strip=(top,bottom,base)=>xs.slice(1).flatMap((x,i)=>{const a=[xs[i],top[i]],b=[x,top[i+1]],c=[x,bottom[i+1]],d=[xs[i],bottom[i]];return i%2?[[a,b,d],[b,c,d]]:[[a,b,c],[a,c,d]];})
+      .map((t,i)=>facet(t,reds[Math.max(0,Math.min(7,Math.round((base+.18*(1-(t[0][0]+t[1][0]+t[2][0])/1380)+(i%2?.07:-.07))*7)))])).join('');
+    // Friends in profile, facing the road; faces in the heroine's grey facets (mascot.js). The frame drawn after them hides any bounce past the glass.
+    const head=[[0,-14],[12.5,-9],[13,7],[0,14],[-13,7],[-12.5,-9]],skin=['#ececec','#dadada','#cecece','#e2e2e2','#f3f3f3','#fbfbfb'];
+    const guest=(cx,shirt,look)=>{const at=list=>list.map(([x,y])=>[cx+x,68+y]);
+      return '<g class="car-guest">'+poly(at([[-17,30],[-14,18],[-5,14],[6,14],[14,18],[17,30]]),shirt)+head.map((p,i)=>facet(at([p,head[(i+1)%6],[0,0]]),skin[i])).join('')+
+        facet(at([[13,-1],[17,4],[13,6]]),'#dadada')+poly(at([[5,-4],[8,-4],[8,0],[5,0]]),'#151515')+poly(at([[4,8],[10,7],[8,10]]),'#8e1219')+look.map(([list,fill])=>facet(at(list),fill)).join('')+'</g>';};
+    const wheel=cx=>{const rim=arc(cx,151,15,15,0,360,10);
+      return '<g class="car-wheel">'+poly(arc(cx,151,25,25,0,360,10).slice(0,-1),'#1f1f1f')+poly(arc(cx,151,19,19,0,360,10).slice(0,-1),'#3a3a3a')+
+        rim.slice(0,-1).map((p,i)=>facet([[cx,151],p,rim[i+1]],i%2?'#9aa1ab':'#e6e9ed')).join('')+poly(arc(cx,151,5,5,0,360,8).slice(0,-1),'#5a5a5a')+'</g>';};
+    // A static trail for Google Slides and still frames; in motion the same puffs leave the pipe one after another.
+    const puff=gem(0,0,10,8.5,['#fbfbfb','#e4e4e4','#c2c2c2'],7);
+    const exhaust='<g class="car-exhaust" data-x="12" data-y="152">'+[[-2,149,.55,.85],[-24,143,.8,.7],[-52,135,1.05,.5],[-86,126,1.3,.32],[-124,117,1.55,.16]]
+      .map(([x,y,s,o])=>'<g class="car-puff" transform="translate('+x+' '+y+') scale('+s+')" opacity="'+o+'">'+puff+'</g>').join('')+'</g>';
+    return '<svg class="car-art" viewBox="0 0 460 190" aria-hidden="true">'+ellipse(232,176,212,6,'#151515',' fill-opacity=".14" class="car-shadow"')+exhaust+
+      '<g class="car-body">'+poly([[30,94],[40,50],[52,40],[262,40],[326,94]],'#9fc3db')+
+        guest(86,'#e9a72f',[[[[-14,-6],[-9,-6],[-11,5],[-14.5,3]],'#7a4627'],[[[-14,-6],[-11,-14],[0,-19],[10,-15],[14,-7]],'#2c6f98'],[[[-11,-14],[0,-19],[-2,-12]],'#3a8fc2'],[[[10,-9],[25,-6],[24,-3],[12,-5]],'#1f5577']])+
+        guest(161,'#2f7d5b',[[[[-14,-9],[-5,-17],[-1,-6],[-5,17],[-16,19]],'#c9922f'],[[[-5,-17],[6,-18],[14,-10],[4,-8],[-1,-6]],'#e0b04f'],[[[12,16],[18,13],[28,27],[22,29]],'#2f7d5b']])+
+        guest(244,'#3a3a3a',[[[[-13.5,-8],[-5,-16],[-3,-5],[-13,5]],'#2b2b2b'],[[[-5,-16],[6,-17],[13.5,-9],[3,-8],[-3,-5]],'#3d3d3d']])+
+        // The passenger waves inside her window; it turns about the elbow below the sill, and the frame drawn after it keeps the hand in the glass.
+        '<g class="car-arm" data-pivot="186,96">'+facet([[181,98],[186,98],[187,69],[183,69]],'#2f7d5b')+facet([[186,98],[191,98],[191,69],[187,69]],'#276b4d')+
+          facet([[182,69],[187,69],[187,57],[184,57],[181,62]],'#dadada')+facet([[187,69],[192,69],[194,62],[192,57],[187,57]],'#c4c4c4')+
+          facet([[182.5,58],[183.5,51],[185.5,57]],'#cecece')+facet([[185.5,57],[187.5,50],[189.5,57]],'#dadada')+facet([[189.5,58],[192,52],[193,59]],'#c4c4c4')+facet([[181,63],[176,58],[182,60]],'#cecece')+'</g>'+
+        poly([[270,72],[275,70],[285,90],[280,92]],'#151515')+poly([[52,58],[60,50],[52,90],[45,90]],'#fff',' fill-opacity=".35"')+poly([[266,50],[274,50],[300,82],[292,82]],'#fff',' fill-opacity=".35"')+
+        facet([[40,50],[52,40],[262,40],[271.5,48],[58,48],[48,54]],'#f25553')+facet([[52,40],[262,40],[150,45]],'#f6716d')+facet([[40,50],[48,54],[39,94],[30,94]],'#cf1723')+
+        facet(box(114,48,124,94),'#e0262a')+facet(box(198,48,208,94),'#e0262a')+facet([[258,48],[271.5,48],[326,94],[310.4,94]],'#f25553')+
+        strip(belt,crease,.62)+strip(crease,sill,.34)+
+        poly(box(119,96,121,152),'#95161d')+poly(box(203,96,205,153),'#95161d')+poly([[311,96],[313,96],[316,140],[314,140]],'#95161d')+
+        poly(box(176,101,190,105),'#e6e9ed')+poly(box(262,101,276,105),'#e6e9ed')+facet([[316,84],[330,80],[334,90],[320,94]],'#b51a22')+
+        poly(box(26,100,34,118),'#5d0f14')+poly(box(27,102,33,111),'#ff6b5e')+poly([[422,112],[437,119],[440,128],[424,124]],'#fbe78a')+poly([[426,114],[433,117.5],[428,118]],'#fff6d6')+
+        [112,350].map(cx=>poly([...arc(cx,151,32,32,180,360,10),[cx+32,154],[cx-32,154]],'#4a0c10')).join('')+
+        poly(box(12,149,32,155),'#8a8a8a')+ellipse(12,152,2.2,3,'#3a3a3a')+poly([[18,134],[30,134],[30,152],[20,150]],'#9aa1ab')+poly([[434,136],[447,138],[447,150],[432,153]],'#c9ccd2')+
+      '</g>'+wheel(112)+wheel(350)+'</svg>';
+  })();
+
   // The finale: a laid table in the conference heart's facet language.
   const nachos=[[[600,206],[652,130],[690,200]],[[640,200],[700,118],[742,196]],[[690,204],[758,134],[790,206]],[[742,206],[800,150],[836,210]],[[566,212],[598,160],[632,214]],[[620,176],[676,150],[650,214]],[[700,170],[742,150],[728,214]],[[760,180],[812,176],[790,214]]];
   const nachoShades=['#f6c453','#eeb33b','#f8d77a','#e7a12c'];
@@ -237,7 +280,7 @@
       reveal(1,'<p class="fridge-need" data-edit>Potrzebuję napojów, przekąsek<br>i czegoś słodkiego. <span class="red-text">Teraz.</span></p>')+
       '<div class="fridge" data-move aria-hidden="true"><i class="fridge-glow"></i><div class="fridge-body"><div class="fridge-inside"><i class="shelf s1"></i><i class="shelf s2"></i><i class="shelf s3"></i><span class="fridge-item item-jar"></span><span class="fridge-item item-lemon"></span><span class="fridge-item item-sauce"></span></div></div>'+
       '<svg class="fridge-door" viewBox="0 0 170 780">'+poly([[0,0],[170,70],[170,720],[0,780]],'#d4d4d9')+poly([[16,36],[154,94],[154,680],[16,738]],'#e9e9ed')+poly([[30,120],[140,160],[140,190],[30,152]],'#f4f4f6')+poly([[30,330],[140,350],[140,380],[30,362]],'#f4f4f6')+poly([[56,96],[72,98],[72,122],[56,118]],'#ee312f')+'</svg></div>'},
-    {id:'dwa-plany',title:'Dwa plany. Jeden moment.',layout:'worlds',theme:'dark',textVersion:3,seconds:50,reveals:2,clock:3,speaker:'Uliana',notes:'Marka ma swój plan: launch, awareness, zaangażowanie i główny produkt. Konsumentka też ma plan: goście za 20 minut i coś słodkiego na stół. Najpierw widać tylko markę. Pierwsze kliknięcie odsłania konsumentkę i jej plan, drugie: rolę Retail Media jako miejsca spotkania tych dwóch planów. Nie przeciwstawiamy celów marki klientce: szukamy momentu, w którym produkt marki pomaga wykonać jej zadanie.',html:'<div class="world-brand" data-move><p class="kicker" data-edit>Marka</p><h1 data-edit>Ma swój plan.</h1><div class="brand-goals"><p data-edit>Launch</p><p data-edit>Awareness</p><p data-edit>Zaangażowanie</p><p data-edit>Główny produkt</p></div><p class="world-quote" data-edit>Chce, żebyś wybrała jej produkt.</p></div>'+reveal(1,'<div class="world-consumer" data-move><p class="kicker" data-edit>Konsumentka</p><h1 data-edit>Też ma plan.</h1><p class="consumer-need" data-edit>Goście<br>za 20 minut.</p><p class="world-quote" data-edit>Potrzebuje czegoś słodkiego. <span class="red-text">TERAZ.</span></p></div>')+reveal(2,'<div class="world-bridge" data-move><span class="bridge-icon" aria-hidden="true">↔</span><h2 data-edit>Retail Media łączy te dwa plany.</h2></div>')},
+    {id:'dwa-plany',title:'Dwa plany. Jeden moment.',layout:'worlds',theme:'dark',textVersion:3,seconds:50,reveals:2,clock:3,speaker:'Uliana',notes:'Marka ma swój plan: launch, awareness, zaangażowanie i główny produkt. Konsumentka też ma plan: goście za 20 minut i coś słodkiego na stół. Najpierw widać tylko markę. Pierwsze kliknięcie odsłania konsumentkę i jej plan, drugie: rolę Retail Media jako miejsca spotkania tych dwóch planów. Nie przeciwstawiamy celów marki klientce: szukamy momentu, w którym produkt marki pomaga wykonać jej zadanie.',html:'<div class="world-brand" data-move><p class="kicker" data-edit>Marka</p><h1 data-edit>Ma swój plan.</h1><div class="brand-goals"><p data-edit>Launch</p><p data-edit>Awareness</p><p data-edit>Zaangażowanie</p><p data-edit>Główny produkt</p></div><p class="world-quote" data-edit>Chce, żebyś wybrała jej produkt.</p></div>'+reveal(1,'<div class="world-consumer" data-move><p class="kicker" data-edit>Konsumentka</p><h1 data-edit>Też ma plan.</h1><p class="consumer-need" data-edit>Goście<br>za 20 minut.</p><p class="world-quote" data-edit>Potrzebuje czegoś słodkiego. <span class="red-text">TERAZ.</span></p></div>')+reveal(2,'<div class="world-bridge" data-move><span class="bridge-icon" aria-hidden="true">↔</span><h2 data-edit>Retail Media łączy te dwa plany.</h2></div>')+reveal(1,'<div class="guest-car" data-move>'+guestCar+'</div>')},
     {id:'potrzeba-teraz',title:'Potrzebuję czekolady',layout:'scenario',theme:'light',seconds:40,reveals:1,clock:4,speaker:'Uliana',notes:'Coś słodkiego dla gości: czekolada. Bohaterka zna produkt, ale nie wybrała marki. Nie przypisujemy tej historii konkretnej osobie z badania. Odsłoń różnicę między znaną potrzebą a otwartym wyborem marki.',html:heading('Potrzebuję<br>czekolady.','Plan konsumentki')+'<p class="scenario-question" data-edit>Coś słodkiego dla gości. Teraz.</p>'+
       '<div class="hero-chocolate" data-move aria-hidden="true"><i class="choc-shadow"></i><span class="choc-piece p1"></span><span class="choc-piece p2"></span><div class="choc-pack"><svg class="choc-foil" viewBox="0 0 220 80">'+poly([[0,80],[0,34],[28,18],[46,36],[78,6],[104,30],[136,10],[162,34],[192,14],[220,30],[220,80]],'#c9ccd2')+poly([[0,80],[0,50],[30,36],[52,52],[84,26],[110,48],[140,30],[166,52],[196,36],[220,48],[220,80]],'#e8eaee')+'</svg><div class="choc-bar"><span class="choc-brand">?</span><span class="choc-label">CZEKOLADA</span></div></div></div>'+
       reveal(1,'<p class="scenario-answer" data-edit>Produkt znam.<br><span class="red-text">Marki jeszcze nie wybrałam.</span></p>')},

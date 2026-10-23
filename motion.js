@@ -567,6 +567,77 @@
     fadeUp($(consumer,'.consumer-need'),delay+380,{distance:18});
     fadeUp($(consumer,'.world-quote'),delay+560,{distance:12});
   }
+  // The guests' car stands still: the wheels spin, the body rides the bumps, the guests bob a beat later, exhaust trails behind.
+  // Export and editing keep the drawn car; there the static trail stands in for the puffs.
+  function carPivots(car){
+    $$(car,'.car-wheel').forEach(w=>{const b=w.getBBox();w.style.transformBox='view-box';w.style.transformOrigin=(b.x+b.width/2)+'px '+(b.y+b.height/2)+'px';});
+    const body=$(car,'.car-body'),arm=$(car,'.car-arm'),shadow=$(car,'.car-shadow');
+    if(body){body.style.transformBox='view-box';body.style.transformOrigin='232px 176px';}
+    if(arm){arm.style.transformBox='view-box';arm.style.transformOrigin=arm.dataset.pivot.split(',').map(v=>v+'px').join(' ');}
+    if(shadow){shadow.style.transformBox='fill-box';shadow.style.transformOrigin='center';}
+  }
+  function carLoop(car,delay=0,spinUp=0){
+    carPivots(car);
+    const run=delay+spinUp,turn=[{transform:'rotate(0deg)'},{transform:'rotate(360deg)'}];
+    $$(car,'.car-wheel').forEach(w=>{
+      if(spinUp)A(w,turn,{duration:spinUp,delay,easing:'cubic-bezier(.5,0,.75,.6)',fill:'none'});
+      A(w,turn,{duration:520,delay:run,iterations:Infinity,easing:'linear',fill:'none'});
+    });
+    A($(car,'.car-body'),[{transform:'none'},{transform:'translateY(-3px)',offset:.16},{transform:'none',offset:.34},{transform:'translateY(-1.5px)',offset:.6},{transform:'none',offset:.78},{transform:'none'}],
+      {duration:1100,delay:run,iterations:Infinity,easing:'ease-in-out',fill:'none'});
+    $$(car,'.car-guest').forEach((g,i)=>A(g,[{transform:'none'},{transform:'translateY(-2.5px)',offset:.24},{transform:'translateY(.5px)',offset:.42},{transform:'translateY(-1.5px)',offset:.68},{transform:'none',offset:.86},{transform:'none'}],
+      {duration:1100,delay:run+90+i*35,iterations:Infinity,easing:'ease-in-out',fill:'none'}));
+    A($(car,'.car-arm'),[{transform:'rotate(0deg)'},{transform:'rotate(-14deg)',offset:.09},{transform:'rotate(12deg)',offset:.19},{transform:'rotate(-14deg)',offset:.29},{transform:'rotate(12deg)',offset:.39},{transform:'rotate(-8deg)',offset:.48},{transform:'rotate(0deg)',offset:.56},{transform:'rotate(0deg)'}],
+      {duration:2600,delay:run+500,iterations:Infinity,easing:'ease-in-out',fill:'none'});
+    // Each puff leaves the pipe, grows, drifts back and up, and fades; they follow each other, so the stream never breaks.
+    const exhaust=$(car,'.car-exhaust'),puffs=$$(car,'.car-puff'),x=Number(exhaust?.dataset.x),y=Number(exhaust?.dataset.y),random=rng(17),life=1600;
+    puffs.forEach((puff,i)=>{
+      const rise=28+random()*22,spin=(random()<.5?-1:1)*(70+random()*80),at=(dx,dy,s,r)=>'translate('+(x+dx).toFixed(1)+'px,'+(y+dy).toFixed(1)+'px) rotate('+r.toFixed(0)+'deg) scale('+s+')';
+      puff.style.transformBox='view-box';puff.style.transformOrigin='0 0';
+      A(puff,[{transform:at(0,0,.25,0),opacity:0},{opacity:.9,offset:.06},{transform:at(-70,-rise*.3,.9,spin*.4),opacity:.7,offset:.35},{transform:at(-240,-rise,1.6,spin),opacity:0}],
+        {duration:life,delay:delay+i*life/puffs.length,iterations:Infinity,easing:'cubic-bezier(.3,.6,.5,1)'});
+    });
+  }
+  function exhaustBurst(car,delay){
+    const exhaust=$(car,'.car-exhaust'),puff=$(car,'.car-puff');
+    if(!exhaust||!puff)return;
+    const x=Number(exhaust.dataset.x),y=Number(exhaust.dataset.y);
+    [[-150,10,1.5,140],[-200,-30,1.9,-120],[-120,-60,1.3,160]].forEach(([dx,dy,s,r],i)=>{
+      const p=puff.cloneNode(true);
+      ['class','transform','opacity'].forEach(n=>p.removeAttribute(n));
+      p.style.transformBox='view-box';p.style.transformOrigin='0 0';exhaust.append(p);
+      const run=A(p,[{transform:'translate('+x+'px,'+y+'px) scale(.3)',opacity:0},{opacity:1,offset:.1},{transform:'translate('+(x+dx)+'px,'+(y+dy)+'px) rotate('+r+'deg) scale('+s+')',opacity:0}],{duration:900,delay:delay+i*60,easing:EASE.expo,fill:'both'});
+      run.onfinish=run.oncancel=()=>p.remove();
+    });
+  }
+  // Entry: the wheels pop in, the body builds itself from flying facets rear to front (like the heart), the guests get in,
+  // then the engine starts: the body squats, a burst of exhaust, the wheels spin up.
+  function carIn(car,delay){
+    carPivots(car);
+    const random=rng(23),start=delay+1700;
+    $$(car,'.car-wheel').forEach((w,i)=>A(w,[{transform:'scale(0)'},{transform:'none'}],{duration:700,delay:delay+i*90,easing:EASE.spring}));
+    A($(car,'.car-shadow'),[{opacity:0,transform:'scaleX(.3)'},{opacity:1,transform:'none'}],{duration:700,delay,easing:EASE.expo});
+    $$(car,'.car-body polygon').filter(p=>!p.closest('.car-guest,.car-arm')).forEach(p=>{
+      const b=p.getBBox(),ang=random()*Math.PI*2,d=90+random()*140;
+      p.style.transformBox='fill-box';p.style.transformOrigin='center';
+      A(p,[{opacity:0,transform:'translate('+(Math.cos(ang)*d).toFixed(1)+'px,'+(Math.sin(ang)*d-60).toFixed(1)+'px) rotate('+((random()-.5)*300).toFixed(0)+'deg) scale(.2)'},{opacity:1,transform:'none'}],
+        {duration:640,delay:delay+120+(b.x+b.width/2)/460*560+random()*140,easing:EASE.expo});
+    });
+    $$(car,'.car-guest').forEach((g,i)=>{g.style.transformBox='fill-box';g.style.transformOrigin='50% 100%';A(g,[{transform:'scale(0)'},{transform:'none'}],{duration:620,delay:delay+800+i*120,easing:EASE.spring});});
+    A($(car,'.car-arm'),[{transform:'rotate(-90deg) scale(0)'},{transform:'none'}],{duration:620,delay:delay+1100,easing:EASE.spring});
+    A($(car,'.car-body'),[{transform:'none'},{transform:'translateY(3px) scale(1.02,.94)',offset:.3},{transform:'translateY(-4px) scale(.99,1.03)',offset:.62},{transform:'none'}],{duration:560,delay:start,easing:EASE.out,fill:'none'});
+    exhaustBurst(car,start+80);
+    carLoop(car,start,800);
+  }
+  // Step 2: the band unrolls under the wheels; the car hops and lands on it. Translate and scale leave the loops' transforms alone.
+  function carLand(car,delay){
+    const hop=[{translate:'0 0'},{translate:'0 -14px',offset:.35,easing:'ease-in'},{translate:'0 0',offset:.6},{translate:'0 0'}];
+    [$(car,'.car-body'),...$$(car,'.car-wheel')].forEach(el=>A(el,hop,{duration:640,delay,easing:EASE.out,fill:'none'}));
+    A($(car,'.car-body'),[{scale:'1'},{scale:'1',offset:.58},{scale:'1.025 .94',offset:.7},{scale:'1'}],{duration:640,delay,easing:'ease-out',fill:'none'});
+    A($(car,'.car-shadow'),[{scale:'1',opacity:1},{scale:'.7',opacity:.5,offset:.35},{scale:'1',opacity:1,offset:.6},{scale:'1',opacity:1}],{duration:640,delay,fill:'none'});
+    exhaustBurst(car,delay+380);
+  }
+  function liveCar(ctx){const car=$(ctx.article,'.guest-car svg');return car&&ctx.ambient&&!ctx.capture?car:null;}
   // A product falls onto the slide and settles with a small squash.
   const DROP=[
     {transform:'translateY(-780px) scale(.96,1.06)',opacity:0,easing:'cubic-bezier(.5,0,.9,.55)'},
@@ -844,10 +915,12 @@
         rise($(brand,'h1'),220);
         $$(brand,'.brand-goals p').forEach((p,i)=>fadeUp(p,440+i*80,{distance:18}));
         fadeUp($(brand,'.world-quote'),780,{distance:12});
-        if(ctx.step>=1)consumerIn($(a,'.world-consumer'),240);
+        if(ctx.step>=1){consumerIn($(a,'.world-consumer'),240);const car=liveCar(ctx);if(car)carIn(car,890);}
         footerIn(a);
       },
-      reveal:{1(ctx,els){els.forEach(el=>consumerIn($(el,'.world-consumer'),0));},2(ctx,els){
+      still(ctx){const car=ctx.step>=1&&liveCar(ctx);if(car)carLoop(car);},
+      // The guests' car arrives with her plan and keeps going; on step 2 the band unrolls under its wheels as the road.
+      reveal:{1(ctx,els){els.forEach(el=>consumerIn($(el,'.world-consumer'),0));const car=liveCar(ctx);if(car)carIn(car,650);},2(ctx,els){
         els.forEach(el=>{
           const bridge=$(el,'.world-bridge');
           if(!bridge)return defaultReveal(ctx,el);
@@ -855,6 +928,8 @@
           fadeUp($(bridge,'h2'),260,{distance:12});
           A($(bridge,'.bridge-icon'),[{transform:'scale(.2)',opacity:0},{transform:'scale(1.4)',opacity:1,offset:.6},{transform:'none',opacity:1}],{duration:540,delay:300,easing:EASE.out});
         });
+        const car=liveCar(ctx);
+        if(car)carLand(car,300);
       }}
     },
     'potrzeba-teraz':{
