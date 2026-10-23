@@ -571,9 +571,9 @@
   // Export and editing keep the drawn car; there the static trail stands in for the puffs.
   function carPivots(car){
     $$(car,'.car-wheel').forEach(w=>{const b=w.getBBox();w.style.transformBox='view-box';w.style.transformOrigin=(b.x+b.width/2)+'px '+(b.y+b.height/2)+'px';});
-    const body=$(car,'.car-body'),arm=$(car,'.car-arm'),shadow=$(car,'.car-shadow');
-    if(body){body.style.transformBox='view-box';body.style.transformOrigin='232px 176px';}
-    if(arm){arm.style.transformBox='view-box';arm.style.transformOrigin=arm.dataset.pivot.split(',').map(v=>v+'px').join(' ');}
+    const body=$(car,'.car-body'),shadow=$(car,'.car-shadow');
+    if(body){const b=body.getBBox();body.style.transformBox='view-box';body.style.transformOrigin=(b.x+b.width/2)+'px '+(b.y+b.height)+'px';}
+    $$(car,'[data-pivot]').forEach(el=>{el.style.transformBox='view-box';el.style.transformOrigin=el.dataset.pivot.split(',').map(v=>v+'px').join(' ');});
     if(shadow){shadow.style.transformBox='fill-box';shadow.style.transformOrigin='center';}
   }
   function carLoop(car,delay=0,spinUp=0){
@@ -587,14 +587,12 @@
       {duration:1100,delay:run,iterations:Infinity,easing:'ease-in-out',fill:'none'});
     $$(car,'.car-guest').forEach((g,i)=>A(g,[{transform:'none'},{transform:'translateY(-2.5px)',offset:.24},{transform:'translateY(.5px)',offset:.42},{transform:'translateY(-1.5px)',offset:.68},{transform:'none',offset:.86},{transform:'none'}],
       {duration:1100,delay:run+90+i*35,iterations:Infinity,easing:'ease-in-out',fill:'none'}));
-    A($(car,'.car-arm'),[{transform:'rotate(0deg)'},{transform:'rotate(-14deg)',offset:.09},{transform:'rotate(12deg)',offset:.19},{transform:'rotate(-14deg)',offset:.29},{transform:'rotate(12deg)',offset:.39},{transform:'rotate(-8deg)',offset:.48},{transform:'rotate(0deg)',offset:.56},{transform:'rotate(0deg)'}],
-      {duration:2600,delay:run+500,iterations:Infinity,easing:'ease-in-out',fill:'none'});
     // Each puff leaves the pipe, grows, drifts back and up, and fades; they follow each other, so the stream never breaks.
     const exhaust=$(car,'.car-exhaust'),puffs=$$(car,'.car-puff'),x=Number(exhaust?.dataset.x),y=Number(exhaust?.dataset.y),random=rng(17),life=1600;
     puffs.forEach((puff,i)=>{
       const rise=28+random()*22,spin=(random()<.5?-1:1)*(70+random()*80),at=(dx,dy,s,r)=>'translate('+(x+dx).toFixed(1)+'px,'+(y+dy).toFixed(1)+'px) rotate('+r.toFixed(0)+'deg) scale('+s+')';
       puff.style.transformBox='view-box';puff.style.transformOrigin='0 0';
-      A(puff,[{transform:at(0,0,.25,0),opacity:0},{opacity:.9,offset:.06},{transform:at(-70,-rise*.3,.9,spin*.4),opacity:.7,offset:.35},{transform:at(-240,-rise,1.6,spin),opacity:0}],
+      A(puff,[{transform:at(0,0,.25,0),opacity:0},{opacity:.9,offset:.06},{transform:at(-70,-rise*.3,.9,spin*.4),opacity:.7,offset:.35},{transform:at(-200,-rise,1.6,spin),opacity:0}],
         {duration:life,delay:delay+i*life/puffs.length,iterations:Infinity,easing:'cubic-bezier(.3,.6,.5,1)'});
     });
   }
@@ -602,7 +600,7 @@
     const exhaust=$(car,'.car-exhaust'),puff=$(car,'.car-puff');
     if(!exhaust||!puff)return;
     const x=Number(exhaust.dataset.x),y=Number(exhaust.dataset.y);
-    [[-150,10,1.5,140],[-200,-30,1.9,-120],[-120,-60,1.3,160]].forEach(([dx,dy,s,r],i)=>{
+    [[-130,10,1.5,140],[-170,-30,1.9,-120],[-110,-60,1.3,160]].forEach(([dx,dy,s,r],i)=>{
       const p=puff.cloneNode(true);
       ['class','transform','opacity'].forEach(n=>p.removeAttribute(n));
       p.style.transformBox='view-box';p.style.transformOrigin='0 0';exhaust.append(p);
@@ -610,24 +608,43 @@
       run.onfinish=run.oncancel=()=>p.remove();
     });
   }
+  // The passenger in the back rolls her window down, leans out into the wind and beams. The individual rotate, scale and translate
+  // properties hold her pose; transform stays free for the bob, the sway and the flutter.
+  function carLean(car,delay){
+    const out=delay+650,pose={duration:750,delay:out,easing:EASE.spring,fill:'both'};
+    A($(car,'.car-pane'),[{transform:'none'},{transform:'scaleY(0)'}],{duration:700,delay,easing:EASE.inOut,fill:'both'});
+    A($(car,'.car-lean'),[{rotate:'0deg'},{rotate:'-12deg'}],pose);
+    A($(car,'.car-torso'),[{scale:'1 1'},{scale:'1 2.4'}],pose);
+    A($(car,'.car-head'),[{translate:'0 0'},{translate:'0 -19.6px'}],pose);
+    A($(car,'.car-hair'),[{rotate:'0deg'},{rotate:'70deg'}],{duration:600,delay:out+150,easing:EASE.out,fill:'both'});
+    A($(car,'.car-wind'),[{opacity:0},{opacity:1}],{duration:300,delay:out+250,fill:'both'});
+    A($(car,'.car-calm'),[{opacity:1},{opacity:0}],{duration:200,delay:out+300,fill:'both'});
+    A($(car,'.car-joy'),[{opacity:0},{opacity:1}],{duration:200,delay:out+300,fill:'both'});
+    A($(car,'.car-lean'),[{transform:'rotate(0deg)'},{transform:'rotate(-4deg)',offset:.4},{transform:'rotate(1.5deg)',offset:.75},{transform:'rotate(0deg)'}],{duration:1300,delay:out+800,iterations:Infinity,easing:'ease-in-out',fill:'none'});
+    A($(car,'.car-hair'),[{transform:'rotate(0deg) scaleX(1)'},{transform:'rotate(-7deg) scaleX(1.08)'},{transform:'rotate(4deg) scaleX(.96)'},{transform:'rotate(0deg) scaleX(1)'}],{duration:420,delay:out+700,iterations:Infinity,easing:'ease-in-out',fill:'none'});
+    $$(car,'.car-wind polygon').forEach((strand,i)=>{
+      strand.style.transformBox='fill-box';strand.style.transformOrigin='100% 50%';
+      A(strand,[{transform:'none'},{transform:'skewY(8deg) scaleX(1.12)'},{transform:'skewY(-6deg) scaleX(.94)'},{transform:'none'}],{duration:380+i*50,delay:out+400+i*70,iterations:Infinity,easing:'ease-in-out',fill:'none'});
+    });
+  }
   // Entry: the wheels pop in, the body builds itself from flying facets rear to front (like the heart), the guests get in,
-  // then the engine starts: the body squats, a burst of exhaust, the wheels spin up.
+  // then the engine starts: the body squats, a burst of exhaust, the wheels spin up; once under way, the passenger leans out.
   function carIn(car,delay){
     carPivots(car);
     const random=rng(23),start=delay+1700;
     $$(car,'.car-wheel').forEach((w,i)=>A(w,[{transform:'scale(0)'},{transform:'none'}],{duration:700,delay:delay+i*90,easing:EASE.spring}));
     A($(car,'.car-shadow'),[{opacity:0,transform:'scaleX(.3)'},{opacity:1,transform:'none'}],{duration:700,delay,easing:EASE.expo});
-    $$(car,'.car-body polygon').filter(p=>!p.closest('.car-guest,.car-arm')).forEach(p=>{
+    $$(car,'.car-body polygon').filter(p=>!p.closest('.car-guest')).forEach(p=>{
       const b=p.getBBox(),ang=random()*Math.PI*2,d=90+random()*140;
       p.style.transformBox='fill-box';p.style.transformOrigin='center';
       A(p,[{opacity:0,transform:'translate('+(Math.cos(ang)*d).toFixed(1)+'px,'+(Math.sin(ang)*d-60).toFixed(1)+'px) rotate('+((random()-.5)*300).toFixed(0)+'deg) scale(.2)'},{opacity:1,transform:'none'}],
-        {duration:640,delay:delay+120+(b.x+b.width/2)/460*560+random()*140,easing:EASE.expo});
+        {duration:640,delay:delay+120+(b.x+b.width/2)/(car.viewBox.baseVal.width||400)*560+random()*140,easing:EASE.expo});
     });
     $$(car,'.car-guest').forEach((g,i)=>{g.style.transformBox='fill-box';g.style.transformOrigin='50% 100%';A(g,[{transform:'scale(0)'},{transform:'none'}],{duration:620,delay:delay+800+i*120,easing:EASE.spring});});
-    A($(car,'.car-arm'),[{transform:'rotate(-90deg) scale(0)'},{transform:'none'}],{duration:620,delay:delay+1100,easing:EASE.spring});
     A($(car,'.car-body'),[{transform:'none'},{transform:'translateY(3px) scale(1.02,.94)',offset:.3},{transform:'translateY(-4px) scale(.99,1.03)',offset:.62},{transform:'none'}],{duration:560,delay:start,easing:EASE.out,fill:'none'});
     exhaustBurst(car,start+80);
     carLoop(car,start,800);
+    carLean(car,start+900);
   }
   // Step 2: the band unrolls under the wheels; the car hops and lands on it. Translate and scale leave the loops' transforms alone.
   function carLand(car,delay){
@@ -918,7 +935,7 @@
         if(ctx.step>=1){consumerIn($(a,'.world-consumer'),240);const car=liveCar(ctx);if(car)carIn(car,890);}
         footerIn(a);
       },
-      still(ctx){const car=ctx.step>=1&&liveCar(ctx);if(car)carLoop(car);},
+      still(ctx){const car=ctx.step>=1&&liveCar(ctx);if(car){carLoop(car);carLean(car,400);}},
       // The guests' car arrives with her plan and keeps going; on step 2 the band unrolls under its wheels as the road.
       reveal:{1(ctx,els){els.forEach(el=>consumerIn($(el,'.world-consumer'),0));const car=liveCar(ctx);if(car)carIn(car,650);},2(ctx,els){
         els.forEach(el=>{
@@ -1034,12 +1051,14 @@
         const a=ctx.article,art=$(a,'.table-art'),random=rng(27);
         headingIn(a);
         A($(art,'.table-top'),[{opacity:0,transform:'translateY(140px)'},{opacity:1,transform:'none'}],{duration:950,delay:200,easing:EASE.expo});
-        $$(art,'.table-item').forEach((g,i)=>A(g,[{opacity:0,transform:'translateY(-240px)'},{opacity:1,transform:'translateY(10px)',offset:.72},{opacity:1,transform:'none'}],{duration:720,delay:620+i*150,easing:'cubic-bezier(.3,0,.3,1)'}));
-        // Nachos land facet by facet, like the conference heart.
+        const items=$$(art,'.table-item'),step=95;
+        items.forEach((g,i)=>A(g,[{opacity:0,transform:'translateY(-240px)'},{opacity:1,transform:'translateY(10px)',offset:.72},{opacity:1,transform:'none'}],{duration:720,delay:620+i*step,easing:'cubic-bezier(.3,0,.3,1)'}));
+        // Nachos land facet by facet, like the conference heart, once their bowl is down.
+        const bowlDown=620+Math.max(0,items.findIndex(g=>g.matches('.table-bowl')))*step+520;
         $$(art,'.nacho').forEach((p,i)=>{
           p.style.transformBox='fill-box';p.style.transformOrigin='center';
           const ang=random()*Math.PI*2,d=500+random()*500;
-          A(p,[{transform:'translate('+(Math.cos(ang)*d).toFixed(0)+'px,'+(Math.sin(ang)*d-300).toFixed(0)+'px) rotate('+((random()-.5)*540).toFixed(0)+'deg) scale(.4)',opacity:0},{opacity:1,offset:.3},{transform:'none',opacity:1}],{duration:1000,delay:1150+i*70,easing:EASE.spring});
+          A(p,[{transform:'translate('+(Math.cos(ang)*d).toFixed(0)+'px,'+(Math.sin(ang)*d-300).toFixed(0)+'px) rotate('+((random()-.5)*540).toFixed(0)+'deg) scale(.4)',opacity:0},{opacity:1,offset:.3},{transform:'none',opacity:1}],{duration:1000,delay:bowlDown-250+i*60,easing:EASE.spring});
         });
         footerIn(a);
       },

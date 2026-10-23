@@ -164,65 +164,165 @@
   const needs='<div class="needs-grid" data-move>'+['Brakujący produkt<br>spożywczy','Leki lub produkty<br>z apteki','Zwykłe zakupy<br>spożywcze','Produkty pod wpływem<br>chwilowej ochoty']
     .map((caption,i)=>'<figure class="need-card">'+needArt[i]+'<figcaption data-edit>'+caption+'</figcaption></figure>').join('')+'</div>';
 
-  // The guests on their way (slide 12): a faceted red estate car with three friends inside, lit from the top left like the heart.
-  // Its ground line (y = 176) lands on the top edge of the red band; motion.js spins the wheels, rocks the body and blows the exhaust.
+  // The guests on their way (slide 12): a round little red car driving right, with two friends inside, in facets lit from the top left
+  // like the heart. A long hood in front, a short trunk behind. Its ground line (y = 176) lands on the top edge of the red band;
+  // motion.js spins the wheels, rocks the body and blows the exhaust.
   const guestCar=(()=>{
     const facet=(list,fill)=>poly(list,fill,' stroke="'+fill+'" stroke-width=".8" stroke-linejoin="round"');
     const reds=['#7d1118','#95161d','#b51a22','#cf1723','#e0262a','#ee312f','#f25553','#f6716d'];
-    // The lower body: two strips of facets (beltline to crease, crease to sill), brighter on top and towards the rear.
-    const xs=[26,56,86,116,146,176,206,236,266,296,326,356,386,414,442];
-    const belt=[96,94,94,94,94,94,94,94,94,94,94,96.5,99,103,122],crease=[122,120,120,120,120,120,120,120,120,120,120,120,121,123,128],sill=[146,154,154,154,154,154,154,154,154,154,154,154,154,152,144];
+    // The lower body, rounded at both ends: two strips of facets (beltline to crease, crease to sill), brighter on top and towards the light.
+    const xs=[30,36,50,72,96,120,144,168,192,216,240,264,288,312,336,356,368];
+    const belt=[110,94,83,79,78,78,78,78,78,78,78,78,78,78,79.5,84,96],crease=[116,110,108,108,108,108,108,108,108,108,108,108,108,108,108,110,118],sill=[141,148,151,151,151,151,151,151,151,151,151,151,151,151,151,147,137];
     const strip=(top,bottom,base)=>xs.slice(1).flatMap((x,i)=>{const a=[xs[i],top[i]],b=[x,top[i+1]],c=[x,bottom[i+1]],d=[xs[i],bottom[i]];return i%2?[[a,b,d],[b,c,d]]:[[a,b,c],[a,c,d]];})
-      .map((t,i)=>facet(t,reds[Math.max(0,Math.min(7,Math.round((base+.18*(1-(t[0][0]+t[1][0]+t[2][0])/1380)+(i%2?.07:-.07))*7)))])).join('');
-    // Friends in profile, facing the road; faces in the heroine's grey facets (mascot.js). The frame drawn after them hides any bounce past the glass.
+      .map((t,i)=>facet(t,reds[Math.max(0,Math.min(7,Math.round((base+.18*(1-(t[0][0]+t[1][0]+t[2][0])/1200)+(i%2?.07:-.07))*7)))])).join('');
+    // The domed cabin: its outline and the two windows inside it, point for point, so the frame between them is a ring of facets.
+    // The rear window slants down to the trunk; the windscreen curves down to the hood.
+    const rearOut=[[188.5,12],[160,12],[129,12.8],[108.2,16.5],[97.6,26.4],[89.8,46.9],[83,78]],rearWin=[[184,22],[160,22],[130,22],[114,25],[104,33],[97,48],[91,78]];
+    const frontOut=[[188.5,12],[210,12.2],[227.8,13.2],[246.2,20.2],[258.6,34.5],[267,55],[271.5,78]],frontWin=[[193,22],[210,22],[228,24],[241,31],[250,42],[256,58],[259,78]];
+    const ring=(out,win,fills)=>out.slice(1).map((p,i)=>facet([out[i],p,win[i+1],win[i]],fills[i])).join('');
+    // Friends in profile, facing the road; faces in the heroine's grey facets (mascot.js).
     const head=[[0,-14],[12.5,-9],[13,7],[0,14],[-13,7],[-12.5,-9]],skin=['#ececec','#dadada','#cecece','#e2e2e2','#f3f3f3','#fbfbfb'];
-    const guest=(cx,shirt,look)=>{const at=list=>list.map(([x,y])=>[cx+x,68+y]);
-      return '<g class="car-guest">'+poly(at([[-17,30],[-14,18],[-5,14],[6,14],[14,18],[17,30]]),shirt)+head.map((p,i)=>facet(at([p,head[(i+1)%6],[0,0]]),skin[i])).join('')+
-        facet(at([[13,-1],[17,4],[13,6]]),'#dadada')+poly(at([[5,-4],[8,-4],[8,0],[5,0]]),'#151515')+poly(at([[4,8],[10,7],[8,10]]),'#8e1219')+look.map(([list,fill])=>facet(at(list),fill)).join('')+'</g>';};
-    const wheel=cx=>{const rim=arc(cx,151,15,15,0,360,10);
-      return '<g class="car-wheel">'+poly(arc(cx,151,25,25,0,360,10).slice(0,-1),'#1f1f1f')+poly(arc(cx,151,19,19,0,360,10).slice(0,-1),'#3a3a3a')+
-        rim.slice(0,-1).map((p,i)=>facet([[cx,151],p,rim[i+1]],i%2?'#9aa1ab':'#e6e9ed')).join('')+poly(arc(cx,151,5,5,0,360,8).slice(0,-1),'#5a5a5a')+'</g>';};
+    const face=at=>head.map((p,i)=>facet(at([p,head[(i+1)%6],[0,0]]),skin[i])).join('')+facet(at([[13,-1],[17,4],[13,6]]),'#dadada');
+    const calm=at=>poly(at([[5,-4],[8,-4],[8,0],[5,0]]),'#151515')+poly(at([[4,8],[10,7],[8,10]]),'#8e1219');
+    // The driver sits in front, behind the frame (drawn after him), which hides any bounce past the glass.
+    const driver=(()=>{const at=list=>list.map(([x,y])=>[218+x,50+y]);
+      return '<g class="car-guest">'+poly(at([[-17,30],[-14,18],[-5,14],[6,14],[14,18],[17,30]]),'#e9a72f')+face(at)+calm(at)+
+        [[[[-14,-6],[-9,-6],[-11,5],[-14.5,3]],'#7a4627'],[[[-14,-6],[-11,-14],[0,-19],[10,-15],[14,-7]],'#2c6f98'],[[[-11,-14],[0,-19],[-2,-12]],'#3a8fc2'],[[[10,-9],[25,-6],[24,-3],[12,-5]],'#1f5577']]
+          .map(([list,fill])=>facet(at(list),fill)).join('')+'</g>';})();
+    // The passenger in the back is drawn over the frame: motion.js rolls her window down and she leans out into the wind, beaming.
+    // Her torso ends on the sill and stretches up from it; the long hair turns back in the wind; wind strands and the happy face wait hidden.
+    const rider=(()=>{const at=list=>list.map(([x,y])=>[140+x,50+y]);
+      return '<g class="car-guest car-rider"><g class="car-lean" data-pivot="140,78">'+
+        '<g class="car-torso" data-pivot="140,78">'+facet(at([[-17,28],[-15,18],[-6,14],[6,14],[15,18],[17,28]]),'#2f7d5b')+facet(at([[6,14],[15,18],[17,28],[4,28]]),'#276b4d')+'</g>'+
+        '<g class="car-head"><g class="car-wind" opacity="0">'+facet(at([[-11,-13],[-28,-19],[-46,-14],[-28,-9]]),'#e0b04f')+facet(at([[-14,-4],[-36,-6],[-54,0],[-34,2]]),'#c9922f')+facet(at([[-12,5],[-30,9],[-44,16],[-28,13]]),'#b07f26')+'</g>'+
+          '<g class="car-hair" data-pivot="131,48">'+facet(at([[-13,-2],[-5,0],[-5,17],[-16,19]]),'#b8862a')+'</g>'+face(at)+
+          facet(at([[-14,-9],[-5,-17],[-1,-6],[-6,4],[-13,6]]),'#c9922f')+facet(at([[-5,-17],[6,-18],[14,-10],[4,-8],[-1,-6]]),'#e0b04f')+
+          '<g class="car-calm">'+calm(at)+'</g><g class="car-joy" opacity="0">'+poly(at([[4,-2],[6.5,-6],[9,-2],[7.8,-1.2],[6.5,-3.6],[5.2,-1.2]]),'#151515')+
+          poly(at([[3,6],[11,5],[9.5,11],[5,11.5]]),'#8e1219')+poly(at([[5,10],[9,9.6],[8.5,11],[5.5,11.3]]),'#ff8a80')+ellipse(141,54,3.2,2,'#ff9a9a',' fill-opacity=".7"')+'</g>'+
+        '</g></g></g>';})();
+    // Big cartoon wheels; the rim's ten facets alternate, so it reads as five spokes and shows the spin.
+    const wheel=cx=>{const rim=arc(cx,145,19,19,0,360,10);
+      return '<g class="car-wheel">'+poly(arc(cx,145,31,31,0,360,16).slice(0,-1),'#1f1f1f')+poly(arc(cx,145,23,23,0,360,12).slice(0,-1),'#3a3a3a')+
+        rim.slice(0,-1).map((p,i)=>facet([[cx,145],p,rim[i+1]],i%2?'#9aa1ab':'#e6e9ed')).join('')+poly(arc(cx,145,6,6,0,360,8).slice(0,-1),'#c9ccd2')+ellipse(cx,145,2.5,2.5,'#7a7a7a')+'</g>';};
     // A static trail for Google Slides and still frames; in motion the same puffs leave the pipe one after another.
     const puff=gem(0,0,10,8.5,['#fbfbfb','#e4e4e4','#c2c2c2'],7);
-    const exhaust='<g class="car-exhaust" data-x="12" data-y="152">'+[[-2,149,.55,.85],[-24,143,.8,.7],[-52,135,1.05,.5],[-86,126,1.3,.32],[-124,117,1.55,.16]]
+    const exhaust='<g class="car-exhaust" data-x="14" data-y="150">'+[[0,147,.55,.85],[-22,141,.8,.7],[-50,133,1.05,.5],[-84,124,1.3,.32],[-122,115,1.55,.16]]
       .map(([x,y,s,o])=>'<g class="car-puff" transform="translate('+x+' '+y+') scale('+s+')" opacity="'+o+'">'+puff+'</g>').join('')+'</g>';
-    return '<svg class="car-art" viewBox="0 0 460 190" aria-hidden="true">'+ellipse(232,176,212,6,'#151515',' fill-opacity=".14" class="car-shadow"')+exhaust+
-      '<g class="car-body">'+poly([[30,94],[40,50],[52,40],[262,40],[326,94]],'#9fc3db')+
-        guest(86,'#e9a72f',[[[[-14,-6],[-9,-6],[-11,5],[-14.5,3]],'#7a4627'],[[[-14,-6],[-11,-14],[0,-19],[10,-15],[14,-7]],'#2c6f98'],[[[-11,-14],[0,-19],[-2,-12]],'#3a8fc2'],[[[10,-9],[25,-6],[24,-3],[12,-5]],'#1f5577']])+
-        guest(161,'#2f7d5b',[[[[-14,-9],[-5,-17],[-1,-6],[-5,17],[-16,19]],'#c9922f'],[[[-5,-17],[6,-18],[14,-10],[4,-8],[-1,-6]],'#e0b04f'],[[[12,16],[18,13],[28,27],[22,29]],'#2f7d5b']])+
-        guest(244,'#3a3a3a',[[[[-13.5,-8],[-5,-16],[-3,-5],[-13,5]],'#2b2b2b'],[[[-5,-16],[6,-17],[13.5,-9],[3,-8],[-3,-5]],'#3d3d3d']])+
-        // The passenger waves inside her window; it turns about the elbow below the sill, and the frame drawn after it keeps the hand in the glass.
-        '<g class="car-arm" data-pivot="186,96">'+facet([[181,98],[186,98],[187,69],[183,69]],'#2f7d5b')+facet([[186,98],[191,98],[191,69],[187,69]],'#276b4d')+
-          facet([[182,69],[187,69],[187,57],[184,57],[181,62]],'#dadada')+facet([[187,69],[192,69],[194,62],[192,57],[187,57]],'#c4c4c4')+
-          facet([[182.5,58],[183.5,51],[185.5,57]],'#cecece')+facet([[185.5,57],[187.5,50],[189.5,57]],'#dadada')+facet([[189.5,58],[192,52],[193,59]],'#c4c4c4')+facet([[181,63],[176,58],[182,60]],'#cecece')+'</g>'+
-        poly([[270,72],[275,70],[285,90],[280,92]],'#151515')+poly([[52,58],[60,50],[52,90],[45,90]],'#fff',' fill-opacity=".35"')+poly([[266,50],[274,50],[300,82],[292,82]],'#fff',' fill-opacity=".35"')+
-        facet([[40,50],[52,40],[262,40],[271.5,48],[58,48],[48,54]],'#f25553')+facet([[52,40],[262,40],[150,45]],'#f6716d')+facet([[40,50],[48,54],[39,94],[30,94]],'#cf1723')+
-        facet(box(114,48,124,94),'#e0262a')+facet(box(198,48,208,94),'#e0262a')+facet([[258,48],[271.5,48],[326,94],[310.4,94]],'#f25553')+
-        strip(belt,crease,.62)+strip(crease,sill,.34)+
-        poly(box(119,96,121,152),'#95161d')+poly(box(203,96,205,153),'#95161d')+poly([[311,96],[313,96],[316,140],[314,140]],'#95161d')+
-        poly(box(176,101,190,105),'#e6e9ed')+poly(box(262,101,276,105),'#e6e9ed')+facet([[316,84],[330,80],[334,90],[320,94]],'#b51a22')+
-        poly(box(26,100,34,118),'#5d0f14')+poly(box(27,102,33,111),'#ff6b5e')+poly([[422,112],[437,119],[440,128],[424,124]],'#fbe78a')+poly([[426,114],[433,117.5],[428,118]],'#fff6d6')+
-        [112,350].map(cx=>poly([...arc(cx,151,32,32,180,360,10),[cx+32,154],[cx-32,154]],'#4a0c10')).join('')+
-        poly(box(12,149,32,155),'#8a8a8a')+ellipse(12,152,2.2,3,'#3a3a3a')+poly([[18,134],[30,134],[30,152],[20,150]],'#9aa1ab')+poly([[434,136],[447,138],[447,150],[432,153]],'#c9ccd2')+
-      '</g>'+wheel(112)+wheel(350)+'</svg>';
+    return '<svg class="car-art" viewBox="0 0 400 190" aria-hidden="true">'+ellipse(199,176,185,6,'#151515',' fill-opacity=".14" class="car-shadow"')+exhaust+
+      '<g class="car-body">'+poly([...rearOut.slice().reverse(),...frontOut.slice(1)],'#9fc3db')+driver+
+        poly([[238,60],[243,58],[251,78],[246,80]],'#151515')+poly([[246,58],[252,56],[258,76],[252,78]],'#fff',' fill-opacity=".35"')+
+        ring(rearOut,rearWin,['#f6716d','#f25553','#ee312f','#e0262a','#cf1723','#b51a22'])+ring(frontOut,frontWin,['#f25553','#f6716d','#f25553','#ee312f','#e0262a','#cf1723'])+
+        facet([[193,22],[188.5,12],[184,22]],'#f25553')+facet(box(184,22,193,78),'#e0262a')+
+        strip(belt,crease,.62)+strip(crease,sill,.34)+poly([[44,89],[354,89],[355,91],[43,91]],'#ffc9c2')+
+        poly(box(106,79,108,150),'#95161d')+poly(box(187,79,189,151),'#95161d')+poly(box(264,79,266,150),'#95161d')+
+        poly(box(164,94,178,97),'#e6e9ed')+poly(box(200,94,214,97),'#e6e9ed')+ellipse(290,84,3,2.4,'#ff9f1c')+facet([[268,70],[280,66],[284,74],[272,78]],'#b51a22')+
+        poly([[36,102],[31,108],[31,118],[36,116]],'#5d0f14')+poly([[35,105],[32,109],[32,115],[35,114]],'#ff6b5e')+poly(box(364,101,370,114),'#fbe78a')+poly(box(365,102,368,106),'#fff6d6')+
+        // Fender flares in a lighter red around dark wheel arches, as on a classic cartoon car.
+        [91,299].map(cx=>poly([...arc(cx,145,45,45,180,360,14),[cx+45,151],[cx-45,151]],'#ff7b72')+poly([...arc(cx,145,37,37,180,360,14),[cx+37,151],[cx-37,151]],'#4a0c10')).join('')+
+        poly(box(14,147,30,153),'#8a8a8a')+ellipse(14,150,2,3,'#3a3a3a')+
+        [[22,42],[358,378]].map(([x0,x1])=>poly(box(x0,139,x1,151),'#2b2b2b')+poly(box(x0,136,x1,139.5),'#f4f4f4')).join('')+
+        // Her window pane, tinted with a glare, lies over her; it rolls down into the door from the sill.
+        rider+'<g class="car-pane" data-pivot="138,78">'+poly([...rearWin,[184,78]],'#e8f4fb',' fill-opacity=".25"')+poly([[170,30],[178,26],[166,70],[160,72]],'#fff',' fill-opacity=".4"')+'</g>'+
+      '</g>'+wheel(91)+wheel(299)+'</svg>';
   })();
 
-  // The finale: a laid table in the conference heart's facet language.
-  const nachos=[[[600,206],[652,130],[690,200]],[[640,200],[700,118],[742,196]],[[690,204],[758,134],[790,206]],[[742,206],[800,150],[836,210]],[[566,212],[598,160],[632,214]],[[620,176],[676,150],[650,214]],[[700,170],[742,150],[728,214]],[[760,180],[812,176],[790,214]]];
-  const nachoShades=['#f6c453','#eeb33b','#f8d77a','#e7a12c'];
-  const tableArt='<svg class="table-art" viewBox="0 0 1660 440" aria-hidden="true">'+
-    '<g class="table-top">'+poly([[110,170],[1550,170],[1660,340],[0,340]],'#c8925e')+poly([[0,340],[1660,340],[1660,382],[0,382]],'#9c6438')+
-      poly([[60,382],[112,382],[112,440],[60,440]],'#8a5631')+poly([[1548,382],[1600,382],[1600,440],[1548,440]],'#8a5631')+
-      poly([[560,170],[1100,170],[1180,340],[480,340]],'#fffaf2')+poly([[560,170],[590,170],[512,340],[480,340]],'#ee312f')+poly([[1070,170],[1100,170],[1180,340],[1148,340]],'#ee312f')+'</g>'+
-    '<g class="table-item">'+ellipse(300,262,124,34,'#fff')+ellipse(300,262,88,24,'#f1ece4')+ellipse(1380,262,124,34,'#fff')+ellipse(1380,262,88,24,'#f1ece4')+'</g>'+
-    '<g class="table-item">'+poly([[392,82],[488,82],[500,262],[380,262]],'#f3e2a0')+poly([[400,96],[420,96],[414,250],[392,250]],'#fbf1c8')+poly([[488,110],[530,124],[524,200],[494,214]],'#e9d48a')+ellipse(440,82,48,10,'#fff6d6')+'<circle cx="452" cy="150" r="22" fill="#f4d03f"/><circle cx="452" cy="150" r="14" fill="#fbe78a"/></g>'+
-    '<g class="table-item">'+poly(arc(700,212,150,92,0,180,24),'#cf1723')+ellipse(700,212,150,30,'#95161d')+'</g>'+
-    nachos.map((t,i)=>poly(t,nachoShades[i%4],' class="nacho"')).join('')+
-    '<g class="table-item">'+poly(arc(930,262,70,44,0,180,16),'#fff')+ellipse(930,262,70,16,'#ee312f')+poly([[904,258],[922,252],[916,266]],'#95161d')+poly([[940,256],[958,262],[944,268]],'#95161d')+'</g>'+
-    '<g class="table-item">'+poly([[1060,236],[1214,214],[1236,272],[1082,294]],'#23305e')+poly([[1060,236],[1096,231],[1118,289],[1082,294]],'#d6b15e')+
-      poly([[1206,286],[1246,280],[1254,306],[1214,312]],'#5a3321')+poly([[1252,292],[1292,286],[1300,312],[1260,318]],'#6d4029')+poly([[1226,252],[1262,246],[1270,272],[1234,278]],'#6d4029')+'</g>'+
-    '<g class="table-item">'+poly([[1474,150],[1528,150],[1520,250],[1482,250]],'#f3e2a0')+ellipse(1501,150,27,6,'#fff6d6')+poly([[1556,166],[1606,166],[1598,256],[1564,256]],'#f3e2a0')+ellipse(1581,166,25,6,'#fff6d6')+'</g>'+
-    '</svg>';
+  // The finale: the laid table, in the conference heart's facet language. Everything from the cart is on it (lemonade C,
+  // nachos and salsa A, chocolate B) beside the fridge's lemon, popcorn, salt sticks and three glasses; back row first.
+  // Standing things are drawn about their foot (stand); things lying on the table in plan, squashed to its depth (flat).
+  const tableArt=(()=>{
+    const facet=(list,fill)=>poly(list,fill,' stroke="'+fill+'" stroke-width=".8" stroke-linejoin="round"');
+    const stand=(cx,cy,deg=0)=>list=>turn(list.map(([x,y])=>[cx+x,cy+y]),cx,cy,deg);
+    const flat=(cx,cy,deg=0)=>list=>turn(list,0,0,deg).map(([x,y])=>[cx+x,cy+y*.42]);
+    const oval=(P,cx,cy,rx,ry,fill,from=0,to=360)=>poly(P(to-from<360?arc(cx,cy,rx,ry,from,to,12):arc(cx,cy,rx,ry,0,360,24).slice(0,-1)),fill);
+    const shadow=(cx,cy,rx)=>ellipse(cx,cy,rx,rx*.2,'#5a3321',' fill-opacity=".18"');
+    const item=(body,cls='')=>'<g class="table-item'+cls+'">'+body+'</g>';
+    const nachoShades=['#f6c453','#eeb33b','#f8d77a','#e7a12c'];
+    // A bowl in vertical strips of facets, listed left to right (lit from the top left), under its lip and inside.
+    const bowl=(cx,cy,rx,ry,fills,lip,inside)=>fills.map((fill,i)=>{const n=fills.length,a=180*(n-i)/n,b=180*(n-i-1)/n,x=d=>cx+rx*Math.cos(d*Math.PI/180);
+      return facet([[x(a),cy],[x(b),cy],...arc(cx,cy,rx,ry,b,a,4)],fill);}).join('')+ellipse(cx,cy,rx,rx*.19,lip)+ellipse(cx,cy+1,rx*.92,rx*.15,inside);
+    // A square of chocolate lying on the table, lit on its top-left half.
+    const piece=(cx,cy,deg)=>{const F=flat(cx,cy,deg);
+      return poly(F(box(-15,-15,15,15)).map(([x,y])=>[x,y+5]),'#3d2214')+poly(F(box(-15,-15,15,15)),'#5a3321')+poly(F(box(-11,-11,11,11)),'#6d4029')+poly(F([[-11,-11],[11,-11],[-11,11]]),'#7a4a2e');};
+
+    // Lemonade C, as in the app banner: one litre, green label with a lemon.
+    const bottle=(cx,cy,s)=>{const P=list=>list.map(([x,y])=>[cx+(x-50)*s,cy+(y-186)*s]);
+      return shadow(cx,cy,30*s)+poly(P(box(41,12,59,26)),'#1f5c42')+poly(P(box(52,12,59,26)),'#174a35')+
+        poly(P([[43,26],[57,26],[57,44],[70,58],[73,70],[73,180],[69,186],[31,186],[27,180],[27,70],[30,58],[43,44]]),'#ffe7a0')+
+        poly(P([[60,70],[73,70],[73,180],[69,186],[60,186]]),'#f5d88a')+poly(P(box(33,74,39,170)),'#fff',' fill-opacity=".55"')+
+        poly(P(box(27,104,73,146)),'#2f7d5b')+poly(P(box(60,104,73,146)),'#276b4d')+oval(P,50,125,11,11,'#f6d33c')+oval(P,50,125,6,6,'#fff3b0');};
+    // Salt sticks in a glass: the sticks first, then the glass over them, see-through.
+    const sticks=(cx,cy)=>{const P=stand(cx,cy),fan=[[-17,-15,124],[-10,-8,138],[-3,-2,128],[4,4,144],[11,10,130],[17,16,120],[-7,-12,112],[8,7,116],[0,-5,136]];
+      return shadow(cx,cy,34)+oval(P,0,-96,30,7,'#cdd9e1')+
+        fan.map(([x,deg,len],i)=>poly(turn(P(box(x-3.5,-14-len,x+3.5,-14)),cx+x,cy-14,deg),i%2?'#d9a05b':'#e8b874')).join('')+
+        poly(P([...arc(0,-96,30,7,180,0,12),[26,0],[-26,0]]),'#e4ecf1',' fill-opacity=".72"')+poly(P([[15,-90],[30,-96],[26,0],[13,0]]),'#c5d2db',' fill-opacity=".6"')+
+        poly(P([[-23,-86],[-17,-87],[-16,-8],[-20,-8]]),'#fff',' fill-opacity=".8"')+poly(P([...arc(0,-96,30,7,180,0,12),...arc(0,-95,27,5,0,180,12)]),'#f7fafc');};
+    // A tumbler of lemonade with a straw and a slice of lemon on its rim.
+    const glass=(cx,cy)=>{const P=stand(cx,cy);
+      return shadow(cx,cy,30)+poly(P([[-26,-92],[26,-92],[22,0],[-22,0]]),'#f3e2a0')+poly(P([[12,-92],[26,-92],[22,0],[10,0]]),'#ead38a')+poly(P([[-19,-84],[-12,-84],[-11,-8],[-16,-8]]),'#fbf1c8')+
+        oval(P,0,-92,26,6,'#fff6d6')+poly(P([[2,-90],[7,-90],[24,-146],[19,-146]]),'#ee312f')+poly(P([[7,-90],[9,-90],[26,-146],[24,-146]]),'#cf1723')+
+        oval(P,-20,-92,15,15,'#f4d03f',180,360)+oval(P,-20,-92,11,11,'#fbe78a',180,360);};
+    // An open bag of nachos A, as in the app banner, leaning back a little; a few chips peek over the top.
+    const nachoBag=(cx,cy)=>{const P=stand(cx,cy,-6);
+      return shadow(cx,cy,58)+poly(P([[-48,-121],[-24,-138],[0,-132],[24,-140],[48,-121]]),'#b5661a')+
+        [[[-36,-120],[-16,-158],[2,-118]],[[-8,-118],[16,-152],[32,-116]],[[14,-120],[42,-142],[46,-114]]].map((t,i)=>facet(P(t),nachoShades[i])).join('')+
+        facet(P([[-50,-120],[-26,-126],[-26,0],[-50,0],[-54,-60]]),'#eba142')+facet(P([[-26,-126],[0,-118],[0,0],[-26,0]]),'#e2932b')+
+        facet(P([[0,-118],[26,-126],[26,0],[0,0]]),'#d6861f')+facet(P([[26,-126],[50,-120],[54,-60],[50,0],[26,0]]),'#c4741a')+
+        poly(P(box(-50,-12,50,0)),'#b5661a')+poly(P(box(-38,-102,38,-78)),'#fff')+poly(P(box(-26,-94,26,-86)),'#e2932b')+
+        oval(P,0,-44,24,24,'#fff4d8')+poly(P([[-14,-34],[0,-60],[10,-32]]),'#f6c445')+poly(P([[-2,-30],[16,-52],[20,-28]]),'#e9a72f');};
+    // Salsa A in its jar: red through the glass, the brand's orange label, a dark lid.
+    const jar=(cx,cy)=>{const P=stand(cx,cy);
+      return shadow(cx,cy,40)+poly(P([[-35,-76],[35,-76],[35,-7],[28,0],[-28,0],[-35,-7]]),'#cf1723')+poly(P([[18,-76],[35,-76],[35,-7],[28,0],[18,0]]),'#b51a22')+
+        poly(P(box(-29,-70,-23,-10)),'#fff',' fill-opacity=".35"')+poly(P(box(-35,-58,35,-22)),'#e2932b')+poly(P(box(18,-58,35,-22)),'#c4741a')+poly(P(box(-20,-46,14,-34)),'#fff')+
+        poly(P(box(-31,-82,31,-76)),'#95161d')+poly(P(box(-33,-98,33,-82)),'#3a3a3a')+poly(P(box(18,-98,33,-82)),'#2b2b2b')+oval(P,0,-98,33,6,'#5a5a5a');};
+    // Popcorn in a striped paper bucket, as on the craving card; two kernels have escaped.
+    const popcorn=(cx,cy)=>{const P=stand(cx,cy),kernel=(x,y,c,r=1)=>gem(cx+x,cy+y,14*r,11*r,['#fffdf4',c,'#e7cf8a'],7);
+      return shadow(cx,cy,48)+[0,1,2,3,4,5].map(i=>{const t=-54+18*i,u=t+18;return poly(P([[t,-96],[u,-96],[u*.76,0],[t*.76,0]]),i%2?(i<3?'#fff':'#f1ece4'):(i<3?'#ee312f':'#cf1723'));}).join('')+
+        oval(P,0,-96,54,9,'#e9dcc0')+
+        [[-38,-102,'#fff6d6'],[-14,-108,'#f8e7b0'],[12,-104,'#fff6d6'],[38,-100,'#f8e7b0'],[-26,-122,'#f8e7b0'],[0,-128,'#fff6d6'],[24,-120,'#f8e7b0'],[-10,-142,'#fff6d6'],[12,-140,'#f8e7b0']]
+          .map(([x,y,c])=>kernel(x,y,c)).join('')+kernel(72,10,'#fff6d6',.8)+kernel(-66,20,'#f8e7b0',.8);};
+    // A can of something fizzy, as in the app banner.
+    const can=(cx,cy)=>{const P=stand(cx,cy);
+      return shadow(cx,cy,28)+oval(P,0,0,22,6,'#2c6f98',0,180)+poly(P(box(-22,-84,22,0)),'#3a8fc2')+poly(P(box(8,-84,22,0)),'#2c6f98')+
+        poly(P([[-22,-46],[22,-56],[22,-42],[-22,-32]]),'#fff')+poly(P([[8,-52.8],[22,-56],[22,-42],[8,-38.8]]),'#e6e9ed')+poly(P(box(-16,-76,-12,-8)),'#fff',' fill-opacity=".35"')+
+        oval(P,0,-84,22,6,'#dfe5ea')+oval(P,0,-84,15,3.6,'#b9c2ca')+poly(P(box(-3,-87,7,-83)),'#9aa1ab');};
+    // The lemon from the fridge, whole, beside a half cut face up.
+    const lemons=(cx,cy,hx,hy)=>{const P=stand(hx,hy),face=arc(0,0,27,10.5,0,360,8);
+      return shadow(cx,cy+28,48)+poly([[cx-42,cy-5],[cx-53,cy+1],[cx-42,cy+7]],'#d9a614')+poly([[cx+42,cy-7],[cx+53,cy-3],[cx+43,cy+5]],'#e9bb22')+gem(cx,cy,44,32,['#fdeb98','#f4cf3c','#cf980c'],12)+
+        shadow(hx,hy+16,34)+oval(P,0,0,32,22,'#e0b42a',0,180)+oval(P,0,0,32,13,'#fff3c4')+oval(P,0,0,28,11,'#fffbe6')+
+        face.slice(0,-1).map((p,i)=>{const q=face[i+1],m=t=>[p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t],s=([x,y])=>[x*.88,y*.88];return poly(P([[0,0],s(m(.12)),s(m(.88))]),i%2?'#f6d33c':'#f4cf3c');}).join('');};
+    // A plate, its underside showing at the front, and what has landed on it.
+    const plate=(cx,cy,food)=>shadow(cx,cy+8,122)+ellipse(cx,cy+6,118,32,'#e3dbd0')+ellipse(cx,cy,118,32,'#fff')+ellipse(cx,cy+2,84,22,'#f1ece4')+food;
+    // Chocolate B lying open: the bar unwrapped past the foil, a row of squares broken off; the wrapper as on the shelf.
+    const chocolate=(cx,cy,deg)=>{const F=flat(cx,cy,deg),drop=list=>list.map(([x,y])=>[x,y+8]);
+      return poly(F(box(-74,-30,92,48)),'#5a3321',' fill-opacity=".18"')+poly(drop(F(box(-70,-36,14,36))),'#3d2214')+poly(drop(F(box(14,-39,85,39))),'#161d3a')+
+        poly(F(box(-70,-36,14,36)),'#4a2a1a')+[-70,-44,-18].flatMap(u=>[-36,0].map(v=>poly(F(box(u+3,v+3,u+23,v+33)),'#6d4029')+poly(F([[u+3,v+3],[u+23,v+3],[u+3,v+33]]),'#7a4a2e'))).join('')+
+        poly(F([[6,-40],[13,-32],[6,-24],[13,-16],[6,-8],[13,0],[6,8],[13,16],[6,24],[13,32],[6,40],[22,40],[22,-40]]),'#d6b15e')+
+        poly(F(box(20,-39,85,39)),'#23305e')+poly(F(box(20,-27,85,-21)),'#d6b15e')+poly(F(box(36,-6,72,16)),'#fff');};
+
+    // The pile in the big bowl, relative to its rim centre; motion.js flies each chip in.
+    const pile=[[[-134,0],[-102,-52],[-68,2]],[[-104,-6],[-50,-86],[-10,-12]],[[-62,-12],[0,-110],[42,-16]],[[-10,-8],[60,-90],[92,-6]],[[42,-6],[102,-70],[138,-2]],
+      [[100,-10],[134,-44],[146,2]],[[-120,-12],[-74,-60],[-86,6]],[[-80,-36],[-24,-64],[-50,4]],[[-30,-48],[18,-70],[-4,4]],[[0,-42],[44,-64],[30,4]],[[60,-32],[112,-38],[92,4]]];
+    const nachos=pile.map((t,i)=>facet(t.map(([x,y])=>[830+x,226+y]),nachoShades[i%4]))
+      .concat([[574,312,20],[646,324,-34]].map(([x,y,deg],i)=>facet(flat(x,y,deg)([[-28,16],[0,-30],[28,16]]),nachoShades[(i+1)%4])))
+      .map(p=>p.replace('<polygon','<polygon class="nacho"')).join('');
+
+    return '<svg class="table-art" viewBox="0 0 1660 440" aria-hidden="true">'+
+      '<g class="table-top">'+poly([[110,170],[1550,170],[1660,340],[0,340]],'#c8925e')+poly([[0,340],[1660,340],[1660,382],[0,382]],'#9c6438')+
+        poly([[60,382],[112,382],[112,440],[60,440]],'#8a5631')+poly([[1548,382],[1600,382],[1600,440],[1548,440]],'#8a5631')+
+        poly([[540,170],[1120,170],[1210,340],[450,340]],'#fffaf2')+poly([[540,170],[570,170],[482,340],[450,340]],'#ee312f')+poly([[1090,170],[1120,170],[1210,340],[1178,340]],'#ee312f')+
+        poly(box(450,340,1210,378),'#f1e9dc')+poly(box(450,340,482,378),'#cf1723')+poly(box(1178,340,1210,378),'#cf1723')+'</g>'+
+      item(bottle(200,212,1.1))+item(sticks(318,208))+item(nachoBag(604,212))+item(jar(1046,206))+
+      item(popcorn(1262,214))+item(can(1380,204))+item(glass(1468,212))+item(glass(1546,226))+item(glass(456,266))+
+      item(bowl(830,226,158,96,['#f6716d','#ee312f','#f25553','#e0262a','#cf1723','#e0262a','#b51a22','#95161d'],'#f25553','#7d1118'),' table-bowl')+nachos+
+      item(plate(320,292,[[284,290,8],[318,298,-24],[300,280,64]].map(([x,y,deg],i)=>facet(flat(x,y,deg)([[-30,18],[0,-34],[30,18]]),nachoShades[i])).join('')+
+        ellipse(366,290,24,10,'#ee312f')+poly([[358,286],[366,283],[364,291]],'#95161d')+poly([[370,291],[378,288],[376,295]],'#95161d')))+
+      item(lemons(96,272,176,306))+
+      item(bowl(1084,282,62,36,['#ffffff','#f8f5f0','#efe9e0','#e3dbd0'],'#fff','#ee312f')+poly([[1066,284],[1098,218],[1112,282]],'#f8d77a')+poly([[1088,250],[1098,218],[1112,282],[1098,284]],'#eeb33b')+
+        poly([[1050,284],[1060,280],[1058,288]],'#95161d')+poly([[1110,286],[1120,283],[1117,291]],'#95161d')+poly([[1072,292],[1080,289],[1080,295]],'#5a9b4c'))+
+      item(chocolate(1240,302,-12)+piece(1162,326,18))+
+      item(plate(1450,292,[[1408,292,-14],[1440,282,40]].map(([x,y,deg],i)=>facet(flat(x,y,deg)([[-30,18],[0,-34],[30,18]]),nachoShades[i+2])).join('')+piece(1478,296,-20)+piece(1506,286,14)+piece(1494,308,32)))+
+      '</svg>';
+  })();
 
   // The organizer's closing slide (last-slide.svg, 2560 × 1440, drawn here at 1920 × 1080). Its red background is the
   // conference heart seen from very close: the same eight facets, centre vertex at (1730.5, 635.4), edges within 0.1° of
@@ -260,6 +360,19 @@
     return shape.length>2?poly(shape,fill,' stroke="'+fill+'" stroke-width="1.6" stroke-linejoin="round" data-facet="'+i+'"'):'';
   }).join('')+'</svg>';
 
+  // Slide 13's chocolate, in the pack's own pixels: the sleeve slid back, the foil torn open over three columns of squares,
+  // the top-right square broken off (it lies on the table with another). Each square is bevelled, lit from the top left.
+  const chocSquare=(x,y,w,h,b=10)=>{const r=x+w,d=y+h;
+    return poly([[x,y],[r,y],[r-b,y+b],[x+b,y+b]],'#85512f')+poly([[x,y],[x+b,y+b],[x+b,d-b],[x,d]],'#7a4a2e')+
+      poly([[r,y],[r,d],[r-b,d-b],[r-b,y+b]],'#5a3321')+poly([[x,d],[x+b,d-b],[r-b,d-b],[r,d]],'#4a2a1a')+poly(box(x+b,y+b,r-b,d-b),'#6d4029');};
+  const chocPiece=cls=>'<svg class="choc-piece '+cls+'" viewBox="0 0 86 94">'+poly(box(6,12,86,94),'#000',' fill-opacity=".1"')+poly(box(0,76,80,86),'#3d2214')+chocSquare(0,0,80,78)+'</svg>';
+  const openChocolate='<svg class="choc-open" viewBox="0 0 680 330">'+
+    poly(box(340,316,672,328),'#3d2214')+poly([[340,72],[589,72],[589,154],[672,154],[672,318],[340,318]],'#331c11')+
+    [0,1,2,3].flatMap(c=>[0,1,2].filter(r=>c<3||r>0).map(r=>chocSquare(342+c*83,74+r*82,79,78))).join('')+
+    poly([[372,64],[414,64],[404,84],[426,104],[410,126],[428,150],[412,172],[430,196],[414,220],[428,244],[408,266],[426,290],[410,312],[420,330],[372,330]],'#c9ccd2')+
+    poly([[372,66],[402,66],[394,86],[414,106],[398,128],[416,152],[400,174],[418,198],[402,222],[416,246],[396,268],[412,292],[398,312],[404,328],[372,328]],'#e8eaee')+
+    poly([[392,96],[408,108],[394,124]],'#f6f7f9')+poly([[392,160],[412,170],[408,176],[392,168]],'#d4d7dc')+poly([[392,214],[410,226],[396,250]],'#f6f7f9')+
+    poly([[392,66],[398,44],[418,34],[436,46],[420,58],[426,68]],'#c9ccd2')+poly([[396,64],[402,48],[416,42],[414,56]],'#e8eaee')+'</svg>';
   const slides=[
     {id:'tytul',title:'Homo Urgens: Wychowaliśmy pokolenie natychmiastowości. Co na to Retail Media onsite?',layout:'cover',theme:'light',textVersion:2,seconds:30,reveals:0,coverHeart,speaker:'Obie',notes:'To pierwszy slajd. Ustaw go przed wejściem na scenę; po wejściu naciśnij R, aby serce złożyło się jeszcze raz. Przedstawcie się krótko. Powiedzcie, że opowiecie jedną historię zakupową i pokażecie na niej, co z badania Inquiry wynika dla Retail Media onsite.',html:coverTemplate+'<div class="cover-copy"><p class="kicker" data-edit>Tryb: TERAZ</p><h1 data-edit>Homo<br>Urgens</h1><p class="cover-subtitle" data-edit>Wychowaliśmy pokolenie natychmiastowości.<br>Co na to Retail Media onsite?</p><p class="speakers" data-edit>Uliana Jelonek<br>Joanna Wysocka</p><img class="speakers-logo" src="assets/brand/glovo-logo-black.png" alt="Glovo"></div>'},
     {id:'cytaty',title:'Co mówi konsument w trybie pilnej potrzeby',layout:'quotes',theme:'light',textVersion:2,seconds:45,reveals:2,speaker:'Uliana',source:inquiry,notes:'Trzy zdania z raportu Inquiry (s. 22). To sformułowania raportu, które oddają głos konsumenta na kolejnych etapach decyzji, nie wypowiedzi konkretnych osób z badania. Odsłaniaj je po kolei: pokaż, pomóż wybrać, pomóż skończyć. Te trzy prośby wrócą w historii o gościach.',html:heading('Trzy prośby<br>konsumenta.')+'<div class="quote-grid">'+
@@ -282,7 +395,7 @@
       '<svg class="fridge-door" viewBox="0 0 170 780">'+poly([[0,0],[170,70],[170,720],[0,780]],'#d4d4d9')+poly([[16,36],[154,94],[154,680],[16,738]],'#e9e9ed')+poly([[30,120],[140,160],[140,190],[30,152]],'#f4f4f6')+poly([[30,330],[140,350],[140,380],[30,362]],'#f4f4f6')+poly([[56,96],[72,98],[72,122],[56,118]],'#ee312f')+'</svg></div>'},
     {id:'dwa-plany',title:'Dwa plany. Jeden moment.',layout:'worlds',theme:'dark',textVersion:3,seconds:50,reveals:2,clock:3,speaker:'Uliana',notes:'Marka ma swój plan: launch, awareness, zaangażowanie i główny produkt. Konsumentka też ma plan: goście za 20 minut i coś słodkiego na stół. Najpierw widać tylko markę. Pierwsze kliknięcie odsłania konsumentkę i jej plan, drugie: rolę Retail Media jako miejsca spotkania tych dwóch planów. Nie przeciwstawiamy celów marki klientce: szukamy momentu, w którym produkt marki pomaga wykonać jej zadanie.',html:'<div class="world-brand" data-move><p class="kicker" data-edit>Marka</p><h1 data-edit>Ma swój plan.</h1><div class="brand-goals"><p data-edit>Launch</p><p data-edit>Awareness</p><p data-edit>Zaangażowanie</p><p data-edit>Główny produkt</p></div><p class="world-quote" data-edit>Chce, żebyś wybrała jej produkt.</p></div>'+reveal(1,'<div class="world-consumer" data-move><p class="kicker" data-edit>Konsumentka</p><h1 data-edit>Też ma plan.</h1><p class="consumer-need" data-edit>Goście<br>za 20 minut.</p><p class="world-quote" data-edit>Potrzebuje czegoś słodkiego. <span class="red-text">TERAZ.</span></p></div>')+reveal(2,'<div class="world-bridge" data-move><span class="bridge-icon" aria-hidden="true">↔</span><h2 data-edit>Retail Media łączy te dwa plany.</h2></div>')+reveal(1,'<div class="guest-car" data-move>'+guestCar+'</div>')},
     {id:'potrzeba-teraz',title:'Potrzebuję czekolady',layout:'scenario',theme:'light',seconds:40,reveals:1,clock:4,speaker:'Uliana',notes:'Coś słodkiego dla gości: czekolada. Bohaterka zna produkt, ale nie wybrała marki. Nie przypisujemy tej historii konkretnej osobie z badania. Odsłoń różnicę między znaną potrzebą a otwartym wyborem marki.',html:heading('Potrzebuję<br>czekolady.','Plan konsumentki')+'<p class="scenario-question" data-edit>Coś słodkiego dla gości. Teraz.</p>'+
-      '<div class="hero-chocolate" data-move aria-hidden="true"><i class="choc-shadow"></i><span class="choc-piece p1"></span><span class="choc-piece p2"></span><div class="choc-pack"><svg class="choc-foil" viewBox="0 0 220 80">'+poly([[0,80],[0,34],[28,18],[46,36],[78,6],[104,30],[136,10],[162,34],[192,14],[220,30],[220,80]],'#c9ccd2')+poly([[0,80],[0,50],[30,36],[52,52],[84,26],[110,48],[140,30],[166,52],[196,36],[220,48],[220,80]],'#e8eaee')+'</svg><div class="choc-bar"><span class="choc-brand">?</span><span class="choc-label">CZEKOLADA</span></div></div></div>'+
+      '<div class="hero-chocolate" data-move aria-hidden="true"><i class="choc-shadow"></i>'+chocPiece('p1')+chocPiece('p2')+'<div class="choc-pack">'+openChocolate+'<div class="choc-bar"><span class="choc-brand">?</span><span class="choc-label">CZEKOLADA</span></div></div></div>'+
       reveal(1,'<p class="scenario-answer" data-edit>Produkt znam.<br><span class="red-text">Marki jeszcze nie wybrałam.</span></p>')},
     {id:'wybor-w-aplikacji',title:'Produkt w głowie. Marka do wyboru.',layout:'metrics',theme:'light',textVersion:2,seconds:60,reveals:1,metrics:[55],clock:5,speaker:'Uliana',source:inquiry,notes:'55% zawsze lub często mniej więcej wie, czego potrzebuje, ale konkretny produkt wybiera podczas przeglądania aplikacji. Kliknięcie: wykres fraz w kategorii czekolada. Fraza „czekolada” zdecydowanie dominuje nad nazwami marek i wariantami. W naszej historii: czekolada tak, marka jeszcze otwarta. Tu jest miejsce dla Retail Media. Przekaż narrację Joannie: „Zobaczmy, co dzieje się w aplikacji”.',html:heading('Produkt w głowie.<br>Marka do wyboru.')+'<div class="metrics-pair">'+metric(55,'Wybiera konkretny produkt/markę<br>podczas przeglądania aplikacji')+'</div>'+reveal(1,barChart('Kategoria: czekolada',[['czekolada',100],['marka',30,'ink'],['marka',28,'ink'],['marka',23,'ink'],['czekolada gorzka',18],['marka',13,'ink'],['czekolada mleczna',9],['marka',7.5,'ink'],['biała czekolada',7]],'Fraza „czekolada” zdecydowanie dominująca'),'chart-reveal')},
     {id:'otwieram-aplikacje',title:'Nie wiem, od czego zacząć',layout:'shopping journey',theme:'light',textVersion:2,seconds:50,reveals:1,clock:7,speaker:'Joanna',notes:'Bohaterka otwiera aplikację i nie wie, od czego zacząć. Na ekranie startowym sponsorowany banner odpowiada na jej okazję: spotkanie ze znajomymi, napoje i przekąski w jednym miejscu. Nie nazywaj jeszcze formatu: publiczność ma zobaczyć, co robi. Kliknięcie: kursor wybiera banner. Kontekst z raportu: 19% wskazuje gości lub przygotowanie spotkania jako sytuację, w której sięga po szybką dostawę (s. 9). Ekran jest schematem, nie zrzutem prawdziwej aplikacji.',html:journey('· Otwieram aplikację','„Nie wiem, od czego<br>zacząć.”','Nie mam listy zakupów.<br>Mam gości w drodze.','Banner prowadzi prosto<br>do produktów na spotkanie.',app.home)},
