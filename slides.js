@@ -72,7 +72,8 @@
   const row=(kind,brand,name,detail,price,cls='')=>'<div class="product-row '+cls+'">'+(snackArt[kind]?snack(kind,brand):pack(kind,brand))+'<div><strong data-edit>'+name+'</strong><span class="product-detail" data-edit>'+detail+'</span></div><b data-edit>'+price+'</b><span class="product-add" aria-hidden="true">+</span></div>';
   const ad='<span class="ad-disclosure" data-edit>Sponsorowane</span>';
   const appHeader='<header class="shop-header"><span class="shop-wordmark" data-edit>Aplikacja szybkich dostaw</span><span class="shop-cart-icon" aria-hidden="true">▣</span></header>';
-  const frame=(mode,body)=>'<section class="shopping-frame app-'+mode+'" data-move aria-label="Ilustracyjny ekran aplikacji szybkich dostaw">'+appHeader+'<div class="shop-body">'+body+'</div></section>';
+  // The app runs on a phone: side keys on the graphite rim, then the screen with the camera island (phoneStatus, below).
+  const frame=(mode,body)=>'<section class="shopping-frame app-'+mode+'" data-move aria-label="Ilustracyjny ekran aplikacji szybkich dostaw">'+phoneKeys+'<div class="phone-screen">'+phoneStatus+appHeader+'<div class="shop-body">'+body+'</div></div></section>';
   const top=(context,title)=>(context?'<p class="shop-context" data-edit>'+context+'</p>':'')+'<h2 data-edit>'+title+'</h2>';
   // Banner still life: lemonade, a can and a bag of nachos behind a half-open chocolate bar. Tilted parts are rotated point by point.
   const turn=(list,cx,cy,deg)=>{const a=deg*Math.PI/180,c=Math.cos(a),s=Math.sin(a);return list.map(([x,y])=>[cx+(x-cx)*c-(y-cy)*s,cy+(x-cx)*s+(y-cy)*c]);};
@@ -137,6 +138,9 @@
       ellipse(32,49,9.5,9.5,'#fff4e6')+ellipse(32,49,7.8,7.8,'#7a3e22')
   };
   const snack=(kind,brand)=>'<span class="snack snack-'+kind+'" aria-hidden="true"><svg viewBox="0 0 64 72">'+snackArt[kind]+'</svg><b>'+brand+'</b></span>';
+  // The status bar holds only the camera island: no clock, no signal icons.
+  const phoneKeys=['action','up','down','power'].map(key=>'<i class="phone-key key-'+key+'" aria-hidden="true"></i>').join('');
+  const phoneStatus='<div class="phone-status" aria-hidden="true"><i class="phone-island"></i></div>';
   const app={
     home:frame('home',top('Dzień dobry!','Czego dziś potrzebujesz?')+
       '<div class="shop-search"><span aria-hidden="true">⌕</span><span data-edit>Szukaj produktów</span></div>'+

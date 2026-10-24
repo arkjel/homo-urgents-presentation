@@ -1025,7 +1025,7 @@
       enter(ctx){
         defaultEnter(ctx);
         const a=ctx.article,start=ctx.vtShop?240:520;
-        $$(a,'.app-cart > .shop-body > .product-row').forEach((row,i)=>A(row,[{opacity:0,transform:'translateY(-110px) scale(.86) rotate(-4deg)'},{opacity:1,transform:'translateY(6px) scale(1.02) rotate(1deg)',offset:.7},{opacity:1,transform:'none'}],{duration:720,delay:start+i*140,easing:'cubic-bezier(.3,0,.3,1)'}));
+        $$(a,'.app-cart .shop-body > .product-row').forEach((row,i)=>A(row,[{opacity:0,transform:'translateY(-110px) scale(.86) rotate(-4deg)'},{opacity:1,transform:'translateY(6px) scale(1.02) rotate(1deg)',offset:.7},{opacity:1,transform:'none'}],{duration:720,delay:start+i*140,easing:'cubic-bezier(.3,0,.3,1)'}));
         A($(a,'.shop-cart-icon'),[{transform:'none'},{transform:'scale(1.55) rotate(-12deg)',offset:.4},{transform:'scale(.9)',offset:.7},{transform:'none'}],{duration:520,delay:start+600});
         const suggestion=$(a,'.cart-suggestion');
         fadeUp(suggestion,start+700,{distance:18});

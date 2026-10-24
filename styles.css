@@ -174,11 +174,26 @@ dialog h2{font-size:30px;line-height:1.2;margin:12px 0 24px}
 .onsite-points{position:absolute;left:130px;top:500px;max-width:850px;font-size:40px;line-height:1.35}
 .onsite-points p{padding:27px 0;border-top:1px solid #ddd}
 /* An illustrative quick-delivery app in neutral colours: no platform logo, no platform palette. */
-.shopping-frame{position:absolute;left:1180px;top:185px;width:610px;border:2px solid #d9d9d9;border-radius:28px;overflow:hidden;background:#fff;color:#1c1c1c;box-shadow:0 24px 70px #00000012;z-index:3}
-.shop-header{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;background:#fff;border-bottom:2px solid #ededed}
+/* It runs on a graphite phone: the screen is 610 wide at x 1180 (the app header at y 241), the rim (3 px, the phone's background) and
+   the bezel (13 px, ::before) sit outside it, the camera island above. No bottom bezel: the fade (::after) lies between the bezel and
+   the screen, so beside the last rows only the sides, keys and shadow turn white and the phone melts into the slide. */
+.shopping-frame{position:absolute;left:1164px;top:189px;width:642px;padding:16px 16px 0;border-radius:62px 62px 0 0;background:linear-gradient(100deg,#2b2c30,#5b5d63 18%,#2e2f33 40%,#1f2023 70%,#4a4c51);color:#1c1c1c;box-shadow:0 34px 70px -18px #00000040,0 12px 28px #0000001a;z-index:3}
+.shopping-frame::before{content:"";position:absolute;inset:3px 3px 0;border-radius:59px 59px 0 0;background:#0b0b0c}
+.shopping-frame::after{content:"";position:absolute;left:-80px;right:-80px;bottom:-110px;height:290px;background:linear-gradient(#fff0,#fff 52%);z-index:1;pointer-events:none}
+.phone-screen{position:relative;z-index:2;border-radius:46px 46px 0 0;background:#fff;overflow:hidden;padding-bottom:30px}
+.phone-status{display:flex;align-items:center;justify-content:center;height:36px}
+.phone-island{position:relative;width:106px;height:30px;border-radius:15px;background:#050505}
+.phone-island::after{content:"";position:absolute;right:10px;top:7px;width:10px;height:10px;border-radius:50%;border:3px solid #15161b;background:#26304f}
+.phone-key{position:absolute;width:5px;background:linear-gradient(90deg,#3a3b40,#6a6c72 50%,#3a3b40)}
+.key-action,.key-up,.key-down{left:-5px;border-radius:3px 0 0 3px}
+.key-action{top:128px;height:34px}
+.key-up{top:190px;height:62px}
+.key-down{top:266px;height:62px}
+.key-power{right:-5px;top:214px;height:96px;border-radius:0 3px 3px 0}
+.shop-header{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:#fff;border-bottom:2px solid #ededed}
 .shop-wordmark{font-weight:900;color:var(--ink);font-size:26px;letter-spacing:-.01em}
 .shop-cart-icon{font-size:30px;color:var(--ink)}
-.shop-body{padding:24px 30px 22px}
+.shop-body{padding:24px 32px 22px}
 .shop-context{font-size:21px;color:#777;margin-bottom:8px}
 .shop-body h2{font-size:34px;letter-spacing:-.025em;margin-bottom:18px}
 .shop-search{display:flex;gap:16px;align-items:center;border-radius:10px;background:#f3f3f3;padding:14px 18px;font-size:22px;margin-bottom:18px;color:#777}
@@ -241,7 +256,7 @@ dialog h2{font-size:30px;line-height:1.2;margin:12px 0 24px}
 .cat-icon .pack-bar{background:#7a3e22}
 /* Chocolates: a 2 × 2 grid of product tiles. */
 .app-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.app-tile{position:relative;border:1px solid #e6e6e6;border-radius:14px;padding:12px 14px 12px;height:236px}
+.app-tile{position:relative;border:1px solid #e6e6e6;border-radius:14px;padding:12px 14px 12px;height:228px}
 .app-tile strong{display:block;font-size:20px;line-height:1.2;margin-top:10px}
 .app-tile .product-detail{font-size:16px;margin-top:3px}
 .tile-shot{height:100px;border-radius:10px;background:#f6f3ee;display:grid;place-items:center}
