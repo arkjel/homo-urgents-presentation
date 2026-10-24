@@ -345,7 +345,7 @@ dialog h2{font-size:30px;line-height:1.2;margin:12px 0 24px}
 .shelf.s1{top:210px}.shelf.s2{top:420px}.shelf.s3{top:610px}
 .fridge-item{position:absolute;display:block}
 .item-jar{left:50px;top:146px;width:50px;height:64px;border-radius:8px;background:#d9a62b;border-top:12px solid #555}
-.item-lemon{left:146px;top:372px;width:48px;height:48px;border-radius:50%;background:#f4d03f}
+.item-lemon{left:142px;top:372px;width:56px;height:48px}
 .item-sauce{left:258px;top:520px;width:36px;height:90px;border-radius:12px 12px 6px 6px;background:var(--red)}
 .fridge-door{position:absolute;left:380px;top:0;width:170px;height:780px;transform-origin:left}
 /* Inside the empty fridge, full bleed. */

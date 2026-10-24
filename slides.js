@@ -15,22 +15,32 @@
   const poly=(points,fill,extra='')=>'<polygon points="'+pts(points)+'" fill="'+fill+'"'+extra+'/>';
   const arc=(cx,cy,rx,ry,from=0,to=360,n=32)=>Array.from({length:n+1},(_,i)=>{const a=(from+(to-from)*i/n)*Math.PI/180;return [cx+rx*Math.cos(a),cy+ry*Math.sin(a)];});
   const ellipse=(cx,cy,rx,ry,fill,extra='')=>poly(arc(cx,cy,rx,ry,0,360,36).slice(0,-1),fill,extra);
+  const rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),mix=(p,q,t)=>'#'+rgb(p).map((v,i)=>Math.round(v+(rgb(q)[i]-v)*t).toString(16).padStart(2,'0')).join('');
+  // Half a lemon in a 56×48 box, cut face to the viewer; the rind of the back half shows on the right.
+  // The fridge draws it at scale 1, the inside view ×6 with finer facets, so the zoom between them lands shape on shape.
+  const halfLemon=(ox,oy,s,fine=false)=>{
+    const P=(x,y)=>[ox+x*s,oy+y*s],F=P(24,24),D=P(30,25),R=24*s;
+    const at=(c,rx,ry,deg)=>{const a=deg*Math.PI/180;return [c[0]+rx*Math.cos(a),c[1]+ry*Math.sin(a)];};
+    const lit=deg=>.5+.5*Math.cos((deg+135)*Math.PI/180),n=fine?18:1;
+    let out='';
+    // Back rind, then the face: rind ring, pith, ten segments with pith between them.
+    for(let i=0;i<n&&fine;i++){const a0=i*20,a1=a0+20;out+=poly([D,at(D,26*s,23*s,a0),at(D,26*s,23*s,a1)],mix('#cf9a12','#f0c235',lit(a0+10)));}
+    if(!fine)out+=ellipse(D[0],D[1],26*s,23*s,'#e2b020');
+    out+=ellipse(F[0],F[1],R,R,'#f4cb33')+ellipse(F[0],F[1],.9*R,.9*R,'#fbf1c9');
+    for(let i=0;i<10;i++){
+      const a0=12+i*36,a1=a0+28,am=a0+14,inner=at(F,.1*R,.1*R,am),p0=at(F,.8*R,.8*R,a0),pm=at(F,.84*R,.84*R,am),p1=at(F,.8*R,.8*R,a1);
+      if(fine)out+=poly([inner,p0,pm],mix('#f0ca3e','#fbe68e',Math.min(1,lit(am)+.1)))+poly([inner,pm,p1],mix('#f0ca3e','#fbe68e',Math.max(0,lit(am)-.1)));
+      else out+=poly([inner,p0,pm,p1],'#f7d955');
+    }
+    return out;
+  };
 
   // Inside the fridge of the next slide, seen from its back shelf. One vanishing point; the back wall is the screen scaled by k.
-  // The lemon sits at (960,700): motion.js zooms the drawn fridge 6× onto its lemon and lands exactly here.
+  // The half lemon's box is centred on (960,700): motion.js zooms the drawn fridge 6× onto its lemon and lands exactly here.
   const fridgeInside=()=>{
     const k=.42,back=([x,y])=>[960+(x-960)*k,540+(y-540)*k],mirror=list=>list.map(([x,y])=>[1920-x,y]);
     const rib=y=>{const [,b]=back([0,y]);return [[[0,y],[557,b],[557,b+30*k],[0,y+30]],[[0,y-10],[557,b-10*k],[557,b],[0,y]]];};
     const ribs=[120,300,480].flatMap(y=>{const [shade,light]=rib(y);return [poly(shade,'#ddd2b8'),poly(light,'#fcf8ee'),poly(mirror(shade),'#d9ceb3'),poly(mirror(light),'#fbf6ea')];}).join('');
-    // A faceted lemon: an outer and an inner ring of facets, lit from the top left, darker towards the shelf.
-    const a=-6*Math.PI/180,at=([x,y])=>[960+x*Math.cos(a)-y*Math.sin(a),700+x*Math.sin(a)+y*Math.cos(a)];
-    const rim=[[-165,-4],[-142,-58],[-92,-102],[-24,-118],[48,-112],[108,-84],[148,-40],[166,2],[146,52],[98,92],[30,112],[-44,110],[-106,84],[-146,44]];
-    const H=[-24,-30],inner=rim.map(([x,y])=>[H[0]+(x-H[0])*.56,H[1]+(y-H[1])*.56]);
-    const rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),mix=(p,q,t)=>'#'+rgb(p).map((v,i)=>Math.round(v+(rgb(q)[i]-v)*t).toString(16).padStart(2,'0')).join('');
-    const shade=(tri,i)=>{const cx=tri.reduce((s,p)=>s+p[0],0)/3/166,cy=tri.reduce((s,p)=>s+p[1],0)/3/118;
-      const b=Math.min(1,Math.max(0,.5+.5*(-.55*cx-.83*cy)*1.25+(i%2?.05:-.05)));return b<.5?mix('#cf980c','#f4cf3c',b*2):mix('#f4cf3c','#fdeb98',(b-.5)*2);};
-    const facets=rim.flatMap((p,i)=>{const n=(i+1)%rim.length;return [[p,rim[n],inner[n]],[p,inner[n],inner[i]],[H,inner[i],inner[n]]];});
-    const lemon=facets.map((tri,i)=>poly(tri.map(at),shade(tri,i))).join('');
     return '<svg viewBox="0 0 1920 1080" aria-hidden="true">'
       +poly([[0,0],[1920,0],[1363,313],[557,313]],'#fbf6ea')
       +poly([[700,215],[1220,215],[1180,300],[740,300]],'#fff9ec')+poly([[795,243],[1125,243],[1101,286],[819,286]],'#fffdf8')
@@ -41,7 +51,7 @@
       +poly([[0,892],[1920,892],[1920,1080],[0,1080]],'#e9e0cb')+poly([[0,892],[1920,892],[1920,904],[0,904]],'#cfc2a6')
       +poly([[800,952],[1120,952],[1100,980],[820,980]],'#d3c6aa')
       +poly([[0,844],[1920,844],[1920,892],[0,892]],'#d9ccb0')+poly([[0,844],[1920,844],[1920,852],[0,852]],'#e8dec8')
-      +ellipse(960,820,150,18,'#d4c8ab')+'<g class="inside-lemon">'+lemon+'</g></svg>';
+      +ellipse(966,842,175,12,'#d4c8ab')+'<g class="inside-lemon">'+halfLemon(792,556,6,true)+'</g></svg>';
   };
 
   // The story clock has no digits: one turn is the 20 minutes until the guests arrive. Tension, never a delivery time.
@@ -120,7 +130,7 @@
       [[23.5,56,32],[27,56.5,29],[30.5,55,30.5],[34,56.5,32],[28.5,48,40]].map(([x,y0,y1],i)=>poly([[x,y0],[x+2.6,y0],[x+2.6+(y0-y1)*.2,y1],[x+(y0-y1)*.2,y1]],['#d9a05b','#e8b874','#d9a05b','#e8b874','#cf9450'][i])).join('')+
       [[25,51],[26.6,40],[29,48],[30.4,36],[33,52],[34.6,40],[36.6,33],[32,45]].map(([x,y])=>ellipse(x,y,.7,.7,'#fff')).join('')+
       poly([[38.5,29],[42,29],[42,56],[40,58],[38.5,58]],'#fff',' fill-opacity=".45"'),
-    // Butter popcorn D: a striped paper bag filled over the top, like the popcorn on the table.
+    // Butter popcorn D: a striped paper bag filled over the top.
     popcorn:[0,1,2,3,4,5].map(i=>{const t=13+6.4*i,b=18.5+4.5*i;return poly([[t,28],[t+6.4,28],[b+4.5,68],[b,68]],i%2?(i<3?'#fff4e6':'#f1e6d4'):(i<3?'#7a3e22':'#65321b'));}).join('')+
       [[17,26],[25,24],[33,26],[41,24],[48,27],[21,18],[30,16],[38,17],[45,20],[33,9],[25,10.5]].map(([x,y],i)=>
         ellipse(x+.5,y+.8,5,4.6,'#e7cf8a')+ellipse(x,y,4.6,4.3,i%2?'#f8e7b0':'#fff1c4')+ellipse(x-1.2,y-1.2,2.1,1.9,'#fffdf4')).join('')+
@@ -275,7 +285,7 @@
   })();
 
   // The finale: the laid table, in the conference heart's facet language. Everything from the cart is on it (lemonade C,
-  // nachos and salsa A, chocolate B) beside the fridge's lemon, popcorn, salt sticks and three glasses; back row first.
+  // nachos and salsa A, chocolate B) beside the fridge's half lemon, salt sticks and three glasses; back row first.
   // Standing things are drawn about their foot (stand); things lying on the table in plan, squashed to its depth (flat).
   const tableArt=(()=>{
     const facet=(list,fill)=>poly(list,fill,' stroke="'+fill+'" stroke-width=".8" stroke-linejoin="round"');
@@ -322,22 +332,13 @@
       return shadow(cx,cy,40)+poly(P([[-35,-76],[35,-76],[35,-7],[28,0],[-28,0],[-35,-7]]),'#cf1723')+poly(P([[18,-76],[35,-76],[35,-7],[28,0],[18,0]]),'#b51a22')+
         poly(P(box(-29,-70,-23,-10)),'#fff',' fill-opacity=".35"')+poly(P(box(-35,-58,35,-22)),'#e2932b')+poly(P(box(18,-58,35,-22)),'#c4741a')+poly(P(box(-20,-46,14,-34)),'#fff')+
         poly(P(box(-31,-82,31,-76)),'#95161d')+poly(P(box(-33,-98,33,-82)),'#3a3a3a')+poly(P(box(18,-98,33,-82)),'#2b2b2b')+oval(P,0,-98,33,6,'#5a5a5a');};
-    // Popcorn in a striped paper bucket, as on the craving card; two kernels have escaped.
-    const popcorn=(cx,cy)=>{const P=stand(cx,cy),kernel=(x,y,c,r=1)=>gem(cx+x,cy+y,14*r,11*r,['#fffdf4',c,'#e7cf8a'],7);
-      return shadow(cx,cy,48)+[0,1,2,3,4,5].map(i=>{const t=-54+18*i,u=t+18;return poly(P([[t,-96],[u,-96],[u*.76,0],[t*.76,0]]),i%2?(i<3?'#fff':'#f1ece4'):(i<3?'#ee312f':'#cf1723'));}).join('')+
-        oval(P,0,-96,54,9,'#e9dcc0')+
-        [[-38,-102,'#fff6d6'],[-14,-108,'#f8e7b0'],[12,-104,'#fff6d6'],[38,-100,'#f8e7b0'],[-26,-122,'#f8e7b0'],[0,-128,'#fff6d6'],[24,-120,'#f8e7b0'],[-10,-142,'#fff6d6'],[12,-140,'#f8e7b0']]
-          .map(([x,y,c])=>kernel(x,y,c)).join('')+kernel(72,10,'#fff6d6',.8)+kernel(-66,20,'#f8e7b0',.8);};
     // A can of something fizzy, as in the app banner.
     const can=(cx,cy)=>{const P=stand(cx,cy);
       return shadow(cx,cy,28)+oval(P,0,0,22,6,'#2c6f98',0,180)+poly(P(box(-22,-84,22,0)),'#3a8fc2')+poly(P(box(8,-84,22,0)),'#2c6f98')+
         poly(P([[-22,-46],[22,-56],[22,-42],[-22,-32]]),'#fff')+poly(P([[8,-52.8],[22,-56],[22,-42],[8,-38.8]]),'#e6e9ed')+poly(P(box(-16,-76,-12,-8)),'#fff',' fill-opacity=".35"')+
         oval(P,0,-84,22,6,'#dfe5ea')+oval(P,0,-84,15,3.6,'#b9c2ca')+poly(P(box(-3,-87,7,-83)),'#9aa1ab');};
-    // The lemon from the fridge, whole, beside a half cut face up.
-    const lemons=(cx,cy,hx,hy)=>{const P=stand(hx,hy),face=arc(0,0,27,10.5,0,360,8);
-      return shadow(cx,cy+28,48)+poly([[cx-42,cy-5],[cx-53,cy+1],[cx-42,cy+7]],'#d9a614')+poly([[cx+42,cy-7],[cx+53,cy-3],[cx+43,cy+5]],'#e9bb22')+gem(cx,cy,44,32,['#fdeb98','#f4cf3c','#cf980c'],12)+
-        shadow(hx,hy+16,34)+oval(P,0,0,32,22,'#e0b42a',0,180)+oval(P,0,0,32,13,'#fff3c4')+oval(P,0,0,28,11,'#fffbe6')+
-        face.slice(0,-1).map((p,i)=>{const q=face[i+1],m=t=>[p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t],s=([x,y])=>[x*.88,y*.88];return poly(P([[0,0],s(m(.12)),s(m(.88))]),i%2?'#f6d33c':'#f4cf3c');}).join('');};
+    // The half lemon from the fridge, standing on the table about its foot (cx,cy), cut face to the guests.
+    const halfOnTable=(cx,cy,s)=>shadow(cx,cy,50*s/1.6)+halfLemon(cx-28*s,cy-48*s,s,true);
     // A plate, its underside showing at the front, and what has landed on it.
     const plate=(cx,cy,food)=>shadow(cx,cy+8,122)+ellipse(cx,cy+6,118,32,'#e3dbd0')+ellipse(cx,cy,118,32,'#fff')+ellipse(cx,cy+2,84,22,'#f1ece4')+food;
     // Chocolate B lying open: the bar unwrapped past the foil, a row of squares broken off; the wrapper as on the shelf.
@@ -360,11 +361,11 @@
         poly([[540,170],[1120,170],[1210,340],[450,340]],'#fffaf2')+poly([[540,170],[570,170],[482,340],[450,340]],'#ee312f')+poly([[1090,170],[1120,170],[1210,340],[1178,340]],'#ee312f')+
         poly(box(450,340,1210,378),'#f1e9dc')+poly(box(450,340,482,378),'#cf1723')+poly(box(1178,340,1210,378),'#cf1723')+'</g>'+
       item(bottle(200,212,1.1))+item(sticks(318,208))+item(nachoBag(604,212))+item(jar(1046,206))+
-      item(popcorn(1262,214))+item(can(1380,204))+item(glass(1468,212))+item(glass(1546,226))+item(glass(456,266))+
+      item(can(1380,204))+item(glass(1468,212))+item(glass(1546,226))+item(glass(456,266))+
       item(bowl(830,226,158,96,['#f6716d','#ee312f','#f25553','#e0262a','#cf1723','#e0262a','#b51a22','#95161d'],'#f25553','#7d1118'),' table-bowl')+nachos+
       item(plate(320,292,[[284,290,8],[318,298,-24],[300,280,64]].map(([x,y,deg],i)=>facet(flat(x,y,deg)([[-30,18],[0,-34],[30,18]]),nachoShades[i])).join('')+
         ellipse(366,290,24,10,'#ee312f')+poly([[358,286],[366,283],[364,291]],'#95161d')+poly([[370,291],[378,288],[376,295]],'#95161d')))+
-      item(lemons(96,272,176,306))+
+      item(halfOnTable(112,304,1.6))+
       item(bowl(1084,282,62,36,['#ffffff','#f8f5f0','#efe9e0','#e3dbd0'],'#fff','#ee312f')+poly([[1066,284],[1098,218],[1112,282]],'#f8d77a')+poly([[1088,250],[1098,218],[1112,282],[1098,284]],'#eeb33b')+
         poly([[1050,284],[1060,280],[1058,288]],'#95161d')+poly([[1110,286],[1120,283],[1117,291]],'#95161d')+poly([[1072,292],[1080,289],[1080,295]],'#5a9b4c'))+
       item(chocolate(1240,302,-12)+piece(1162,326,18))+
@@ -419,7 +420,7 @@
     poly([[392,96],[408,108],[394,124]],'#f6f7f9')+poly([[392,160],[412,170],[408,176],[392,168]],'#d4d7dc')+poly([[392,214],[410,226],[396,250]],'#f6f7f9')+
     poly([[392,66],[398,44],[418,34],[436,46],[420,58],[426,68]],'#c9ccd2')+poly([[396,64],[402,48],[416,42],[414,56]],'#e8eaee')+'</svg>';
   const slides=[
-    {id:'tytul',title:'Homo Urgens: Wychowaliśmy pokolenie natychmiastowości. Co na to Retail Media onsite?',layout:'cover',theme:'light',textVersion:2,seconds:30,reveals:0,coverHeart,speaker:'Obie',notes:'To pierwszy slajd. Ustaw go przed wejściem na scenę; po wejściu naciśnij R, aby serce złożyło się jeszcze raz. Przedstawcie się krótko. Powiedzcie, że opowiecie jedną historię zakupową i pokażecie na niej, co z badania Inquiry wynika dla Retail Media onsite.',html:coverTemplate+'<div class="cover-copy"><p class="kicker" data-edit>Tryb: TERAZ</p><h1 data-edit>Homo<br>Urgens</h1><p class="cover-subtitle" data-edit>Wychowaliśmy pokolenie natychmiastowości.<br>Co na to Retail Media onsite?</p><p class="speakers" data-edit>Uliana Jelonek<br>Joanna Wysocka</p><img class="speakers-logo" src="assets/brand/glovo-logo-black.png" alt="Glovo"></div>'},
+    {id:'tytul',title:'Homo Urgens: Wychowaliśmy pokolenie natychmiastowości. Co na to Retail Media onsite?',layout:'cover',theme:'light',textVersion:2,seconds:30,reveals:0,coverHeart,speaker:'Obie',notes:'To pierwszy slajd. Ustaw go przed wejściem na scenę. Po wejściu kliknij raz (albo naciśnij R): serce złoży się jeszcze raz. Kolejne kliknięcie przechodzi do slajdu 2. Przedstawcie się krótko. Powiedzcie, że opowiecie jedną historię zakupową i pokażecie na niej, co z badania Inquiry wynika dla Retail Media onsite.',html:coverTemplate+'<div class="cover-copy"><p class="kicker" data-edit>Tryb: TERAZ</p><h1 data-edit>Homo<br>Urgens</h1><p class="cover-subtitle" data-edit>Wychowaliśmy pokolenie natychmiastowości.<br>Co na to Retail Media onsite?</p><p class="speakers" data-edit>Uliana Jelonek<br>Joanna Wysocka</p><img class="speakers-logo" src="assets/brand/glovo-logo-black.png" alt="Glovo"></div>'},
     {id:'cytaty',title:'Co mówi konsument w trybie pilnej potrzeby',layout:'quotes',theme:'light',textVersion:2,seconds:45,reveals:2,speaker:'Uliana',source:inquiry,notes:'Trzy zdania z raportu Inquiry (s. 22). To sformułowania raportu, które oddają głos konsumenta na kolejnych etapach decyzji, nie wypowiedzi konkretnych osób z badania. Odsłaniaj je po kolei: pokaż, pomóż wybrać, pomóż skończyć. Te trzy prośby wrócą w historii o gościach.',html:heading('Trzy prośby<br>konsumenta.')+'<div class="quote-grid">'+
       [['Pokaż mi to, co jest mi potrzebne.','Gdy decyzja jest jeszcze otwarta'],['Pomóż mi wybrać.','Gdy porównuję kilka opcji'],['Pomóż mi upewnić się i zakończyć zakup.','Gdy wybór jest prawie gotowy']]
         .map(([quote,stage],i)=>{const card='<figure class="quote-card" data-move><svg class="quote-mark" viewBox="0 0 76 52" aria-hidden="true">'+poly([[0,0],[30,0],[30,30],[17,52],[5,52],[13,30],[0,30]],'#ee312f')+poly([[42,0],[72,0],[72,30],[59,52],[47,52],[55,30],[42,30]],'#ee312f')+'</svg><blockquote data-edit>'+quote+'</blockquote><figcaption data-edit>'+stage+'</figcaption></figure>';return i?reveal(i,card):card;}).join('')+'</div>'},
@@ -433,10 +434,10 @@
     {id:'kontrola',title:'Potrzeba nie może czekać',layout:'needs',theme:'light',textVersion:2,seconds:50,reveals:0,metrics:[78],speaker:'Uliana',source:inquiry,notes:'78% chce mieć produkt lub usługę wtedy, kiedy ich potrzebuje. Po doliczeniu do 78% same, bez klikania, pojawiają się cztery przykłady takich potrzeb: brakujący produkt spożywczy, leki lub produkty z apteki, zwykłe zakupy spożywcze i produkty pod wpływem chwilowej ochoty. Karty są ilustracjami, nie danymi. To kontekst dla Retail Media: marka ma szansę pojawić się, gdy konsument szuka rozwiązania swojej aktywnej potrzeby. Powiedz: „Rola Retail Media to pokazać produkt w momencie potrzeby”. Ta liczba opisuje oczekiwanie wobec dostępności, nie wpływ reklamy.',html:heading('Potrzeba nie<br>może czekać.')+'<i class="then-divider" aria-hidden="true"></i><div class="relevance-metric">'+metric(78,'Chce produktu lub usługi<br>wtedy, kiedy ich potrzebuje')+'</div>'+needs},
     {id:'tryb-sytuacyjny',title:'Każdy z nas bywa Homo Urgens',layout:'mechanism',theme:'dark',textVersion:2,seconds:40,reveals:1,speaker:'Uliana',source:inquiry,notes:'Tytuł mówi o pokoleniu, ale badanie nie wyodrębnia generacji. Homo Urgens jest sytuacyjnym trybem działania. Ta sama osoba może działać inaczej zależnie od zadania. Aktywna potrzeba i ograniczenie zasobów uruchamiają ten tryb. Przejście: „Pokażemy to na jednej historii”.',html:heading('Każdy z nas bywa<br>Homo Urgens')+'<div class="mechanism-line"><p data-edit>Potrzeba</p>'+reveal(1,'<span class="mechanism-plus" aria-hidden="true">+</span><p data-edit>Brak czasu</p>')+reveal(1,'<span class="mode-result" data-edit>= TRYB: TERAZ</span>')+'</div>'},
     {id:'goscie',title:'Będziemy za 20 minut',layout:'message',theme:'dark',seconds:25,reveals:1,clock:0,speaker:'Uliana',notes:'Zaczyna się historia. Bohaterka dostaje wiadomość: znajomi będą za 20 minut. Zegar w rogu będzie nam towarzyszył do końca zakupów. To element opowieści, nie czas dostawy. Odsłoń pytanie: „A w lodówce?”. Następne kliknięcie: wjeżdżamy do lodówki.',html:'<p class="kicker message-kicker" data-edit>Zakupowy thriller</p><div class="notification" data-move><div class="notif-top"><span class="notif-icon" aria-hidden="true"><svg viewBox="0 0 40 40">'+poly([[6,8],[34,8],[34,28],[18,28],[10,35],[11,28],[6,28]],'#fff')+'</svg></span><span class="notif-app" data-edit>Znajomi</span><span class="notif-time" data-edit>teraz</span></div><p class="notif-text" data-edit>Będziemy za 20 minut 😊</p></div>'+reveal(1,'<p class="message-twist" data-edit>A w lodówce?</p>')},
-    {id:'pusta-lodowka',title:'o-shit commerce',layout:'fridge-inside',theme:'light',seconds:10,reveals:0,clock:1,speaker:'Uliana',notes:'O-shit commerce: goście za 20 minut, a w lodówce tylko cytryna. Krótka pauza na reakcję sali. To moment, w którym zaczyna się pilna potrzeba. Kliknięcie: kamera odjeżdża od lodówki i widzimy bohaterkę.',html:'<div class="inside-scene">'+fridgeInside()+'</div><h1 class="inside-title" data-edit>o-shit commerce</h1>'},
+    {id:'pusta-lodowka',title:'o-shit commerce',layout:'fridge-inside',theme:'light',seconds:10,reveals:0,clock:1,speaker:'Uliana',notes:'O-shit commerce: goście za 20 minut, a w lodówce tylko pół cytryny. Krótka pauza na reakcję sali. To moment, w którym zaczyna się pilna potrzeba. Kliknięcie: kamera odjeżdża od lodówki i widzimy bohaterkę.',html:'<div class="inside-scene">'+fridgeInside()+'</div><h1 class="inside-title" data-edit>o-shit commerce</h1>'},
     {id:'lodowka',title:'To nie jest moment na długą historię marki',layout:'fridge',theme:'dark',seconds:30,reveals:1,clock:2,speaker:'Uliana',notes:'Otwarta lodówka, prawie pusta. To nie jest moment na długą historię marki. Bohaterka potrzebuje napojów, przekąsek i czegoś słodkiego. Odsłoń jej listę. Potrzeba plus brak czasu: tryb TERAZ.',html:heading('To nie jest moment<br>na długą historię<br>marki.','Otwieram lodówkę')+
       reveal(1,'<p class="fridge-need" data-edit>Potrzebuję napojów, przekąsek<br>i czegoś słodkiego. <span class="red-text">Teraz.</span></p>')+
-      '<div class="fridge" data-move aria-hidden="true"><i class="fridge-glow"></i><div class="fridge-body"><div class="fridge-inside"><i class="shelf s1"></i><i class="shelf s2"></i><i class="shelf s3"></i><span class="fridge-item item-jar"></span><span class="fridge-item item-lemon"></span><span class="fridge-item item-sauce"></span></div></div>'+
+      '<div class="fridge" data-move aria-hidden="true"><i class="fridge-glow"></i><div class="fridge-body"><div class="fridge-inside"><i class="shelf s1"></i><i class="shelf s2"></i><i class="shelf s3"></i><span class="fridge-item item-jar"></span><svg class="fridge-item item-lemon" viewBox="0 0 56 48">'+halfLemon(0,0,1)+'</svg><span class="fridge-item item-sauce"></span></div></div>'+
       '<svg class="fridge-door" viewBox="0 0 170 780">'+poly([[0,0],[170,70],[170,720],[0,780]],'#d4d4d9')+poly([[16,36],[154,94],[154,680],[16,738]],'#e9e9ed')+poly([[30,120],[140,160],[140,190],[30,152]],'#f4f4f6')+poly([[30,330],[140,350],[140,380],[30,362]],'#f4f4f6')+poly([[56,96],[72,98],[72,122],[56,118]],'#ee312f')+'</svg></div>'},
     {id:'dwa-plany',title:'Dwa plany. Jeden moment.',layout:'worlds',theme:'dark',textVersion:3,seconds:50,reveals:2,clock:3,speaker:'Uliana',notes:'Marka ma swój plan: launch, awareness, zaangażowanie i główny produkt. Konsumentka też ma plan: goście za 20 minut i coś słodkiego na stół. Najpierw widać tylko markę. Pierwsze kliknięcie odsłania konsumentkę i jej plan, drugie: rolę Retail Media jako miejsca spotkania tych dwóch planów. Nie przeciwstawiamy celów marki klientce: szukamy momentu, w którym produkt marki pomaga wykonać jej zadanie.',html:'<div class="world-brand" data-move><p class="kicker" data-edit>Marka</p><h1 data-edit>Ma swój plan.</h1><div class="brand-goals"><p data-edit>Launch</p><p data-edit>Awareness</p><p data-edit>Zaangażowanie</p><p data-edit>Główny produkt</p></div><p class="world-quote" data-edit>Chce, żebyś wybrała jej produkt.</p></div>'+reveal(1,'<div class="world-consumer" data-move><p class="kicker" data-edit>Konsumentka</p><h1 data-edit>Też ma plan.</h1><p class="consumer-need" data-edit>Goście<br>za 20 minut.</p><p class="world-quote" data-edit>Potrzebuje czegoś słodkiego. <span class="red-text">TERAZ.</span></p></div>')+reveal(2,'<div class="world-bridge" data-move><span class="bridge-icon" aria-hidden="true">↔</span><h2 data-edit>Retail Media łączy te dwa plany.</h2></div>')+reveal(1,'<div class="guest-car" data-move>'+guestCar+'</div>')},
     {id:'potrzeba-teraz',title:'Potrzebuję czekolady',layout:'scenario',theme:'light',seconds:40,reveals:1,clock:4,speaker:'Uliana',notes:'Coś słodkiego dla gości: czekolada. Bohaterka zna produkt, ale nie wybrała marki. Nie przypisujemy tej historii konkretnej osobie z badania. Odsłoń różnicę między znaną potrzebą a otwartym wyborem marki.',html:heading('Potrzebuję<br>czekolady.','Plan konsumentki')+'<p class="scenario-question" data-edit>Coś słodkiego dla gości. Teraz.</p>'+

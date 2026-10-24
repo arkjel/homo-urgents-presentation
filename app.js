@@ -6,7 +6,7 @@
   const previous=document.querySelector('#previous'),next=document.querySelector('#next');
   const motion=matchMedia('(prefers-reduced-motion: reduce)');
   const options=new URLSearchParams(location.search);
-  let loaderFrame=0,drawFrame=0,hudTimer=0;
+  let loaderFrame=0,drawFrame=0,hudTimer=0,coverReplay=false;
   const editing=()=>Boolean(window.DECK_EDITOR?.isEditing());
   const reduced=()=>motion.matches||options.get('motion')==='off';
   const escape=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
@@ -62,6 +62,8 @@
   function render(animate=false,source='jump'){
     // Forward moves, the opening and its replay are choreographed; going back shows the final state.
     const play=!reduced()&&!editing()&&(animate?source!=='back':['initial','restart'].includes(source));
+    // A cover opened in advance waits for the stage: the first click replays its entrance (like R), the next one moves on.
+    if(source!=='refresh')coverReplay=nav.state().index===0&&['initial','hash','jump'].includes(source);
     const shown=stage.querySelector('.slide'),before=shown&&slides[Number(shown.dataset.slideIndex)];
     if(play&&window.DECK_MOTION?.useViewTransition(before,slides[nav.state().index],source)){
       const transition=document.startViewTransition(()=>commit(play,source));
@@ -96,6 +98,7 @@
   }
   function move(direction){
     if(editing()||document.querySelector('dialog[open]'))return;
+    if(direction==='next'&&coverReplay&&!reduced()&&nav.state().index===0){show(0,0,'restart');return;}
     const before=nav.state();
     nav[direction]();
     const after=nav.state();
