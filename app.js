@@ -113,6 +113,13 @@
     document.body.classList.add('hud-visible');
     clearTimeout(hudTimer);hudTimer=setTimeout(()=>document.body.classList.remove('hud-visible'),2400);
   }
+  // While presenting the controls stay hidden; they surface only near the bottom edge of the screen.
+  const nearBottom=y=>y>=innerHeight-100;
+  function trackPointer(event){
+    if(event.pointerType==='touch')return;
+    clearTimeout(hudTimer);
+    document.body.classList.toggle('hud-visible',nearBottom(event.clientY));
+  }
   function openNotes(){
     const {index}=nav.state(),slide=slides[index],elapsed=slides.slice(0,index).reduce((n,s)=>n+s.seconds,0);
     const time=n=>Math.floor(n/60)+':'+String(n%60).padStart(2,'0');
@@ -132,8 +139,9 @@
   document.querySelector('#notes').addEventListener('click',openNotes);
   document.querySelector('#help').addEventListener('click',()=>document.querySelector('#helpDialog').showModal());
   document.querySelectorAll('[data-close-dialog]').forEach(button=>button.addEventListener('click',()=>button.closest('dialog').close()));
-  document.addEventListener('pointermove',showControls,{passive:true});
-  document.addEventListener('touchstart',showControls,{passive:true});
+  document.addEventListener('pointermove',trackPointer,{passive:true});
+  document.documentElement.addEventListener('mouseleave',()=>{clearTimeout(hudTimer);document.body.classList.remove('hud-visible');});
+  document.addEventListener('touchstart',event=>{if(nearBottom(event.touches[0].clientY))showControls();},{passive:true});
   document.addEventListener('keydown',event=>{
     if(event.defaultPrevented||event.isComposing||event.ctrlKey||event.metaKey||event.altKey)return;
     if(event.target.closest('[contenteditable="true"],input,textarea,select'))return;
@@ -149,7 +157,6 @@
     else if(key.toLowerCase()==='f'){event.preventDefault();if(!event.repeat)void fullscreen();}
     else if(key.toLowerCase()==='o'){event.preventDefault();if(!event.repeat)openNotes();}
     else if(key.toLowerCase()==='r'){event.preventDefault();if(!event.repeat)show(0,0,'restart');}
-    showControls();
   });
   stage.addEventListener('click',event=>{
     if(!editing()&&!event.target.closest('button,a,input,textarea,select,[contenteditable="true"]'))move('next');
@@ -162,7 +169,7 @@
     document.documentElement.classList.toggle('deck-hidden',document.hidden);
     window.DECK_MOTION?.setHidden(document.hidden);
   });
-  show(fromHash(),0,'initial');showControls();
+  show(fromHash(),0,'initial');
   // Fonts and assets are local. This hook also lets visual checks wait for settled loading.
   window.DECK_READY=Promise.all([document.fonts.ready,...Array.from(document.images,im=>im.decode().catch(()=>{}))]);
 })();
