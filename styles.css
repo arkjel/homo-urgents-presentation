@@ -1,7 +1,7 @@
 @font-face{font-family:Lato;src:url("assets/fonts/Lato-Regular.ttf") format("truetype");font-weight:400;font-display:swap}
 @font-face{font-family:Lato;src:url("assets/fonts/Lato-Bold.ttf") format("truetype");font-weight:700;font-display:swap}
 @font-face{font-family:Lato;src:url("assets/fonts/Lato-Black.ttf") format("truetype");font-weight:900;font-display:swap}
-:root{--red:#ee312f;--ink:#151515;--paper:#fff;--muted:#666;--line:#e3e3e3;--body-font:Lato,sans-serif;--brand:#ee312f;--brand-soft:#ffb9b8;--amber:#ffc244}
+:root{--red:#ee312f;--sponsor-bg:#fde4e4;--sponsor-line:#fac1c1;--ink:#151515;--paper:#fff;--muted:#666;--line:#e3e3e3;--body-font:Lato,sans-serif;--brand:#ee312f;--brand-soft:#ffb9b8;--amber:#ffc244}
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0c0c0c;color:var(--ink);font-family:var(--body-font)}
 button,select{font:inherit}
@@ -181,26 +181,24 @@ dialog h2{font-size:30px;line-height:1.2;margin:12px 0 24px}
 .shop-context{font-size:21px;color:#777;margin-bottom:8px}
 .shop-body h2{font-size:34px;letter-spacing:-.025em;margin-bottom:18px}
 .shop-search{display:flex;gap:16px;align-items:center;border-radius:10px;background:#f3f3f3;padding:14px 18px;font-size:22px;margin-bottom:18px;color:#777}
-.shop-search>span:first-child{font-size:28px;line-height:.8}
+.shop-search>span:first-child{font-size:40px;line-height:.6}
 .product-row{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #eee;height:80px}
 .product-row>div{flex:1;min-width:0}
 .product-row strong{display:block;font-size:22px;line-height:1.2}
 .product-row b{font-size:22px;white-space:nowrap}
 .product-detail{display:block;font-size:18px;color:#888;margin-top:5px}
 .product-add{height:32px;width:32px;flex-shrink:0;background:#f1f1f1;border-radius:50%;display:grid;place-items:center;color:var(--ink);font-size:23px;font-weight:700}
-.shop-bottom{display:flex;justify-content:space-between;margin-top:16px;font-size:20px;color:#666}
-.type-query{display:block;overflow:hidden;white-space:nowrap;width:10ch;animation:query-type .55s steps(10,end) both}
+.type-query{display:block;font-size:30px;font-weight:700;color:#1c1c1c;line-height:1.1;overflow:hidden;white-space:nowrap;width:10ch;animation:query-type .55s steps(10,end) both}
 @keyframes query-type{from{width:0}to{width:10ch}}
 .selection-feedback{margin-top:14px;padding:12px 16px;border-radius:9px;background:#fdecec;color:#b8201e;font-size:21px;font-weight:700}
-.relevant-offer{display:flex;align-items:center;gap:14px;border-left:5px solid var(--red);background:#faf6f0;padding:13px 14px;margin:0 0 6px;animation:offer-enter .5s ease both}
+.relevant-offer{display:flex;align-items:center;gap:14px;border:1px solid var(--sponsor-line);border-left:5px solid var(--red);background:var(--sponsor-bg);padding:13px 14px;margin:0 0 6px;animation:offer-enter .5s ease both}
 .relevant-offer>div{flex:1;min-width:0}
 .relevant-offer strong{display:block;font-size:23px;line-height:1.2;margin:5px 0 4px}
 .relevant-offer>div>span:last-child{font-size:18px;line-height:1.25;color:#6a6a6a}
 .relevant-offer b{font-size:22px;white-space:nowrap}
 .ad-disclosure{font-size:15px;color:#7a7a7a;letter-spacing:.02em}
 @keyframes offer-enter{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-.shop-cta{padding:17px;border-radius:10px;background:var(--ink);color:white;font-size:23px;font-weight:700;text-align:center;margin-top:16px}
-.shop-cart-note{font-size:17px;color:#888;line-height:1.35;margin-top:12px}
+.shop-cta{padding:17px;border-radius:10px;background:var(--ink);color:white;font-size:23px;font-weight:700;text-align:center;margin-top:34px}
 /* Packs: brand letters on simple product shapes. */
 .pack{position:relative;flex-shrink:0;display:grid;place-items:center;margin:0 6px;background:#d9d9d9;color:#fff;font-size:17px;font-weight:900;line-height:1}
 .pack b{font-weight:900}
@@ -246,7 +244,7 @@ dialog h2{font-size:30px;line-height:1.2;margin:12px 0 24px}
 .app-tile strong{display:block;font-size:20px;line-height:1.2;margin-top:10px}
 .app-tile .product-detail{font-size:16px;margin-top:3px}
 .tile-shot{height:100px;border-radius:10px;background:#f6f3ee;display:grid;place-items:center}
-.tile-tag{position:absolute;left:14px;top:12px;z-index:2;padding:4px 8px;border-radius:6px;background:#fff;font-size:13px;color:#7a7a7a;letter-spacing:.02em}
+.tile-tag{position:absolute;left:14px;top:12px;z-index:2;padding:4px 8px;border-radius:6px;background:var(--red);font-size:13px;font-weight:700;color:#fff;letter-spacing:.02em}
 .tile-foot{display:flex;align-items:center;justify-content:space-between;margin-top:9px}
 .tile-foot b{font-size:22px}
 /* Each bar is half out of its sleeve: the open chocolate (squares and torn foil) lies under it. */
@@ -255,17 +253,18 @@ dialog h2{font-size:30px;line-height:1.2;margin:12px 0 24px}
 .choc-sleeve{position:absolute;left:0;top:0;width:140px;height:76px;border-radius:6px;border-left:20px solid #d6b15e;box-shadow:0 8px 12px #0002}
 .choc b{position:absolute;left:12px;top:4px;font-size:40px;line-height:1;font-weight:900}
 .choc i{position:absolute;left:12px;bottom:9px;font-style:normal;font-size:13px;font-weight:900;letter-spacing:.05em}
-.app-grid .selected .tile-shot{background:#f1ece4}
+.app-tile.sponsored{background:var(--sponsor-bg);border-color:var(--sponsor-line)}
+.app-tile.sponsored .tile-shot{background:#fff}
 .slide[data-reveal-index="1"] .app-grid .selected{outline:3px solid var(--red);outline-offset:-1px}
 .slide[data-reveal-index="1"] .app-grid .selected .product-add,.slide[data-reveal-index="1"] .cart-suggestion .product-add{background:var(--red);color:#fff;font-size:0}
 .slide[data-reveal-index="1"] .app-grid .selected .product-add::after,.slide[data-reveal-index="1"] .cart-suggestion .product-add::after{content:"✓";font-size:20px}
 /* Cart: what is there, and what fits with it. */
 .app-cart .product-add{display:none}
 .app-cart .cart-suggestion .product-add{display:grid}
-.cart-suggestion{margin-top:16px;padding:12px 14px 2px;border-left:5px solid var(--red);background:#faf6f0;border-radius:4px}
+.cart-suggestion{margin-top:16px;padding:12px 14px 2px;border:1px solid var(--sponsor-line);border-left:5px solid var(--red);background:var(--sponsor-bg);border-radius:4px}
 .cart-suggestion p{display:flex;justify-content:space-between;align-items:baseline;font-size:20px}
 .cart-suggestion .product-row{border-bottom:0}
-.slide[data-reveal-index="1"] .cart-suggestion{background:#fdecec}
+.slide[data-reveal-index="1"] .cart-suggestion{background:#fcd6d5}
 .lessons{position:absolute;left:130px;right:130px;top:465px}
 .lesson{display:flex;gap:36px;align-items:center;border-top:1px solid #ddd;padding:34px 0}
 .lesson>span{font-size:45px;color:var(--red);font-weight:900;min-width:100px}
@@ -320,9 +319,9 @@ dialog h2{font-size:30px;line-height:1.2;margin:12px 0 24px}
 .now-app{position:absolute;left:0;top:355px;width:760px;height:330px;border:2px solid #e3e3e3;border-radius:22px;background:#fff;overflow:hidden;box-shadow:0 18px 50px #0000000f}
 .now-app-header{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;border-bottom:2px solid #ededed;font-size:24px;font-weight:900}
 .now-shops{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:20px 24px 16px}
-.now-shop{display:flex;align-items:center;gap:9px;height:52px;padding:0 12px;border-radius:26px;border:1px solid #e5e5e5;background:#fafafa;font-size:19px;font-weight:700;white-space:nowrap}
-.now-shop i{width:12px;height:12px;border-radius:50%;flex-shrink:0}
-.now-sponsor{margin:0 24px;padding:10px 16px;border-left:5px solid var(--red);background:#faf6f0}
+.now-shop{display:flex;align-items:center;gap:9px;height:52px;padding:0 12px 0 9px;border-radius:26px;border:1px solid #e5e5e5;background:#fafafa;font-size:19px;font-weight:700;white-space:nowrap}
+.now-shop-icon{width:34px;height:34px;flex-shrink:0}
+.now-sponsor{margin:0 24px;padding:10px 16px;border:1px solid var(--sponsor-line);border-left:5px solid var(--red);background:var(--sponsor-bg)}
 .now-sponsor strong{display:block;font-size:22px;margin-top:3px}
 .now-plus{position:absolute;left:1030px;top:888px;font-size:44px;font-weight:900;color:var(--red);letter-spacing:-.02em}
 /* The guests story: message, fridge and table. */

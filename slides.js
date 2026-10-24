@@ -70,10 +70,10 @@
     '<span class="pack pack-'+kind+(brand?' brand-'+brand.toLowerCase():'')+'" aria-hidden="true">'+(brand?'<b>'+brand+'</b>':'')+'</span>';
   const bar=(brand,label)=>'<span class="choc" aria-hidden="true">'+barOpen+'<span class="choc-sleeve brand-'+brand.toLowerCase()+'"><b>'+brand+'</b><i>'+label+'</i></span></span>';
   const row=(kind,brand,name,detail,price,cls='')=>'<div class="product-row '+cls+'">'+(snackArt[kind]?snack(kind,brand):pack(kind,brand))+'<div><strong data-edit>'+name+'</strong><span class="product-detail" data-edit>'+detail+'</span></div><b data-edit>'+price+'</b><span class="product-add" aria-hidden="true">+</span></div>';
-  const ad='<span class="ad-disclosure" data-edit>Sponsorowane · przykład</span>';
+  const ad='<span class="ad-disclosure" data-edit>Sponsorowane</span>';
   const appHeader='<header class="shop-header"><span class="shop-wordmark" data-edit>Aplikacja szybkich dostaw</span><span class="shop-cart-icon" aria-hidden="true">▣</span></header>';
   const frame=(mode,body)=>'<section class="shopping-frame app-'+mode+'" data-move aria-label="Ilustracyjny ekran aplikacji szybkich dostaw">'+appHeader+'<div class="shop-body">'+body+'</div></section>';
-  const top=(context,title)=>'<p class="shop-context" data-edit>'+context+'</p><h2 data-edit>'+title+'</h2>';
+  const top=(context,title)=>(context?'<p class="shop-context" data-edit>'+context+'</p>':'')+'<h2 data-edit>'+title+'</h2>';
   // Banner still life: lemonade, a can and a bag of nachos behind a half-open chocolate bar. Tilted parts are rotated point by point.
   const turn=(list,cx,cy,deg)=>{const a=deg*Math.PI/180,c=Math.cos(a),s=Math.sin(a);return list.map(([x,y])=>[cx+(x-cx)*c-(y-cy)*s,cy+(x-cx)*s+(y-cy)*c]);};
   const box=(x0,y0,x1,y1)=>[[x0,y0],[x1,y0],[x1,y1],[x0,y1]];
@@ -146,16 +146,15 @@
     search:frame('search',top('Na spotkanie','Znajdź produkt')+
       '<div class="shop-search"><span aria-hidden="true">⌕</span><span class="type-query" data-edit>przekąski</span></div>'+
       reveal(1,'<div class="relevant-offer">'+snack('nachos','A')+'<div>'+ad+'<strong data-edit>Nachosy solone · marka A</strong><span data-edit>200 g</span></div><b data-edit>8,99 zł</b><span class="product-add" aria-hidden="true">+</span></div>'+
-        row('chips','B','Chipsy paprykowe · marka B','150 g','6,99 zł')+row('sticks','C','Paluszki solone · marka C','200 g','4,49 zł')+row('popcorn','D','Popcorn maślany · marka D','90 g','5,49 zł'),'shop-results')+
-      '<div class="shop-bottom"><span data-edit>Szukam kategorii. Marka jest otwarta.</span></div>'),
+        row('chips','B','Chipsy paprykowe · marka B','150 g','6,99 zł')+row('sticks','C','Paluszki solone · marka C','200 g','4,49 zł')+row('popcorn','D','Popcorn maślany · marka D','90 g','5,49 zł'),'shop-results')),
     shelf:frame('shelf',top('Słodycze','Czekolady')+'<div class="app-grid">'+
       [['B','Czekolada z orzechami','Z ORZECHAMI','marka B · 100 g','6,49 zł','sponsored selected'],['A','Czekolada gorzka 70%','GORZKA 70%','marka A · 100 g','7,29 zł',''],['C','Czekolada mleczna','MLECZNA','marka C · 90 g','5,49 zł',''],['D','Czekolada z karmelem','Z KARMELEM','marka D · 100 g','6,99 zł','']]
         .map(([brand,name,label,detail,price,cls])=>'<div class="app-tile '+cls+'">'+(cls.includes('sponsored')?'<span class="tile-tag" data-edit>Sponsorowane</span>':'')+'<div class="tile-shot">'+bar(brand,label)+'</div><strong data-edit>'+name+'</strong><span class="product-detail" data-edit>'+detail+'</span><div class="tile-foot"><b data-edit>'+price+'</b><span class="product-add" aria-hidden="true">+</span></div></div>').join('')+'</div>'+
       reveal(1,'<p class="selection-feedback" data-edit>Dodano do koszyka: czekolada z orzechami</p>')),
-    cart:frame('cart',top('Mój koszyk','Twój koszyk')+
+    cart:frame('cart',top('','Mój koszyk')+
       row('bottle','C','Lemoniada · marka C','1 l','7,99 zł')+row('nachos','A','Nachosy solone · marka A','200 g','8,99 zł')+row('bar','B','Czekolada z orzechami · marka B','100 g','6,49 zł')+
       '<div class="cart-suggestion"><p><strong data-edit>Pasuje do Twojego koszyka</strong>'+ad+'</p>'+row('jar','A','Dip salsa · marka A','200 g · do nachosów','9,99 zł','suggested')+'</div>'+
-      '<div class="shop-cta" data-edit>Przejdź do podsumowania</div><p class="shop-cart-note" data-edit>Przykładowe ceny. Dostawa i opłaty widoczne przed zakupem.</p>')
+      '<div class="shop-cta" data-edit>Przejdź do podsumowania</div>')
   };
   const journey=(step,question,statement,punch,screen)=>'<div class="shopping-copy">'+heading(question,step)+'<p class="shopping-statement" data-edit>'+statement+'</p>'+reveal(1,'<p class="shopping-punch red-text" data-edit>'+punch+'</p>')+'</div>'+screen;
 
@@ -167,9 +166,42 @@
     '<svg class="map-pin pin-shop" viewBox="0 0 64 58">'+poly([[8,22],[56,22],[56,56],[8,56]],'#fff',' stroke="#151515" stroke-width="3"')+
       [0,1,2,3].map(i=>poly([[4+i*14,6],[18+i*14,6],[18+i*14,22],[4+i*14,22]],i%2?'#fff':'#ee312f',' stroke="#151515" stroke-width="2"')).join('')+poly([[26,36],[38,36],[38,56],[26,56]],'#151515')+'</svg>'+
     '<span class="map-tag tag-home">Dom</span><span class="map-tag tag-shop">Sklep</span></div>';
+  // Shop badges: a white glyph on the shop colour, details in a paler tint, cut-outs in the colour itself. 40×40, centred on (20,20).
+  const shopIcon=(kind,c)=>{
+    const W='#fff',T=mix(c,'#ffffff',.55);
+    const rr=(x0,y0,x1,y1,r)=>[[x1-r,y0+r,-90],[x1-r,y1-r,0],[x0+r,y1-r,90],[x0+r,y0+r,180]].flatMap(([x,y,a])=>arc(x,y,r,r,a,a+90,4));
+    const band=(cx,cy,r0,r1)=>[...arc(cx,cy,r1,r1,180,360,14),...arc(cx,cy,r0,r0,360,180,14)];
+    const lobe=(cx,cy,rx,ry,deg,fill,extra='')=>poly(turn(arc(cx,cy,rx,ry,0,360,24).slice(0,-1),cx,cy,deg),fill,extra);
+    const glyph={
+      // Basket, three slots in the weave.
+      market:()=>poly(band(20,19,5.2,7.2),W)+poly(rr(9,17.5,31,21,1.5),W)+
+        poly([[11,22],[29,22],[27,30.5],[13,30.5]],W)+[15.6,20,24.4].map(x=>poly(rr(x-.9,24,x+.9,28.5,.9),c)).join(''),
+      // The pharmacy cross.
+      apteka:()=>poly(rr(16.25,10,23.75,30,2),W)+poly(rr(10,16.25,30,23.75,2),W),
+      // Pump bottle with a drop on the label.
+      drogeria:()=>poly(rr(11.5,9.4,18,11.6,1.1),W)+poly(rr(16.5,9,23.5,12.8,1.3),W)+poly(box(18.75,12.8,21.25,15.6),W)+poly(rr(16.5,15.6,23.5,18.6,1),T)+
+        poly(rr(13.5,18.6,26.5,31,3.2),W)+poly(rr(16.5,22,23.5,28,1.2),T)+poly([[20,23.1],...arc(20,25.7,1.5,1.5,-35,215,10)],c),
+      // Domed loaf with three slanted cuts.
+      piekarnia:()=>poly([...arc(20,21,10.5,9,180,360,20),...arc(28.5,27,2,2,0,90,4),...arc(11.5,27,2,2,90,180,4)],W)+
+        [[14.6,19],[20,17.6],[25.4,19]].map(([x,y])=>poly(turn(rr(x-.9,y-3.4,x+.9,y+3.4,.9),x,y,35),c)).join(''),
+      // Tulip: tinted front petal, two leaves at the foot of the stem.
+      kwiaciarnia:()=>poly(box(19.15,22,20.85,31),W)+lobe(16.6,27.1,2.1,4.6,-40,W)+lobe(23.4,26.1,2.1,4.6,40,W)+
+        poly([[13.5,10.5],[16.8,13.8],[20,9],[23.2,13.8],[26.5,10.5],...arc(20,17,6.5,6,0,180,12)],W)+poly([[16.8,13.8],[20,9],[23.2,13.8],[23,17.5],[20,21],[17,17.5]],T),
+      // Takeaway cup with a straw and a sleeve.
+      napoje:()=>poly(turn(box(20.6,6.5,22.4,14.5),21.5,14.5,18),W)+poly([[14,15.4],[15.5,13],[24.5,13],[26,15.4]],W)+poly(rr(12,15,28,18,1.4),W)+
+        poly([[13,19],[27,19],[25.3,32.5],[14.7,32.5]],W)+poly([[13.5,23],[26.5,23],[25.93,27.5],[14.07,27.5]],T),
+      // Paw: a three-lobed pad and four toes.
+      zoologiczny:()=>ellipse(20,24.5,5.6,4.6,W)+ellipse(16.6,26.8,3.4,3.1,W)+ellipse(23.4,26.8,3.4,3.1,W)+
+        lobe(11.6,18.6,2.5,3.3,-25,W)+lobe(16.4,13.4,2.7,3.5,-8,W)+lobe(23.6,13.4,2.7,3.5,8,W)+lobe(28.4,18.6,2.5,3.3,25,W),
+      // Headphones with tinted ear pads.
+      elektronika:()=>poly(band(20,20,7.4,9.4),W)+poly(rr(9.2,19,14.6,29.5,2.4),W)+poly(rr(25.4,19,30.8,29.5,2.4),W)+
+        poly(rr(13.8,20,16.4,28.5,1.2),T)+poly(rr(23.6,20,26.2,28.5,1.2),T)
+    };
+    return '<svg class="now-shop-icon" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="'+c+'"/>'+glyph[kind]()+'</svg>';
+  };
   const nowApp='<div class="now-app" aria-label="Schemat aplikacji szybkich dostaw"><header class="now-app-header"><span data-edit>Aplikacja szybkich dostaw</span><span class="shop-cart-icon" aria-hidden="true">▣</span></header><div class="now-shops">'+
-    [['Market','#ee312f'],['Apteka','#2f7d5b'],['Drogeria','#6c72b3'],['Piekarnia','#e2932b'],['Kwiaciarnia','#d9668f'],['Napoje','#3a8fc2'],['Zoologiczny','#8a6d3b'],['Elektronika','#555']]
-      .map(([name,color])=>'<span class="now-shop"><i style="background:'+color+'"></i><span data-edit>'+name+'</span></span>').join('')+'</div>'+
+    [['Market','#ee312f'],['Apteka','#2f7d5b'],['Drogeria','#6c72b3'],['Piekarnia','#e2932b'],['Kwiaciarnia','#d9668f'],['Napoje','#3a8fc2'],['Zoologiczny','#8a6d3b'],['Elektronika','#555555']]
+      .map(([name,color])=>'<span class="now-shop">'+shopIcon(name.toLowerCase(),color)+'<span data-edit>'+name+'</span></span>').join('')+'</div>'+
     reveal(2,'<div class="now-sponsor">'+ad+'<strong data-edit>Polecane na wieczór ze znajomymi</strong></div>')+'</div>';
 
   // The needs behind 78%: four authored still lifes, no people.
