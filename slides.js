@@ -157,7 +157,7 @@
       reveal(1,'<p class="selection-feedback" data-edit>Dodano do koszyka: czekolada z orzechami</p>')),
     cart:frame('cart',top('','Mój koszyk')+
       row('bottle','C','Lemoniada · marka C','1 l','7,99 zł')+row('nachos','A','Nachosy solone · marka A','200 g','8,99 zł')+row('bar','B','Czekolada z orzechami · marka B','100 g','6,49 zł')+
-      '<div class="cart-suggestion"><p><strong data-edit>Pasuje do Twojego koszyka</strong>'+ad+'</p>'+row('jar','A','Dip salsa · marka A','200 g · do nachosów','9,99 zł','suggested')+'</div>'+
+      '<div class="cart-suggestion"><p><strong data-edit>Pasuje do Twojego koszyka</strong>'+ad+'</p>'+row('jar','A','Dip salsa · marka A','200 g · do nachosów','2,59 zł','suggested')+'</div>'+
       '<div class="shop-cta" data-edit>Przejdź do podsumowania</div>')
   };
   const journey=(step,question,statement,punch,screen)=>'<div class="shopping-copy">'+heading(question,step)+'<p class="shopping-statement" data-edit>'+statement+'</p>'+reveal(1,'<p class="shopping-punch red-text" data-edit>'+punch+'</p>')+'</div>'+screen;
