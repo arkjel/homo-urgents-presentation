@@ -6,10 +6,10 @@ import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),ctx={window:{}};
 vm.runInNewContext(fs.readFileSync(path.join(root,'slides.js'),'utf8'),ctx);
 const {slides,totalDurationSeconds,limitSeconds}=ctx.window.HOMO_DECK;
-assert.equal(slides.length,25);assert.equal(new Set(slides.map(s=>s.id)).size,25);
-assert.equal(totalDurationSeconds,935);assert.equal(limitSeconds,1080);
-const expected={'kontrola':[78],'wybor-w-aplikacji':[55],dopasowanie:[27],trafnosc:[48]};
-assert.equal(slides.reduce((n,s)=>n+(s.metrics?.length||0),0),4,'exactly four research metrics');
+assert.equal(slides.length,24);assert.equal(new Set(slides.map(s=>s.id)).size,24);
+assert.equal(totalDurationSeconds,885);assert.equal(limitSeconds,1080);
+const expected={'kontrola':[78],'wybor-w-aplikacji':[55],trafnosc:[48]};
+assert.equal(slides.reduce((n,s)=>n+(s.metrics?.length||0),0),3,'exactly three research metrics');
 for(const slide of slides){
   assert.ok(slide.notes&&slide.speaker&&slide.seconds>0,slide.id+': speaker notes and timing');
   const steps=Array.from(slide.html.matchAll(/data-reveal="(\d+)"/g),m=>Number(m[1]));
@@ -26,9 +26,9 @@ assert.deepEqual(Array.from(waiting,s=>s.id),['prosze-czekac','jeszcze-chwila'])
 assert.equal(waiting[0].loader.duration+waiting[1].loader.duration,10000);
 assert.equal(waiting[1].loader.to,99);
 assert.equal(slides[0].id,'tytul','the deck opens on the cover with the speakers');
-// The story clock runs from the guests' message to the 27% result, always forward, never with digits.
+// The story clock runs from the guests' message to the cart, always forward, never with digits.
 const clocked=slides.filter(s=>Number.isInteger(s.clock));
-assert.equal(clocked[0].id,'goscie');assert.equal(clocked.at(-1).id,'dopasowanie');
+assert.equal(clocked[0].id,'goscie');assert.equal(clocked.at(-1).id,'koszyk');
 assert.equal(clocked.length,slides.indexOf(clocked.at(-1))-slides.indexOf(clocked[0])+1,'clock on every story slide');
 clocked.forEach((s,i)=>{assert.ok(!i||s.clock>clocked[i-1].clock,s.id+': clock moves forward');assert.ok(s.clock<20);assert.equal((s.html.match(/class="story-clock"/g)||[]).length,1);});
 assert.ok(slides.filter(s=>!Number.isInteger(s.clock)).every(s=>!s.html.includes('story-clock')));

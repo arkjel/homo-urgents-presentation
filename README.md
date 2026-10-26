@@ -2,7 +2,7 @@
 
 Prezentacja dla Uliany Jelonek i Joanny Wysockiej z Glovo.
 
-**25 slajdów. Cztery wartości z raportu. Scenariusz 15:35. Limit 18 minut.**
+**24 slajdy. Trzy wartości z raportu. Scenariusz 14:45. Limit 18 minut.**
 
 ## Uruchomienie
 
@@ -39,11 +39,11 @@ Treści, czasy, dane badania i notatki są w `slides.js`. Liczby wykresów zmien
 
 Źródła, podstawy badania, strony PDF oraz pochodzenie grafik opisano w `SOURCES.md`.
 
-Prezentację prowadzi jedna historia: **„Goście za 20 minut”**. Bohaterka dostaje wiadomość „Będziemy za 20 minut 😊”, otwiera prawie pustą lodówkę (w środku tylko pół cytryny: „o-shit commerce”) i potrzebuje napojów, przekąsek i czegoś słodkiego (czekolada). W aplikacji przechodzi cztery etapy: banner na spotkanie („Nie wiem, od czego zacząć.”), sponsorowane nachosy po wpisaniu „przekąski” („Gdzie są przekąski?”), wybór czekolady po packshocie, wariancie i cenie („Które kupić?”) oraz dip do nachosów przy koszyku („Nie szukałam, ale tego mi brakowało.”). Potem pada wynik 27%, nazwy formatów i wnioski, a finał to nakryty stół: „Marka dostała miejsce przy stole, bo pomogła go przygotować”.
+Prezentację prowadzi jedna historia: **„Goście za 20 minut”**. Bohaterka dostaje wiadomość „Będziemy za 20 minut 😊”, otwiera prawie pustą lodówkę (w środku tylko pół cytryny: „o-shit commerce”) i potrzebuje napojów, przekąsek i czegoś słodkiego (czekolada). W aplikacji przechodzi cztery etapy: banner na spotkanie („Nie wiem, od czego zacząć.”), sponsorowane nachosy po wpisaniu „przekąski” („Gdzie są przekąski?”), wybór czekolady po packshocie, wariancie i cenie („Które kupić?”) oraz dip do nachosów przy koszyku („Nie szukałam, ale tego mi brakowało.”). Potem padają nazwy formatów i wnioski, a finał to nakryty stół: „Marka dostała miejsce przy stole, bo pomogła go przygotować”.
 
-Na slajdach 9–19 w prawym górnym rogu jest zegar opowieści: tarcza bez cyfr, jeden obrót to 20 minut do przyjścia gości. Zegar buduje napięcie; nie pokazuje i nie obiecuje czasu dostawy. Ekrany pokazują ilustracyjną „Aplikację szybkich dostaw” w neutralnych kolorach, bez logo i barw konkretnej platformy, na ekranie grafitowego telefonu (bez godziny i ikon na pasku statusu). Marki A–D, produkty i ceny są umowne. Scena nie jest wynikiem kampanii.
+Na slajdach 9–18 w prawym górnym rogu jest zegar opowieści: tarcza bez cyfr, jeden obrót to 20 minut do przyjścia gości. Zegar buduje napięcie; nie pokazuje i nie obiecuje czasu dostawy. Ekrany pokazują ilustracyjną „Aplikację szybkich dostaw” w neutralnych kolorach, bez logo i barw konkretnej platformy, na ekranie grafitowego telefonu (bez godziny i ikon na pasku statusu). Marki A–D, produkty i ceny są umowne. Scena nie jest wynikiem kampanii.
 
-Cytaty na slajdzie 2 to trzy sformułowania raportu (s. 22) oddające głos konsumenta, nie wypowiedzi konkretnych osób. CAWI N=1002 dotyczy całej próby mieszkańców miast 18+; raport nie podaje liczebności wszystkich podgrup q-commerce. Wynik 27% ma podstawę N=619 (osoby, które zmieniały plany lub zainteresowały się innym produktem) według s. 41 pełnego raportu; w publikacji jest na s. 15. Decision Lab N=11 opisuje ścieżki jakościowe, nie rozkład w populacji. Retail Media może współtworzyć wybór w aplikacji; sam zakup po reklamie nie jest dowodem jej przyczynowego wpływu.
+Cytaty na slajdzie 2 to trzy sformułowania raportu (s. 22) oddające głos konsumenta, nie wypowiedzi konkretnych osób. CAWI N=1002 dotyczy całej próby mieszkańców miast 18+; raport nie podaje liczebności wszystkich podgrup q-commerce. Decision Lab N=11 opisuje ścieżki jakościowe, nie rozkład w populacji. Retail Media może współtworzyć wybór w aplikacji; sam zakup po reklamie nie jest dowodem jej przyczynowego wpływu.
 
 ## Ruch
 
