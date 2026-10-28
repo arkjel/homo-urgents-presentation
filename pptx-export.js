@@ -85,7 +85,8 @@
   }
 
   // ---- Capture: virtual clock, recorded animations, DOM history ------------------------------
-  function createSession(stage){
+  // simple: the Google Slides target, whose scenes keep their reduced, export-only choreography.
+  function createSession(stage,{simple=false}={}){
     const clock={now:0,seq:0,queue:[]},saved={};
     let group=0,sampling=false,state=null,observer=null,cursor=0;
     const css=document.createElement('style');
@@ -119,7 +120,7 @@
         };
         Element.prototype.remove=function(){if(state&&!sampling){if(!state.removed.has(this))state.removed.set(this,clock.now);}else saved.remove.call(this);};
         Animation.prototype.cancel=function(){const rec=state?.byAnim.get(this);if(rec&&!sampling&&rec.canceledAt==null)rec.canceledAt=clock.now;this.finished.catch(()=>{});return saved.cancel.call(this);};
-        window.DECK_MOTION.record({now:()=>clock.now,event:e=>state?.events.push({...e,group})});
+        window.DECK_MOTION.record({now:()=>clock.now,event:e=>state?.events.push({...e,group}),simple});
         document.head.append(css);document.documentElement.classList.add('pptx-capture');
       },
       uninstall(){
@@ -223,7 +224,10 @@
       if(!m){s.alive=false;return s;}
       const n=new DOMMatrix().scale(1/frame.k).translate(-frame.left,-frame.top).multiply(m);
       s.m=[n.a,n.b,n.c,n.d,n.e,n.f];
-      if(prim.feature)s.d=getComputedStyle(prim.el).d;
+      const cs=getComputedStyle(prim.el);
+      if(prim.feature)s.d=cs.d;
+      if(prim.fill&&!prim.fill.gradient)s.fill=color(cs.fill).hex;
+      if(prim.line)s.stroke=color(cs.stroke).hex;
     }else{
       const r=prim.el.getBoundingClientRect(),l=linear(prim.el,frame.article);
       s.cx=((r.left+r.right)/2-frame.left)/frame.k;s.cy=((r.top+r.bottom)/2-frame.top)/frame.k;
@@ -260,14 +264,17 @@
     for(const [el,nodes] of owners)if(!nodes.some(n=>n.textContent.trim()))owners.delete(el);
     return owners;
   }
-  function zOf(el,article){
-    let z=0;
+  // Stacking: each positioned z-index nests inside the one around it (the phone at 3, its screen at 3.02, its fade at 3.01).
+  function zChain(el,article){
+    const chain=[];
     for(let n=el;n&&n!==article;n=n.parentElement){
       const cs=getComputedStyle(n);
-      if(cs.position!=='static'&&cs.zIndex!=='auto')z=parseInt(cs.zIndex,10)||0;
+      if(cs.position!=='static'&&cs.zIndex!=='auto')chain.unshift(parseInt(cs.zIndex,10)||0);
     }
-    return z;
+    return chain;
   }
+  const zFold=chain=>chain.reduce((z,v,i)=>z+v/100**i,0);
+  function zOf(el,article){return zFold(zChain(el,article));}
   function collect(article,frame){
     const prims=[],owners=textOwners(article);
     let order=0;
@@ -328,11 +335,15 @@
     if(!content||content==='none'||content==='normal')return;
     const text=content.replace(/^["']|["']$/g,'');
     if(cs.position==='absolute'){
-      const bg=color(cs.backgroundColor);
-      if(bg.a<=0)return;
-      const host=getComputedStyle(el);
-      add({kind:'box',el,local:{x:number(cs.left)+number(host.borderLeftWidth),y:number(cs.top)+number(host.borderTopWidth),w:number(cs.width),h:number(cs.height)},geom:'rect',fill:{color:bg.hex,alpha:bg.a},line:null,
-        z:cs.zIndex==='auto'?undefined:parseInt(cs.zIndex,10),role:'pseudo'});
+      // A drawn pseudo-element (the phone's bezel, its fade, the camera lens): fill or gradient, rounded corners, one border.
+      const bg=color(cs.backgroundColor),grad=gradient(cs.backgroundImage),bw=number(cs.borderTopWidth),bc=color(cs.borderTopColor);
+      const border=bw>0&&!/none|hidden/.test(cs.borderTopStyle)&&bc.a>0;
+      if(bg.a<=.004&&!grad&&!border)return;
+      const host=getComputedStyle(el),x=number(cs.left)+number(host.borderLeftWidth),y=number(cs.top)+number(host.borderTopWidth);
+      const w=number(cs.width)+number(cs.paddingLeft)+number(cs.paddingRight)+(border?2*bw:0),h=number(cs.height)+number(cs.paddingTop)+number(cs.paddingBottom)+(border?2*bw:0);
+      const inset=border?bw/2:0;
+      add({kind:'box',el,pseudoBox:which,local:{x:x+inset,y:y+inset,w:w-2*inset,h:h-2*inset},...geometry(radii(cs,w,h),w,h),fill:grad?{gradient:grad}:bg.a>.004?{color:bg.hex,alpha:bg.a}:null,
+        line:border?{color:bc.hex,alpha:bc.a,width:bw}:null,z:cs.zIndex==='auto'?undefined:zFold([...zChain(el,el.closest('.slide')),parseInt(cs.zIndex,10)||0]),role:'pseudo'});
     }else if(text.trim())add({kind:'text',el,pseudo:which,pseudoText:text});
   }
   function svgPrim(el,cs,add){
@@ -481,7 +492,11 @@
       const moving=pts.some(([,v])=>Math.abs(v-pts[0][1])>TOL[key]);
       const away=Math.abs(pts[0][1]-restValue)>TOL[key];
       if(!moving&&!(away&&(rest||prim.transient)))continue;
-      out[key]=simplify(pts,TOL[key]).slice(0,60);
+      // Scale keys err by at most half a pixel of the shape's size (seams between big facets); past 60 keys the tolerance grows
+      // instead of cutting the end off.
+      let tol=key==='w'||key==='h'?Math.min(TOL[key],.5/Math.max(1,key==='w'?base.w:base.h)):TOL[key],kept=simplify(pts,tol);
+      while(kept.length>60){tol*=1.5;kept=simplify(pts,tol);}
+      out[key]=kept;
     }
     return out;
   }
@@ -504,7 +519,7 @@
     }
     return out;
   }
-  const kindPreset=b=>b.some(x=>x.attr==='ppt_x'||x.attr==='ppt_y')?['path',[0,0]]:b.some(x=>x.attr==='ppt_w'||x.attr==='ppt_h')?['emph',[6,0]]:b.some(x=>x.type==='rotate'||x.attr==='style.rotation')?['emph',[8,0]]:['emph',[9,0]];
+  const kindPreset=b=>b.some(x=>x.attr==='ppt_x'||x.attr==='ppt_y')?['path',[0,0]]:b.some(x=>x.attr==='ppt_w'||x.attr==='ppt_h')?['emph',[6,0]]:b.some(x=>x.type==='rotate'||x.attr==='style.rotation')?['emph',[8,0]]:b.some(x=>x.type==='color')?['emph',[1,0]]:['emph',[9,0]];
 
   // Finite window of one group: entrance, motion, plateaus of opacity, exit.
   function finiteEffect(prim,g,samples,win,shape,previous){
@@ -562,7 +577,17 @@
         level=target;i=j;
       }
     }
-    if(level==null&&startVisible&&!first)return null;
+    // Colour changes (facets taking on a new palette) become colour emphases of the fill and the outline.
+    for(const key of ['fill','stroke']){
+      const tinted=series.filter(s=>s.alive&&s[key]);
+      for(let i=1,current=tinted[0]?.[key];i<tinted.length;i++){
+        if(tinted[i][key]===current)continue;
+        let j=i;while(j+1<tinted.length&&tinted[j+1][key]!==tinted[j][key])j++;
+        behaviors.push({type:'color',attr:key,to:tinted[j][key],at:Math.max(0,tinted[i-1].t-from),dur:Math.max(1,tinted[j].t-tinted[i-1].t)});
+        current=tinted[j][key];i=j;
+      }
+    }
+    if(level==null&&startVisible&&!first&&!behaviors.length)return null;
     const ch=channels(prim,series,prim.base,true);
     behaviors.push(...animBehaviors(ch,from,Math.max(1,Math.max(to,series.at(-1).t)-from),shape.rot?'chain':'abs'));
     if(!behaviors.length)return null;
@@ -599,7 +624,8 @@
         if(recordEnd(r)===Infinity||!affects(r,prim))continue;
         const s=r.start+(r.timing.delay||0),e=recordEnd(r);
         if(e<g.start||s>g.end)continue;
-        from=Math.min(from,Math.max(g.start,r.start));to=Math.max(to,Math.min(g.end,e));
+        // One sample past the end: a shape held hidden until e only shows in the sample after it.
+        from=Math.min(from,Math.max(g.start,r.start));to=Math.max(to,Math.min(g.end,e+STEP));
       }
       for(const n of prim.lineage){
         const b=state.born.get(n),rm=state.removed.get(n);
@@ -694,6 +720,10 @@
       if(p.el.closest('.m-steam'))s=null;
       if(!s){s=[...all].reverse().find(vis);p.transient=true;}
       if(!s)continue;
+      // A shape whose fill changes starts in its first colour; colour emphases take it from there.
+      const first=all.find(vis);
+      if(first?.fill&&p.fill&&first.fill!==p.fill.color)p.fill={...p.fill,color:first.fill};
+      if(first?.stroke&&p.line&&first.stroke!==p.line.color)p.line={...p.line,color:first.stroke};
       p.staticSample=s;kept.push(p);
     }
     // Of the expressions of one feature only one stays on the slide; the others wait off-slide.
@@ -725,8 +755,10 @@
       if(!shape)continue;
       p.shape=shape;model.shapes.push(shape);
       groups.forEach((g,gi)=>{
-        const visibleHere=p.samples[gi].some(s=>s.alive&&s.presence>.01);
-        const win=p.finite[gi]??(p.transient&&visibleHere?[g.start,g.end]:null);
+        const shown=p.samples[gi].find(s=>s.alive&&s.presence>.01);
+        let win=p.finite[gi]??(p.transient&&shown?[g.start,g.end]:null);
+        // A transient that is on screen before its window (a still layer removed later) enters when it first shows.
+        if(win&&p.transient&&shown&&shown.t<win[0])win=[shown.t,win[1]];
         if(!win)return;
         const e=finiteEffect(p,g,p.samples[gi],win,shape,gi?p.samples[gi-1].at(-1):null);
         if(e)model.effects[gi].push(e);
@@ -777,8 +809,8 @@
       if(el.matches('.clock-tick'))return 'Zegar – kreska '+([...clock.querySelectorAll('.clock-tick')].indexOf(el)+1);
       if(el.matches('.clock-label'))return 'Zegar – napis';
     }
-    const frameRoles=[['.shopping-frame','Telefon'],['.shop-header','Telefon – nagłówek'],['.shop-wordmark','Telefon – aplikacja'],['.shop-cart-icon','Telefon – koszyk'],['.shop-context','Telefon – kontekst'],['.shop-body > h2','Telefon – tytuł'],['.shop-search','Telefon – wyszukiwarka']];
-    for(const [selector,name] of frameRoles)if(el.matches(selector))return name+(p.kind==='text'?' (tekst)':'');
+    const frameRoles=[['.shopping-frame','Telefon'],['.phone-screen','Telefon – ekran'],['.phone-island','Telefon – wyspa'],['.key-action','Telefon – przycisk akcji'],['.key-up','Telefon – głośniej'],['.key-down','Telefon – ciszej'],['.key-power','Telefon – zasilanie'],['.shop-header','Telefon – nagłówek'],['.shop-wordmark','Telefon – aplikacja'],['.shop-cart-icon','Telefon – koszyk'],['.shop-context','Telefon – kontekst'],['.shop-body > h2','Telefon – tytuł'],['.shop-search','Telefon – wyszukiwarka']];
+    for(const [selector,name] of frameRoles)if(el.matches(selector))return name+(p.kind==='text'?' (tekst)':'')+(p.pseudoBox?' '+p.pseudoBox.replace(/:/g,''):'');
     void index;
     return null;
   }
@@ -897,19 +929,42 @@
       model.effects[r.group]=model.effects[r.group].filter(e=>e.shape!==shape||e.cls!=='entr');
       model.effects[r.group].push({shape,cls:'entr',preset:[21,1],delay:Math.max(0,r.start+(r.timing.delay||0)-groups[r.group].start),behaviors:[{type:'visibility',value:'visible'},{type:'filter',filter:'wheel(1)',dir:'in',dur:Number(r.timing.duration)||1000,decel:1}]});
     }
-    // clip-path reveals: a Wipe from the side the clip opens from, or a Split from the middle.
+    // clip-path reveals: a Wipe from the side an inset opens from, a Split from the middle, or Strips from the corner
+    // a collapsed polygon unfolds from. The clip hides the element's content too, so it takes the same entrance,
+    // unless it has an entrance of its own later on (a caption rising after the card).
     for(const r of state.records){
       const k0=r.keyframes[0]?.clipPath;
       if(!k0)continue;
-      const m=/inset\(([^)]*)\)/.exec(k0);if(!m)continue;
-      const [t,ri,b,l]=m[1].split(/\s+/).map(parseFloat);
-      const filter=l>=50&&ri>=50?'barn(outVertical)':ri>=99?'wipe(left)':l>=99?'wipe(right)':b>=99?'wipe(up)':t>=99?'wipe(down)':'wipe(left)';
+      const inset=/inset\(([^)]*)\)/.exec(k0),poly=/polygon\(([^)]*)\)/.exec(k0);
+      let filter,preset;
+      if(inset){
+        const [t,ri,b,l]=inset[1].split(/\s+/).map(parseFloat);
+        filter=l>=50&&ri>=50?'barn(outVertical)':ri>=99?'wipe(left)':l>=99?'wipe(right)':b>=99?'wipe(up)':t>=99?'wipe(down)':'wipe(left)';
+        preset=filter.startsWith('barn')?[16,26]:[22,8];
+      }else if(poly){
+        const corners=poly[1].split(',').map(q=>q.trim().split(/\s+/).map(parseFloat));
+        if(!corners.every(q=>q[0]===corners[0][0]&&q[1]===corners[0][1]))continue;
+        const [x,y]=corners[0],down=y<50,right=x<50;
+        filter='strips('+(down?'down':'up')+(right?'Right':'Left')+')';preset=[18,(down?4:1)+(right?2:8)];
+      }else continue;
       const g=groups[r.group],at=r.start+(r.timing.delay||0)-g.start,dur=Number(r.timing.duration)||500;
-      for(const p of byEl.get(r.el)||[]){
+      for(const p of live.filter(q=>q.shape&&q.lineage.includes(r.el))){
         const e=model.effects[r.group].find(x=>x.shape===p.shape&&x.cls==='entr');
+        if(e&&p.el!==r.el&&e.delay>at+100)continue;
         const wipe={type:'filter',filter,dir:'in',dur};
-        if(e){e.behaviors=e.behaviors.filter(x=>x.type!=='fade');wipe.at=Math.max(0,at-e.delay);e.behaviors.push(wipe);e.preset=filter.startsWith('barn')?[16,26]:[22,8];}
-        else model.effects[r.group].push({shape:p.shape,cls:'entr',preset:[22,8],delay:Math.max(0,at),behaviors:[{type:'visibility',value:'visible'},wipe]});
+        if(e){e.behaviors=e.behaviors.filter(x=>x.type!=='fade');wipe.at=Math.max(0,at-e.delay);e.behaviors.push(wipe);e.preset=preset;}
+        else model.effects[r.group].push({shape:p.shape,cls:'entr',preset,delay:Math.max(0,at),behaviors:[{type:'visibility',value:'visible'},wipe]});
+      }
+    }
+    // Bars growing from their left edge (scaleX from 0 to rest): a Wipe from the left instead of a stretch.
+    for(const r of state.records){
+      const [k0,k1]=r.keyframes;
+      if(r.keyframes.length!==2||k0?.transform!=='scaleX(0)'||k1?.transform!=='none'||'opacity' in k0||r.timing.iterations===Infinity)continue;
+      if(!/^0(px)?\s/.test(getComputedStyle(r.el).transformOrigin))continue;
+      const at=r.start+(r.timing.delay||0)-groups[r.group].start,dur=Number(r.timing.duration)||500;
+      for(const p of byEl.get(r.el)||[]){
+        model.effects[r.group]=model.effects[r.group].filter(e=>e.shape!==p.shape);
+        model.effects[r.group].push({shape:p.shape,cls:'entr',preset:[22,8],delay:Math.max(0,at),behaviors:[{type:'visibility',value:'visible'},{type:'filter',filter:'wipe(left)',dir:'in',dur,decel:1}]});
       }
     }
     // Spinner keeps turning.
@@ -1150,10 +1205,8 @@
 
   // ---- Deck ---------------------------------------------------------------------------------
   async function bytesOf(url){const r=await fetch(url);if(!r.ok)throw new Error('Nie można wczytać '+url);return new Uint8Array(await r.arrayBuffer());}
-  function notesOf(slide,index,slides){
-    const elapsed=slides.slice(0,index).reduce((n,s)=>n+s.seconds,0),time=n=>Math.floor(n/60)+':'+String(n%60).padStart(2,'0');
-    return 'Slajd '+(index+1)+' · '+slide.speaker+' · '+slide.seconds+' s ('+time(elapsed)+'–'+time(elapsed+slide.seconds)+')\n\n'+slide.notes+(slide.source?'\n\nŹródło: '+slide.source:'');
-  }
+  // Speaker notes are the presenter's script only, one paragraph per line.
+  function notesOf(slide){return slide.notes;}
   function backgroundOf(article,slide){
     if(slide.layout.includes('worlds'))return '111111';
     return color(getComputedStyle(article).backgroundColor).hex;
@@ -1169,8 +1222,11 @@
     deck.addFont({typeface:'Lato',style:'regular',ttf:fonts.regular});
     deck.addFont({typeface:'Lato',style:'bold',ttf:fonts.bold});
     deck.addFont({typeface:'Lato Black',style:'regular',ttf:fonts.black});
+    // Images sized by CSS width alone (logos) measure zero until decoded; the capture runs on a virtual clock, so decode them first.
+    const preloaded=[...new Set(slides.flatMap(s=>[...s.html.matchAll(/<img[^>]+src="([^"]+)"/g)].map(m=>m[1])))].map(src=>{const img=new Image();img.src=src;return img;});
+    await Promise.all(preloaded.map(img=>img.decode().catch(()=>{})));
     const media=new Map();
-    const session=createSession(stage);
+    const session=createSession(stage,{simple});
     const results=[];
     session.install();
     try{
@@ -1189,7 +1245,7 @@
       }
       const transition=link.type==='plain'?{type:'plain',duration:600}:link.type==='morph'?{type:'morph',duration:550}:link.type==='wave'?{type:'fade',duration:200}:null;
       const timing={groups:groups.map((g,gi)=>({trigger:g.trigger,effects:model.effects[gi].sort((a,b)=>a.delay-b.delay)}))};
-      deck.addSlide({name:slide.title,background:model.background,shapes:model.shapes,notes:notesOf(slide,i,slides),transition,timing});
+      deck.addSlide({name:slide.title,background:model.background,shapes:model.shapes,notes:notesOf(slide),transition,timing});
     }
     return deck.build();
   }

@@ -53,9 +53,32 @@ Ruch nie zmienia czasów ani kolejności: nic nie przełącza się samo, a każd
 
 Tryb ograniczonego ruchu respektuje ustawienia systemowe. Możesz też otworzyć `index.html?motion=off`; postać jest wtedy widoczna, ale się nie porusza.
 
-## Prezentacje Google
+## PowerPoint (wersja docelowa)
 
-Plik do importu: **`exports/Homo-Urgens-Google.pptx`**. Nowy wygenerujesz w Chrome lub Edge: **E** → **PPTX dla Google** (eksport trwa ok. sekundy i uwzględnia poprawki z edytora). Import: Dysk Google → Nowy → Prześlij plik → Otwórz w Prezentacjach Google (albo w Prezentacjach: Plik → Importuj slajdy).
+Plik: **`exports/Homo-Urgens.pptx`** (28 października, 24 slajdy). Nowy wygenerujesz w Chrome lub Edge: **E** → **Eksportuj PPTX**. Eksport trwa kilkanaście sekund, działa offline i uwzględnia poprawki tekstów i pozycji z edytora. Po pobraniu pliku prezentacja wraca do tego samego slajdu.
+
+Plik jest przygotowany dla PowerPointa 365 na Windows i na Macu:
+
+- Te same slajdy i stany co w HTML. Wejście slajdu startuje samo, a każde odsłonięcie to jedno kliknięcie.
+- Teksty są edytowalnymi polami w foncie Lato, osadzonym w pliku. Kształty, wykresy, tła z fasetek, auto i postać to natywne kształty PowerPointa; każda fasetka to osobny kształt, stąd ich liczba. Logo i serce w rogu to oryginalne pliki PNG.
+- Ruch to natywne efekty (okienko **Animacje**). Slajdy jednego motywu łączy przejście Morph, a zmianę motywu fala trójkątów, jak w HTML.
+- Przeniesione sceny: złożenie serca na okładce z biciem serca, karty potrzeb rozkładane z rogu (efekt Paski) na slajdzie 7, kamera wjeżdżająca do lodówki (slajd 10) i odjeżdżająca od niej (slajd 11), auto gości na slajdzie 12 (składanie z fasetek, kręcące się koła, kołysanie, spaliny, wychylona pasażerka, podskok na wstędze), słupki wykresu rosnące od lewej (slajd 14), telefon z ramką i wygaszeniem na slajdach 15–18 oraz serce organizatora na slajdzie 24 (lot fasetek, wejście kamery w serce, zmiana kolorów, panel z podziękowaniem).
+- Notatki slajdów to scenariusz Joanny (wersja solo), wiersz po wierszu, z nagłówkami aktów i wskazówkami scenicznymi w nawiasach. Nie ma w nich czasów ani źródeł.
+
+Edycja w PowerPoincie:
+
+- Elementy widoczne tylko w ruchu (iskry, konfetti, kursor, echo poprzedniego slajdu, kolejne wartości liczników, miny postaci, kłęby spalin) leżą poza slajdem, po prawej stronie. Animacja wprowadza je na slajd; nie usuwaj ich.
+- Obiekty o nazwach zaczynających się od `!!` (okienko zaznaczenia, Alt+F10) łączy Morph z sąsiednim slajdem. Po zmianie nazwy obiekt nie przejdzie płynnie.
+- Na slajdach z falą trójkąty w nowym kolorze tworzą tło, a tło samego slajdu ma kolor poprzedniego. Po zmianie kolejności slajdów fala pokaże stary kolor.
+- Wiersze są łamane jawnie, jak w HTML. Po wydłużeniu tekstu sprawdź podział wierszy.
+
+Różnice względem HTML: nie ma rozmycia ani wstrząsu ekranu, miny postaci zmieniają się krótkim przenikaniem, a liczby metryk pojawiają się bez odliczania (licznik mają tylko loader i finał). Slajd 12 z autem jest najcięższy (ok. 1000 efektów); jeśli na słabszym komputerze zacznie się przycinać, daj znać. Zmiany wprowadzone w PowerPoincie nie wracają do HTML.
+
+Jeśli PowerPoint pokaże inny font (np. gdy osadzanie fontów jest zablokowane), zainstaluj Lato z `assets/fonts`. Plik przeszedł kontrolę struktury, ale nie został jeszcze otwarty w PowerPoincie. Przed wystąpieniem przejrzyj go na docelowym komputerze w trybie prezentera (szczegóły w `VERIFICATION.md`).
+
+## Prezentacje Google (nieaktualne)
+
+Plik `exports/Homo-Urgens-Google.pptx` pochodzi z 13 października (23 slajdy, stare notatki) i nie odpowiada obecnej prezentacji. Wersja docelowa to PowerPoint (wyżej). Wersję dla Google wygenerujesz tylko wtedy, gdy będzie potrzebna. Nowy wygenerujesz w Chrome lub Edge: **E** → **PPTX dla Google** (eksport trwa ok. sekundy i uwzględnia poprawki z edytora). Import: Dysk Google → Nowy → Prześlij plik → Otwórz w Prezentacjach Google (albo w Prezentacjach: Plik → Importuj slajdy).
 
 Prezentacje Google nie mają przejścia Morph, ścieżek ruchu, efektów wyróżnienia ani opóźnień. Pomijają też odstępy między literami i dokładny odstęp wierszy, a tekst zawsze zawijają do szerokości ramki. Dlatego wersja dla Google jest celowo prostsza:
 
@@ -63,30 +86,9 @@ Prezentacje Google nie mają przejścia Morph, ścieżek ruchu, efektów wyróż
 - Każde kliknięcie z HTML to jedno kliknięcie w Google: elementy z tego kroku pojawiają się przenikaniem, a zastępowane (np. „+” zamienione na „✓”) znikają przenikaniem. Na pozostałych slajdach przejście to zwykłe przenikanie.
 - Każdy wiersz tekstu jest osobną ramką, szerszą od tekstu o ok. 20%, wyśrodkowaną w pionie. Nic się nie zawija i nie rozjeżdża, nawet gdy Google mierzy tekst szerzej.
 - Nie ma iskier, kursora, mozaiki przejść, pisania na żywo ani liczników. Loader na slajdach 3–4 stoi na 87% i 99%, a zegar opowieści przeskakuje między slajdami.
-- Notatki prowadzących z czasami i źródłami są w notatkach slajdów.
+- Notatki slajdów to scenariusz Joanny, tak jak w PowerPoincie.
 
 Teksty są edytowalne w Google. Po zmianie tekstu sprawdź, czy wiersz nadal mieści się w swojej ramce.
-
-## Eksport do PowerPointa (nieużywany)
-
-Prezentację pokazujemy w Prezentacjach Google, więc pełnego pliku PowerPointa nie generujemy. Przycisk zostaje: nowy plik wygenerujesz w Chrome lub Edge: **E** → **Eksportuj PPTX**. Eksport trwa kilka sekund, działa offline i uwzględnia poprawki tekstów i pozycji z edytora. Po pobraniu pliku prezentacja wraca do tego samego slajdu.
-
-Plik jest przygotowany dla PowerPointa 365/2021 na Windows:
-
-- Te same slajdy i stany co w HTML (opis poniżej dotyczy eksportu z 13 października, 20 slajdów i 44 stany). Wejście slajdu startuje samo, a każde odsłonięcie to jedno kliknięcie.
-- Teksty są edytowalnymi polami w foncie Lato, osadzonym w pliku. Kształty, wykresy, tła z fasetek i postać to natywne kształty PowerPointa. Logo i serce w rogu to oryginalne pliki PNG.
-- Ruch to natywne efekty (okienko **Animacje**). Slajdy jednego motywu łączy przejście Morph, a zmianę motywu fala trójkątów, jak w HTML. Notatki do slajdów zawierają czasy i źródła.
-
-Edycja w PowerPoincie:
-
-- Elementy widoczne tylko w ruchu (iskry, konfetti, kursor, echo slajdu 2, kolejne wartości liczników, miny postaci) leżą poza slajdem, po prawej stronie. Animacja wprowadza je na slajd; nie usuwaj ich.
-- Obiekty o nazwach zaczynających się od `!!` (okienko zaznaczenia, Alt+F10) łączy Morph z sąsiednim slajdem. Po zmianie nazwy obiekt nie przejdzie płynnie.
-- Na slajdach z falą trójkąty w nowym kolorze tworzą tło, a tło samego slajdu ma kolor poprzedniego. Po zmianie kolejności slajdów fala pokaże stary kolor.
-- Wiersze są łamane jawnie, jak w HTML. Po wydłużeniu tekstu sprawdź podział wierszy.
-
-Różnice względem HTML: nie ma rozmycia ani wstrząsu ekranu, miny postaci zmieniają się krótkim przenikaniem, a liczby metryk pojawiają się bez odliczania (licznik mają tylko loader i finał). Zmiany wprowadzone w PowerPoincie nie wracają do HTML.
-
-Jeśli PowerPoint pokaże inny font (np. gdy osadzanie fontów jest zablokowane), zainstaluj Lato z `assets/fonts`. Plik przeszedł walidację formatu, ale nie został jeszcze otwarty w PowerPoincie. Przed wystąpieniem przejrzyj go na docelowym komputerze (szczegóły w `VERIFICATION.md`).
 
 ## Kontrole lokalne
 
@@ -98,4 +100,4 @@ node --check app.js
 
 Te polecenia wymagają Node, ale nie wymagają instalowania zależności. Samo prezentowanie nie wymaga Node.
 
-Przed konferencją przećwicz wystąpienie na docelowym laptopie i fizycznym klikerze. Notatki zawierają orientacyjne czasy oraz proponowany podział między prowadzące.
+Przed konferencją przećwicz wystąpienie na docelowym laptopie i fizycznym klikerze. Notatki zawierają scenariusz Joanny; orientacyjne czasy slajdów pokazuje nagłówek nakładki **O**.

@@ -156,6 +156,12 @@
             '<p:animEffect filter="image" prLst="opacity: '+num(b.value)+'"><p:cBhvr rctx="IE"><p:cTn id="'+draw+'" dur="'+dur+'" fill="hold"'+(start?'>'+start+'</p:cTn>':'/>')+tgt+'</p:cBhvr></p:animEffect>';
         }
         case 'color':{
+          // attr 'fill' (default) is PowerPoint's Fill Color emphasis, 'stroke' its Line Color.
+          if(b.attr==='stroke'){
+            const on=id();
+            return '<p:animClr clrSpc="rgb" dir="cw"><p:cBhvr>'+cTn()+tgt+attrs(['stroke.color'])+'</p:cBhvr><p:to>'+clr(b.to)+'</p:to></p:animClr>'+
+              '<p:set><p:cBhvr><p:cTn id="'+on+'" dur="'+dur+'" fill="hold">'+start+'</p:cTn>'+tgt+attrs(['stroke.on'])+'</p:cBhvr><p:to><p:strVal val="true"/></p:to></p:set>';
+          }
           const on=id(),type=id();
           return '<p:animClr clrSpc="rgb" dir="cw"><p:cBhvr>'+cTn()+tgt+attrs(['fillcolor'])+'</p:cBhvr><p:to>'+clr(b.to)+'</p:to></p:animClr>'+
             '<p:set><p:cBhvr><p:cTn id="'+on+'" dur="'+dur+'" fill="hold">'+start+'</p:cTn>'+tgt+attrs(['fill.type'])+'</p:cBhvr><p:to><p:strVal val="solid"/></p:to></p:set>'+

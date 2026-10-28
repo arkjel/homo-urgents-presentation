@@ -36,12 +36,12 @@ h1,h2{font-weight:900;letter-spacing:-.035em}
 .deck-hud button:disabled{opacity:.25;cursor:default}
 #slideCounter{min-width:91px;text-align:center;font-variant-numeric:tabular-nums}
 .hud-divider{height:18px;border-left:1px solid #ffffff40;margin:0 5px}
-.notes-dialog,.help-dialog{border:1px solid #d8d8d8;border-radius:16px;background:white;color:#171717;padding:44px;max-width:750px;width:calc(100vw - 44px);font-size:20px;line-height:1.6;box-shadow:0 20px 100px #0009}
+.notes-dialog,.help-dialog{border:1px solid #d8d8d8;border-radius:16px;background:white;color:#171717;padding:44px;max-width:750px;width:calc(100vw - 44px);font-size:20px;line-height:1.6;box-shadow:0 20px 100px #0009;max-height:90vh;overflow:auto}
 dialog::backdrop{background:#000a;backdrop-filter:blur(8px)}
 dialog h2{font-size:30px;line-height:1.2;margin:12px 0 24px}
 .dialog-close{position:absolute;right:17px;top:10px;background:none;border:0;font-size:30px;color:#666}
 .notes-meta{font-size:14px;color:#777;letter-spacing:.02em}
-#notesBody p{margin:0 0 20px}
+#notesBody p{margin:0 0 20px;white-space:pre-line}
 #notesBody .notes-source{border-top:1px solid #ddd;padding-top:15px;font-size:14px;color:#777}
 .help-dialog dl{margin:0;display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:16px}
 .help-dialog dt{font-weight:700}

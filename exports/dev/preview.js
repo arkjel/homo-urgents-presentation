@@ -78,7 +78,8 @@ window.PPTX_PREVIEW=(()=>{
       g.append(te);
     }
   }
-  async function render(url,index){
+  // all: keep off-slide shapes too (parked transients), tagged with their id and base box for exports/dev players.
+  async function render(url,index,{all=false}={}){
     const files=await unzip(url),xml=new DOMParser().parseFromString(new TextDecoder().decode(files.get('ppt/slides/slide'+index+'.xml')),'application/xml');
     const rels=new DOMParser().parseFromString(new TextDecoder().decode(files.get('ppt/slides/_rels/slide'+index+'.xml.rels')),'application/xml');
     const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 1920 1080');svg.setAttribute('width',1920);svg.setAttribute('height',1080);
@@ -89,8 +90,9 @@ window.PPTX_PREVIEW=(()=>{
       if(node.tagName!=='p:sp'&&node.tagName!=='p:pic')continue;
       const spPr=kid(node,'p:spPr'),xfrm=kid(spPr,'a:xfrm'),off=kid(xfrm,'a:off'),ext=kid(xfrm,'a:ext');
       const x=off.getAttribute('x')/E,y=off.getAttribute('y')/E,w=ext.getAttribute('cx')/E,h=ext.getAttribute('cy')/E,rot=(+xfrm.getAttribute('rot')||0)/60000;
-      if(x>1920||y>1080||x+w<0||y+h<0)continue;
+      if(!all&&(x>1920||y>1080||x+w<0||y+h<0))continue;
       const g=document.createElementNS(ns,'g');g.setAttribute('transform','translate('+x+' '+y+') rotate('+rot+' '+w/2+' '+h/2+')');
+      g.dataset.spid=node.getElementsByTagName('p:cNvPr')[0].getAttribute('id');g.dataset.box=JSON.stringify([x,y,w,h,rot]);
       if(node.tagName==='p:pic'){
         const rid=node.getElementsByTagName('a:blip')[0].getAttribute('r:embed');
         const target=[...rels.documentElement.children].find(r=>r.getAttribute('Id')===rid).getAttribute('Target').replace('../','ppt/');
@@ -121,5 +123,5 @@ window.PPTX_PREVIEW=(()=>{
     for(const i of list){const svg=await render(url,i);svg.setAttribute('width','958');svg.setAttribute('height','538');holder.append(svg);}
     document.body.append(holder);
   }
-  return {show,sheet,hide:()=>document.querySelector('#pptx-preview')?.remove()};
+  return {show,sheet,render,hide:()=>document.querySelector('#pptx-preview')?.remove()};
 })();

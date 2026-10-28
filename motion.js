@@ -328,7 +328,7 @@
   // A damped spring from 0 to 1 over t in [0, 1]; with zeta .8 it overshoots by about 1.5%.
   const springAt=(t,zeta=.8,omega=10)=>{const wd=omega*Math.sqrt(1-zeta*zeta);return t>=1?1:1-Math.exp(-zeta*omega*t)*(Math.cos(wd*t)+zeta*omega/wd*Math.sin(wd*t));};
   function heartbeat(art,delay=0){
-    if(!art||recorder)return;
+    if(!art||recorder?.simple)return;
     art.style.transformOrigin=COVER_C[0]+'px '+COVER_C[1]+'px';
     const up='cubic-bezier(.3,0,.25,1)',down='cubic-bezier(.45,0,.55,1)';
     A(art,[{transform:'scale(1)',easing:up},{transform:'scale(1.022)',offset:.11,easing:down},{transform:'scale(1.003)',offset:.25,easing:up},{transform:'scale(1.012)',offset:.34,easing:down},{transform:'scale(1)',offset:.56},{transform:'scale(1)'}],{duration:1050,delay,iterations:Infinity,easing:'linear',fill:'none'});
@@ -339,8 +339,8 @@
     if(!art||!V)return {landed:start,copy:start};
     const fly=(p,{x,y,turn},at,duration=1000)=>A(p,[{transform:'translate('+x.toFixed(0)+'px,'+y.toFixed(0)+'px) rotate('+turn.toFixed(0)+'deg) scale(.35)',opacity:0},{opacity:1,offset:.25},{transform:'none',opacity:1}],{duration,delay:at,easing:EASE.spring});
     const away=reach=>{const ang=random()*Math.PI*2,d=reach*(1+random()*.6);return {x:Math.cos(ang)*d,y:Math.sin(ang)*d,turn:(random()-.5)*360};};
-    // The exporter keeps the four clean facets and gives them a plain entrance; the copy follows at once.
-    if(recorder){
+    // The Google Slides export keeps the four clean facets and gives them a plain entrance; the copy follows at once.
+    if(recorder?.simple){
       $$(art,'polygon').forEach((p,i)=>{p.style.transformBox='fill-box';p.style.transformOrigin='center';fly(p,away(1500),start+i*90);});
       return {landed:start+1300,copy:start};
     }
@@ -654,7 +654,7 @@
     A($(car,'.car-shadow'),[{scale:'1',opacity:1},{scale:'.7',opacity:.5,offset:.35},{scale:'1',opacity:1,offset:.6},{scale:'1',opacity:1}],{duration:640,delay,fill:'none'});
     exhaustBurst(car,delay+380);
   }
-  function liveCar(ctx){const car=$(ctx.article,'.guest-car svg');return car&&ctx.ambient&&!ctx.capture?car:null;}
+  function liveCar(ctx){const car=$(ctx.article,'.guest-car svg');return car&&ctx.ambient&&!ctx.simple?car:null;}
   // A product falls onto the slide and settles with a small squash.
   const DROP=[
     {transform:'translateY(-780px) scale(.96,1.06)',opacity:0,easing:'cubic-bezier(.5,0,.9,.55)'},
@@ -850,8 +850,9 @@
             A(disc,[{transform:'none'},{transform:'scale(1.03)',offset:.35},{transform:'none'}],{duration:420,easing:EASE.out});
             const layer=fxLayer(a),spark=svg('polygon',{points:pts(triangle(22,rng(i+7))),fill:SHADES[i%3]},layer);
             spark.style.transformBox='view-box';spark.style.transformOrigin='0 0';
-            spark.animate([0,.2,.4,.6,.8,1].map(t=>{const [x,y]=at(t);return {offset:t,opacity:t?1:0,transform:'translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) rotate('+Math.round(t*540)+'deg)'};}),
-              {duration:flight,easing:EASE.inOut,fill:'both'}).onfinish=()=>spark.remove();
+            // The closing keyframe hides the spark where it lands, so a paused export does not leave it on the card.
+            const path=[0,.2,.4,.6,.8,1].map(t=>{const [x,y]=at(t);return {offset:t,opacity:t?1:0,transform:'translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) rotate('+Math.round(t*540)+'deg)'};});
+            spark.animate([...path,{...path.at(-1),opacity:0}],{duration:flight,easing:EASE.inOut,fill:'both'}).onfinish=()=>spark.remove();
             // A short trail: small facets drop off the path behind the spark.
             [.3,.55,.8].forEach((t,k)=>later(flight*t,()=>{const [x,y]=at(t);flyingFacet(layer,{x,y,size:6+k*2,fill:SHADES[(i+k)%3],dx:(k-1)*14,dy:26,spin:200,duration:520});}));
             later(flight,()=>sparkle(a,to[0],to[1],{n:5,reach:[30,90],seed:i+3}));
@@ -887,7 +888,7 @@
       custom:true,
       enter(ctx){
         const a=ctx.article,title=$(a,'.inside-title');
-        const t=ctx.prev&&!ctx.capture?fridgeZoomIn(ctx):0;
+        const t=ctx.prev&&!ctx.simple?fridgeZoomIn(ctx):0;
         A(title,[{opacity:0,transform:'translateY(-40px) scale(.7)'},{opacity:1,transform:'scale(1.06)',offset:.65},{opacity:1,transform:'none'}],{duration:640,delay:t+150,easing:EASE.out});
         later(t+800,()=>shake(title,{amount:8,duration:300}));
         lemonRock(a,t+700);
@@ -900,7 +901,7 @@
       custom:prev=>prev.id==='pusta-lodowka',
       enter(ctx){
         const a=ctx.article,fridge=$(a,'.fridge');
-        const zoom=ctx.prev&&ctx.prevSlide?.id==='pusta-lodowka'&&!ctx.capture,t=zoom?700:0;
+        const zoom=ctx.prev&&ctx.prevSlide?.id==='pusta-lodowka'&&!ctx.simple,t=zoom?700:0;
         headingIn(a,zoom?1250:60);
         if(zoom){fridgeZoomOut(ctx,fridge,1500);ctx.clockDelay=1400;}
         else{
@@ -1102,12 +1103,12 @@
       custom:true,
       enter(ctx){
         const a=ctx.article,fit=ctx.slide.heartFit,bg=$(a,'.thanks-bg'),panel=$(a,'.thanks-panel');
-        if(recorder||!fit||!bg||!panel)return;
+        if(recorder?.simple||!fit||!bg||!panel)return;
         const organizer=Object.fromEntries($$(bg,'polygon').map(p=>[p.dataset.facet,p.getAttribute('fill')]));
         const layer=overlay(a);
         layer.style.zIndex='auto';panel.before(layer);
         const under=svg('svg',{viewBox:'0 0 1920 1080',preserveAspectRatio:'none'},layer);
-        svg('rect',{width:W,height:H,fill:ctx.prevSlide?colorFor(ctx.prevSlide)([[480,540],[480,540],[480,540]]):'#111'},under);
+        svg('polygon',{points:'0,0 '+W+',0 '+W+','+H+' 0,'+H,fill:ctx.prevSlide?colorFor(ctx.prevSlide)([[480,540],[480,540],[480,540]]):'#111'},under);
         const old=ghost(layer,ctx.prev),meter=$(old,'.closing-meter');
         const b=meter?box(meter,a):{cx:W/2,cy:H/2};
         if(old){
@@ -1252,7 +1253,7 @@
     const morph=Boolean(recorder)&&prevSlide&&transitionFor(prevSlide,slide).type==='morph';
     const ctx={slide,article,index,source,play,ambient:!reduce&&!editing,step:Number(article.dataset.revealIndex)||0,
       prev:play&&prevSlide&&prevSlide.id!==slide.id&&!previous.isConnected?previous:null,prevSlide,prevIndex,
-      viaVT:root.classList.contains('mo-vt')||morph,vtShop:root.classList.contains('mo-vt-shop')||morph&&/shopping/.test(prevSlide.layout)&&/shopping/.test(slide.layout),capture:Boolean(recorder)};
+      viaVT:root.classList.contains('mo-vt')||morph,vtShop:root.classList.contains('mo-vt-shop')||morph&&/shopping/.test(prevSlide.layout)&&/shopping/.test(slide.layout),simple:Boolean(recorder?.simple)};
     current=ctx;
     const scene=SCENES[slide.id]||{};
     if(!play)scene.still?.(ctx);
