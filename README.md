@@ -76,9 +76,9 @@ Różnice względem HTML: nie ma rozmycia ani wstrząsu ekranu, miny postaci zmi
 
 Jeśli PowerPoint pokaże inny font (np. gdy osadzanie fontów jest zablokowane), zainstaluj Lato z `assets/fonts`. Plik przeszedł kontrolę struktury, ale nie został jeszcze otwarty w PowerPoincie. Przed wystąpieniem przejrzyj go na docelowym komputerze w trybie prezentera (szczegóły w `VERIFICATION.md`).
 
-## Prezentacje Google (nieaktualne)
+## Prezentacje Google
 
-Plik `exports/Homo-Urgens-Google.pptx` pochodzi z 13 października (23 slajdy, stare notatki) i nie odpowiada obecnej prezentacji. Wersja docelowa to PowerPoint (wyżej). Wersję dla Google wygenerujesz tylko wtedy, gdy będzie potrzebna. Nowy wygenerujesz w Chrome lub Edge: **E** → **PPTX dla Google** (eksport trwa ok. sekundy i uwzględnia poprawki z edytora). Import: Dysk Google → Nowy → Prześlij plik → Otwórz w Prezentacjach Google (albo w Prezentacjach: Plik → Importuj slajdy).
+Plik do importu: **`exports/Homo-Urgens-Google.pptx`** (28 października, 24 slajdy, notatki ze scenariusza Joanny). Pełnego pliku PowerPointa nie wrzucaj do Google: Morph, ścieżki ruchu i efekty wyróżnienia się tam rozsypią. Nowy wygenerujesz w Chrome lub Edge: **E** → **PPTX dla Google** (eksport trwa ok. sekundy i uwzględnia poprawki z edytora). Import: Dysk Google → Nowy → Prześlij plik → Otwórz w Prezentacjach Google (albo w Prezentacjach: Plik → Importuj slajdy).
 
 Prezentacje Google nie mają przejścia Morph, ścieżek ruchu, efektów wyróżnienia ani opóźnień. Pomijają też odstępy między literami i dokładny odstęp wierszy, a tekst zawsze zawijają do szerokości ramki. Dlatego wersja dla Google jest celowo prostsza:
 
