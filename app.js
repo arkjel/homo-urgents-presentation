@@ -6,9 +6,12 @@
   const previous=document.querySelector('#previous'),next=document.querySelector('#next');
   const motion=matchMedia('(prefers-reduced-motion: reduce)');
   const options=new URLSearchParams(location.search);
-  let loaderFrame=0,drawFrame=0,hudTimer=0,coverReplay=false;
+  // The presenter window embeds the deck twice (current and next click) as still previews.
+  const preview=options.get('view')==='preview';
+  if(preview)document.documentElement.classList.add('view-preview');
+  let loaderFrame=0,drawFrame=0,hudTimer=0,coverReplay=false,presenter=null,announced='';
   const editing=()=>Boolean(window.DECK_EDITOR?.isEditing());
-  const reduced=()=>motion.matches||options.get('motion')==='off';
+  const reduced=()=>preview||motion.matches||options.get('motion')==='off';
   const escape=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
   function fitStage(){
     const {width,height}=shell.getBoundingClientRect(),scale=Math.min(width/1920,height/1080);
@@ -58,6 +61,27 @@
     document.querySelector('#slideCounter').textContent=(index+1)+' / '+slides.length+(slide.reveals?' · '+step+'/'+slide.reveals:'');
     previous.disabled=index===0&&step===0;
     next.disabled=index===slides.length-1&&step===(slide.reveals||0);
+    announce();
+  }
+  // The audience window owns the state; the presenter window only mirrors it and sends commands.
+  function announce(force=false){
+    if(!presenter)return;
+    const {index,step}=nav.state(),replay=coverReplay&&index===0&&!reduced(),key=index+':'+step+':'+replay;
+    if(!force&&key===announced)return;
+    announced=key;
+    try{presenter.postMessage({type:'deck:state',index,step,replay},'*');}catch{presenter=null;}
+  }
+  function openPresenter(){
+    if(presenter&&!presenter.closed){presenter.focus();return;}
+    const opened=window.open('presenter.html','homo-urgens-presenter','popup,width=1440,height=900');
+    if(opened){presenter=opened;announced='';}
+  }
+  function command(action){
+    if(editing()||document.querySelector('dialog[open]'))return;
+    if(action==='next'||action==='previous')move(action);
+    else if(action==='home')show(0);
+    else if(action==='end')show(slides.length-1,Infinity);
+    else if(action==='restart')show(0,0,'restart');
   }
   function render(animate=false,source='jump'){
     // Forward moves, the opening and its replay are choreographed; going back shows the final state.
@@ -125,7 +149,7 @@
     const time=n=>Math.floor(n/60)+':'+String(n%60).padStart(2,'0');
     document.querySelector('#notesMeta').textContent='Slajd '+(index+1)+' · '+slide.speaker+' · '+slide.seconds+' s · '+time(elapsed)+'–'+time(elapsed+slide.seconds);
     document.querySelector('#notesTitle').textContent=slide.title;
-    document.querySelector('#notesBody').innerHTML='<p>'+escape(slide.notes)+'</p>'+(slide.source?'<p class="notes-source">'+escape(slide.source)+'</p>':'');
+    document.querySelector('#notesBody').innerHTML=window.HomoNotes.toHtml(slide.notes)+(slide.source?'<p class="notes-source">'+escape(slide.source)+'</p>':'');
     document.querySelector('#notesDialog').showModal();
   }
   async function fullscreen(){
@@ -137,6 +161,7 @@
   document.querySelector('#fullscreen').addEventListener('click',fullscreen);
   document.querySelector('#edit').addEventListener('click',()=>window.DECK_EDITOR.toggle());
   document.querySelector('#notes').addEventListener('click',openNotes);
+  document.querySelector('#presenter').addEventListener('click',openPresenter);
   document.querySelector('#help').addEventListener('click',()=>document.querySelector('#helpDialog').showModal());
   document.querySelectorAll('[data-close-dialog]').forEach(button=>button.addEventListener('click',()=>button.closest('dialog').close()));
   document.addEventListener('pointermove',trackPointer,{passive:true});
@@ -156,10 +181,23 @@
     else if(key==='End'){event.preventDefault();if(!event.repeat)show(slides.length-1,Infinity);}
     else if(key.toLowerCase()==='f'){event.preventDefault();if(!event.repeat)void fullscreen();}
     else if(key.toLowerCase()==='o'){event.preventDefault();if(!event.repeat)openNotes();}
+    else if(key.toLowerCase()==='s'){event.preventDefault();if(!event.repeat)openPresenter();}
     else if(key.toLowerCase()==='r'){event.preventDefault();if(!event.repeat)show(0,0,'restart');}
   });
   stage.addEventListener('click',event=>{
     if(!editing()&&!event.target.closest('button,a,input,textarea,select,[contenteditable="true"]'))move('next');
+  });
+  // file:// pages post with origin "null", so messages are trusted by their source window instead.
+  window.addEventListener('message',event=>{
+    const data=event.data;
+    if(!data||typeof data!=='object')return;
+    if(preview){
+      if(event.source===parent&&data.type==='deck:show'&&Number.isInteger(data.index)&&Number.isInteger(data.step))show(data.index,data.step,'jump');
+      return;
+    }
+    // The presenter says hello every second, so either window can reload and the link comes back.
+    if(data.type==='deck:hello'&&event.source){presenter=event.source;announce(true);}
+    else if(data.type==='deck:command'&&event.source===presenter)command(data.action);
   });
   function fromHash(){const index=slides.findIndex(s=>s.id===location.hash.slice(1));return index<0?0:index;}
   window.addEventListener('hashchange',()=>{if(nav.state().id!==location.hash.slice(1))show(fromHash(),0,'hash');});
@@ -170,6 +208,7 @@
     window.DECK_MOTION?.setHidden(document.hidden);
   });
   show(fromHash(),0,'initial');
+  if(preview&&parent!==window)parent.postMessage({type:'deck:ready'},'*');
   // Fonts and assets are local. This hook also lets visual checks wait for settled loading.
   window.DECK_READY=Promise.all([document.fonts.ready,...Array.from(document.images,im=>im.decode().catch(()=>{}))]);
 })();

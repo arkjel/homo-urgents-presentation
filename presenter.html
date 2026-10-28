@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Prezenter · Homo Urgens</title>
+  <link rel="icon" href="assets/brand/conference-heart.png">
+  <link rel="stylesheet" href="presenter.css">
+</head>
+<body>
+  <main class="console">
+    <section class="stage">
+      <div class="screen current"><iframe id="currentFrame" src="index.html?view=preview" title="Bieżący slajd" tabindex="-1"></iframe></div>
+      <div id="timer" class="timer is-armed">
+        <span id="elapsed" class="elapsed">0:00</span>
+        <button id="pause" type="button" title="Start / pauza">▶</button>
+        <button id="reset" type="button" title="Wyzeruj; start przy następnym kliknięciu">↺</button>
+      </div>
+    </section>
+    <div id="split" class="split" role="separator" aria-orientation="vertical" title="Przeciągnij w prawo, aby powiększyć slajd · dwuklik: układ domyślny"></div>
+    <section class="notes">
+      <div class="notes-head">
+        <p class="label">Notatki</p>
+        <span id="counter" class="counter"></span>
+        <span id="link" class="link"></span>
+        <button id="smaller" type="button" title="Mniejszy tekst · −">A−</button>
+        <button id="larger" type="button" title="Większy tekst · +">A+</button>
+        <button id="full" class="quiet" type="button" title="Pełny ekran · F" aria-label="Pełny ekran"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M1 5V1h4M11 1h4v4M15 11v4h-4M5 15H1v-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+      </div>
+      <div id="notes" class="notes-body"></div>
+    </section>
+  </main>
+  <script src="slides.js"></script>
+  <script src="navigation.js"></script>
+  <script src="notes.js"></script>
+  <script src="presenter.js"></script>
+</body>
+</html>

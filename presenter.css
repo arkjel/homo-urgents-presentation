@@ -1,0 +1,45 @@
+@font-face{font-family:Lato;src:url("assets/fonts/Lato-Regular.ttf") format("truetype");font-weight:400;font-display:swap}
+@font-face{font-family:Lato;src:url("assets/fonts/Lato-Bold.ttf") format("truetype");font-weight:700;font-display:swap}
+@font-face{font-family:Lato;src:url("assets/fonts/Lato-Black.ttf") format("truetype");font-weight:900;font-display:swap}
+/* Presenter console: the current slide with the timer below it, notes in a full-height column on the right;
+ * dark so it stays quiet on stage monitors. */
+:root{color-scheme:dark;--bg:#111;--panel:#1b1b1b;--line:#ffffff1f;--ink:#f4f4f4;--soft:#dcdcdc;--muted:#8f8f8f;--red:#ee312f;--key:#8cc4ff;--live:#3ccf6e;--hold:#f5b942;--notes:28px}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font-family:Lato,system-ui,sans-serif}
+body{display:grid;grid-template-rows:minmax(0,1fr)}
+button{font:inherit;color:inherit;background:#ffffff12;border:1px solid var(--line);border-radius:8px;padding:6px 14px;cursor:pointer}
+button:hover{background:#ffffff26}
+button:disabled{opacity:.3;cursor:default}
+.label{margin:0;font-size:15px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* Status stays in the notes header and out of the way; only a lost connection speaks up. */
+.counter{margin-right:auto;font-size:15px;color:var(--muted);font-variant-numeric:tabular-nums}
+.link{display:flex;align-items:center;gap:8px;margin-right:6px;font-size:14px;color:#ff8a80}
+.link::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--red)}
+.link.is-live::before{background:var(--live);opacity:.55}
+button.quiet{display:grid;place-items:center;padding:6px;border-color:transparent;background:none;color:var(--muted)}
+button.quiet:hover{color:var(--ink);background:#ffffff14}
+
+.console{display:grid;grid-template-columns:minmax(0,var(--left,58%)) auto minmax(0,1fr);padding:20px 24px 24px;min-height:0}
+.split{width:24px;display:grid;place-items:center;cursor:col-resize;touch-action:none}
+.split::before{content:'';width:5px;height:72px;border-radius:3px;background:#ffffff2e;transition:background .15s}
+.split:hover::before,.split.is-dragging::before{background:#ffffff80}
+.stage{container-type:size;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:24px;min-height:0;--clock:min(24cqh,15cqw)}
+.screen{position:relative;flex:none;aspect-ratio:16/9;background:#000;border-radius:8px;overflow:hidden;box-shadow:0 0 0 1px var(--line)}
+.screen iframe{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none}
+.current{width:min(100cqw,calc((100cqh - var(--clock) - 24px) * 16 / 9))}
+.timer{flex:none;display:flex;align-items:center;gap:14px}
+/* Fixed width, so the buttons do not shift when the minutes gain a digit. */
+.elapsed{width:2.7em;margin-right:8px;text-align:center;font-size:var(--clock);font-weight:900;line-height:1;font-variant-numeric:tabular-nums}
+.timer.is-armed .elapsed{color:var(--muted)}
+.timer.is-paused .elapsed{color:var(--hold)}
+.timer button{font-size:24px;padding:6px 18px}
+
+.notes{display:grid;grid-template-rows:auto minmax(0,1fr);min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+.notes-head{display:flex;align-items:center;gap:8px;padding:12px 16px 8px 24px}
+.notes-head button{font-weight:700;padding:4px 12px}
+.notes-body{overflow:auto;padding:6px 24px 24px;font-size:var(--notes);line-height:1.42;color:var(--soft);overscroll-behavior:contain}
+.notes-body.is-clipped{mask-image:linear-gradient(#000 calc(100% - 64px),#0000)}
+.notes-body p{margin:0 0 .55em}
+.notes-body strong{color:var(--key);font-weight:700}
+.notes-body .note-act{font-size:max(13px,.52em);font-weight:900;letter-spacing:.14em;color:var(--red)}

@@ -11,7 +11,7 @@ assert.equal(totalDurationSeconds,885);assert.equal(limitSeconds,1080);
 const expected={'kontrola':[78],'wybor-w-aplikacji':[55],trafnosc:[48]};
 assert.equal(slides.reduce((n,s)=>n+(s.metrics?.length||0),0),3,'exactly three research metrics');
 for(const slide of slides){
-  assert.ok(slide.notes&&slide.speaker&&slide.seconds>0,slide.id+': speaker notes and timing');
+  assert.ok(typeof slide.notes==='string'&&slide.speaker&&slide.seconds>0,slide.id+': speaker notes and timing');
   const steps=Array.from(slide.html.matchAll(/data-reveal="(\d+)"/g),m=>Number(m[1]));
   assert.equal(Math.max(0,...steps),slide.reveals,slide.id+': reveal count');
   for(let i=1;i<=slide.reveals;i++)assert.ok(steps.includes(i),slide.id+': continuous reveals');

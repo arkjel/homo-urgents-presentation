@@ -1206,7 +1206,7 @@
   // ---- Deck ---------------------------------------------------------------------------------
   async function bytesOf(url){const r=await fetch(url);if(!r.ok)throw new Error('Nie można wczytać '+url);return new Uint8Array(await r.arrayBuffer());}
   // Speaker notes are the presenter's script only, one paragraph per line.
-  function notesOf(slide){return slide.notes;}
+  function notesOf(slide){return slide.notes.replaceAll('**','');}
   function backgroundOf(article,slide){
     if(slide.layout.includes('worlds'))return '111111';
     return color(getComputedStyle(article).backgroundColor).hex;

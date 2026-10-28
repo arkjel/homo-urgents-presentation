@@ -23,6 +23,7 @@
     <button id="fullscreen" type="button" title="Pełny ekran · F">Ekran</button>
     <button id="edit" type="button" title="Edycja · E">Edytuj</button>
     <button id="notes" type="button" title="Notatki · O">Notatki</button>
+    <button id="presenter" type="button" title="Tryb prezentera · S">Prezenter</button>
     <button id="help" type="button" aria-label="Skróty klawiatury">?</button>
   </nav>
   <dialog id="notesDialog" class="notes-dialog" aria-labelledby="notesTitle">
@@ -32,7 +33,7 @@
   <dialog id="helpDialog" class="help-dialog" aria-labelledby="helpTitle">
     <button class="dialog-close" type="button" data-close-dialog aria-label="Zamknij pomoc">×</button>
     <h2 id="helpTitle">Sterowanie</h2>
-    <dl><dt>→ ↓ Page Down Spacja Enter</dt><dd>Kolejny element, potem slajd</dd><dt>← ↑ Page Up Backspace</dt><dd>Cofnięcie elementu, potem slajdu</dd><dt>F</dt><dd>Pełny ekran</dd><dt>E</dt><dd>Edytor tekstów i pozycji</dd><dt>O</dt><dd>Notatki do bieżącego slajdu</dd><dt>R</dt><dd>Powtórzenie otwarcia</dd><dt>Home / End</dt><dd>Początek / koniec</dd><dt>Esc</dt><dd>Zamknięcie panelu lub pełnego ekranu</dd></dl>
+    <dl><dt>→ ↓ Page Down Spacja Enter</dt><dd>Kolejny element, potem slajd</dd><dt>← ↑ Page Up Backspace</dt><dd>Cofnięcie elementu, potem slajdu</dd><dt>F</dt><dd>Pełny ekran</dd><dt>E</dt><dd>Edytor tekstów i pozycji</dd><dt>O</dt><dd>Notatki do bieżącego slajdu</dd><dt>S</dt><dd>Tryb prezentera (drugie okno)</dd><dt>R</dt><dd>Powtórzenie otwarcia</dd><dt>Home / End</dt><dd>Początek / koniec</dd><dt>Esc</dt><dd>Zamknięcie panelu lub pełnego ekranu</dd></dl>
   </dialog>
   <script>
     window.DECK_EDITION={id:'homo-urgens',editor:{texts:'homo-urgens-texts-v1',positions:'homo-urgens-layout-v1'}};
@@ -47,6 +48,7 @@
   <script src="motion.js"></script>
   <script src="pptx-writer.js"></script>
   <script src="pptx-export.js"></script>
+  <script src="notes.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

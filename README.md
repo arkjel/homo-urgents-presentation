@@ -19,13 +19,37 @@ Prezentacja zaczyna się okładką z prowadzącymi. Slajdy „Proszę czekać”
 | F | Pełny ekran / powrót |
 | E | Edytor tekstów i pozycji |
 | O | Notatki do aktualnego slajdu |
+| S | Tryb prezentera (drugie okno) |
 | R | Powrót do okładki i powtórzenie jej wejścia |
 | Home / End | Początek / koniec |
 | Esc | Zamknięcie panelu, notatek lub pełnego ekranu |
 
 Kliknięcie slajdu odsłania kolejny etap. Przytrzymanie klikera nie pomija treści. Okno prezentacji musi być aktywne. Pasek sterowania znika po chwili i wraca po ruchu myszy.
 
-**Notatki O pojawiają się na bieżącym ekranie.** Służą do przygotowania i próby; otwieranie ich podczas projekcji pokaże je także widowni.
+**Notatki O pojawiają się na bieżącym ekranie.** Służą do przygotowania i próby; otwieranie ich podczas projekcji pokaże je także widowni. Na scenie używaj trybu prezentera.
+
+## Tryb prezentera
+
+Klawisz **S** (lub przycisk **Prezenter** na pasku) otwiera drugie okno, widok prezentera:
+
+- po lewej bieżący slajd, taki jak na ekranie głównym, a pod nim duży timer;
+- po prawej notatki na całą wysokość (A− / A+ albo klawisze − / +; rozmiar zostaje zapamiętany). W ich nagłówku są numer slajdu, kropka połączenia z oknem widowni i ikonka pełnego ekranu;
+- pionowy suwak między slajdem a notatkami: przeciągnij w prawo, aby powiększyć slajd, w lewo, aby zrobić miejsce na notatki; dwuklik przywraca układ domyślny. Ustawienie zostaje zapamiętane.
+
+Timer rusza przy pierwszym kliknięciu, więc okładka może stać przed wejściem na scenę. ⏸ zatrzymuje timer, a ↺ go zeruje (ruszy przy następnym kliknięciu). Kliker działa w obu oknach: strzałki, Page Up/Down, Spacja, Home/End i R w oknie prezentera sterują oknem widowni. **F** włącza pełny ekran okna, w którym zostało wciśnięte.
+
+W notatkach pogrubione są kluczowe zdania scenariusza, a nagłówki aktów są czerwone. Slajd w oknie prezentera pokazuje stan końcowy etapu, bez animacji.
+
+**Przygotowanie na scenie:**
+
+1. W ustawieniach ekranów ustaw **rozszerzony pulpit**, nie lustro. Przy lustrze widownia zobaczy notatki.
+2. Zapytaj techników, które wyjście idzie na ekran główny, a które na monitory przed sceną.
+3. Otwórz `index.html` i wciśnij **S**. Zrób to przed pełnym ekranem, bo otwarcie nowego okna wyłącza pełny ekran.
+4. Przeciągnij okno prezentacji na ekran główny, kliknij w nie i wciśnij **F**.
+5. Przeciągnij okno prezentera na ekran monitorów, kliknij w nie i wciśnij **F**. Od teraz kliker steruje z okna prezentera.
+6. Kropka w nagłówku notatek musi być zielona. Gdy połączenie zniknie, obok pojawi się czerwony napis.
+
+Oba okna muszą być na różnych ekranach. Chrome wstrzymuje animacje w oknie całkowicie zasłoniętym innym oknem. Jeśli któreś okno zostanie przeładowane, połączenie wraca samo w ciągu sekundy, a timer liczy dalej.
 
 ## Edycja
 
